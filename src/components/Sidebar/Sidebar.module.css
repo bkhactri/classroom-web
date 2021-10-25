@@ -1,0 +1,52 @@
+.drawer {
+  width: 305px;
+  height: 100%;
+  padding: 10px 0;
+}
+
+.drawerLink {
+  margin-bottom: 10px;
+}
+
+.drawerItem {
+  width: 95%;
+  position: relative;
+  display: flex;
+  height: 3.5rem;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 0 50px 50px 0;
+}
+
+.drawerItem:hover {
+  background-color: rgba(177, 177, 177, 0.4);
+}
+
+.drawerItemIcon {
+  width: 25px;
+  height: 25px;
+  margin: 0 20px;
+  color: #5f6368;
+}
+
+.drawerItemTitle {
+  font-size: 15px;
+  line-height: 30px;
+  font-weight: 500;
+  color: #5f6368;
+}
+
+.drawerEnrolled {
+  margin-top: 10px;
+}
+
+.drawerEnrolledTitle {
+  display: flex;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  letter-spacing: 0.01785714em;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+  color: #5f6368;
+}

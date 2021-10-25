@@ -1,0 +1,101 @@
+.item {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  border: 1px solid #ede8e8;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.item:hover {
+  box-shadow: 0 1px 2px 0 rgb(60 64 67 / 30%), 0 2px 6px 2px rgb(60 64 67 / 15%);
+}
+
+.itemContent {
+  z-index: 1;
+  position: relative;
+  width: 100%;
+  cursor: pointer;
+}
+
+.itemContent img {
+  width: 100%;
+  height: 100px;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.itemInfo {
+  color: #fff;
+  z-index: 1;
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  width: 92%;
+}
+
+.itemInfoTop {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.classTitle {
+  color: #fff;
+  width: 200px;
+  font-size: 1.375rem;
+  font-weight: 400;
+  line-height: 1.75rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  text-decoration: none;
+}
+
+.classTitle:hover,
+.classSection:hover {
+  text-decoration: underline;
+}
+
+.classSection {
+  font-size: 13px;
+  position: absolute;
+  top: 30px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  text-decoration: none;
+}
+
+.classFunc {
+  line-height: 35px;
+}
+
+.classAuthor {
+  font-size: 13px;
+}
+
+.itemLink {
+  display: flex;
+  justify-content: flex-end;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 60px;
+  border-top: 1px solid #ede8e8;
+}
+
+.userAvatar {
+  z-index: 6;
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  overflow: hidden;
+  top: 65px;
+  right: 30px;
+}
+
+.userAvatar img {
+  width: 100%;
+}
