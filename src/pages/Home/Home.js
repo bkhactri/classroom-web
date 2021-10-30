@@ -25,13 +25,14 @@ const Home = () => {
 
     fetchClassrooms();
   }, []);
+  console.log(classrooms)
 
   return (
     <>
       <Header loading={isLoading} />
       {!isLoading ? (
         <div className={classes.classList}>
-          {classrooms ? (
+          {classrooms.length > 0 ? (
             <Container maxWidth="xl">
               <Grid
                 container
@@ -56,7 +57,11 @@ const Home = () => {
                   : null}
               </Grid>
             </Container>
-          ) : null}
+          ) : (
+            <div className={classes.noClasses}>
+              <div className={classes.noClassesWarning}>No class found</div>
+            </div>
+          )}
         </div>
       ) : null}
     </>

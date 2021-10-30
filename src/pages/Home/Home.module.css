@@ -1,3 +1,12 @@
 .classList {
   margin-top: 30px;
 }
+
+.noClasses {
+  width: 100%;
+}
+
+.noClassesWarning {
+  font-size: 24px;
+  text-align: center;
+}
