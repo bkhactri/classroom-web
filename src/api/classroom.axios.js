@@ -2,7 +2,7 @@ import axios from "axios";
 
 const axiosClassroom = axios.create({
   baseURL: `${process.env.REACT_APP_API_END_POINT}/classroom`,
-  timeout: 1000,
+  timeout: 10000,
   headers: { "X-Custom-Header": "foobar" },
 });
 
