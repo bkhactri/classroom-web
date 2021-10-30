@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosClassroom = axios.create({
-  baseURL: "http://localhost:8000/classroom",
+  baseURL: `${process.env.REACT_APP_API_END_POINT}/classroom`,
   timeout: 1000,
   headers: { "X-Custom-Header": "foobar" },
 });

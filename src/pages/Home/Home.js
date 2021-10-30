@@ -25,7 +25,6 @@ const Home = () => {
 
     fetchClassrooms();
   }, []);
-  console.log(classrooms)
 
   return (
     <>
