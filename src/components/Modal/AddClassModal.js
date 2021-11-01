@@ -3,17 +3,18 @@ import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
-import { withRouter } from "react-router";
+import { useHistory } from "react-router-dom";
 
 import axiosClassroom from "../../api/classroom.axios";
 import classes from "./Modal.module.css";
 
-const AddClassModal = ({ isOpen, handleClose, history }) => {
+const AddClassModal = ({ isOpen, handleClose }) => {
   const [isValidForm, setValidForm] = useState(false);
   const classNameEl = useRef(null);
   const classSectionEl = useRef(null);
   const classSubjectEl = useRef(null);
   const classRoomIdEl = useRef(null);
+  const history = useHistory();
 
   const handleNameChange = (event) => {
     setValidForm(event.target.value !== "");
@@ -33,7 +34,7 @@ const AddClassModal = ({ isOpen, handleClose, history }) => {
         author: "ANCD",
       });
       
-      history.push(`/classroom/${response.data.id}`);
+      history.replace(`/classroom/${response.data.id}`);
     } catch (error) {
       console.log(error);
     }
@@ -109,4 +110,4 @@ const AddClassModal = ({ isOpen, handleClose, history }) => {
   );
 };
 
-export default withRouter(AddClassModal);
+export default AddClassModal;

@@ -4,6 +4,7 @@ import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
+import Avatar from "@mui/material/Avatar";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
@@ -13,6 +14,7 @@ import AddClassModal from "../Modal/AddClassModal";
 import UserLogo from "../../assets/images/user-logo.png";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import classes from "./Header.module.css";
+import SchoolIcon from "@mui/icons-material/School";
 
 const Header = ({ loading }) => {
   const [isOpenUserMenu, setOpenUserMenu] = useState(null);
@@ -65,11 +67,9 @@ const Header = ({ loading }) => {
             >
               <MenuIcon />
             </IconButton>
-            <img
-              src="https://www.gstatic.com/images/branding/googlelogo/svg/googlelogo_clr_74x24px.svg"
-              alt="Google"
-              className={classes.logo}
-            />
+            <Avatar sx={{ m: 1, bgcolor: "#e3c77b" }}>
+              <SchoolIcon />
+            </Avatar>
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
               Classroom
             </Typography>
