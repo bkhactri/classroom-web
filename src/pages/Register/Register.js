@@ -1,24 +1,46 @@
-import React from "react";
+import React, { useState } from "react";
+import { Link, useHistory } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
 import SchoolIcon from "@mui/icons-material/School";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
+import axiosAuth from "../../api/auth.axios.js";
 
 const RegisterPage = () => {
-  const handleSubmit = (event) => {
+  const history = useHistory();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
+    setIsLoading(true);
     console.log({
+      username: data.get("username"),
       email: data.get("email"),
       password: data.get("password"),
+      confirmPassword: data.get("confirmPassword"),
     });
+    try {
+      const response = await axiosAuth.post("/signup", {
+        username: data.get("username"),
+        email: data.get("email"),
+        password: data.get("password"),
+      });
+      if (response) {
+        setIsLoading(false);
+        history.replace("/login");
+      }
+    } catch (error) {
+      setIsLoading(false);
+      console.log(error);
+    }
   };
 
   return (
@@ -75,7 +97,7 @@ const RegisterPage = () => {
               <TextField
                 required
                 fullWidth
-                name="Confirm Password"
+                name="confirmPassword"
                 label="Confirm Password"
                 type="password"
                 id="confirm-password"
@@ -88,12 +110,17 @@ const RegisterPage = () => {
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2, bgcolor: "secondary.main" }}
+            disabled={isLoading}
           >
-            Sign Up
+            {!isLoading ? (
+              "Sign Up"
+            ) : (
+              <CircularProgress sx={{ color: "#fff" }} />
+            )}
           </Button>
           <Grid container justifyContent="flex-end">
             <Grid item>
-              <Link href="/login" variant="body2">
+              <Link to="/login" variant="body2">
                 Already have an account? Sign in
               </Link>
             </Grid>

@@ -1,4 +1,5 @@
 import { React, useState, useRef } from "react";
+import { useSelector } from "react-redux";
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
@@ -9,6 +10,7 @@ import axiosClassroom from "../../api/classroom.axios";
 import classes from "./Modal.module.css";
 
 const AddClassModal = ({ isOpen, handleClose }) => {
+  const accessToken = useSelector((state) => state.auth.token);
   const [isValidForm, setValidForm] = useState(false);
   const classNameEl = useRef(null);
   const classSectionEl = useRef(null);
@@ -19,6 +21,7 @@ const AddClassModal = ({ isOpen, handleClose }) => {
   const handleNameChange = (event) => {
     setValidForm(event.target.value !== "");
   };
+
   const handleCreateClass = async () => {
     const className = classNameEl.current.value;
     const classSection = classSectionEl.current.value;
@@ -26,14 +29,19 @@ const AddClassModal = ({ isOpen, handleClose }) => {
     const classRoomId = classRoomIdEl.current.value;
 
     try {
-      const response = await axiosClassroom.post("/create", {
-        name: className,
-        section: classSection,
-        subject: classSubject,
-        room: classRoomId,
-        author: "ANCD",
-      });
-      
+      const response = await axiosClassroom.post(
+        "/create",
+        {
+          name: className,
+          section: classSection,
+          subject: classSubject,
+          room: classRoomId,
+        },
+        {
+          headers: { Authorization: "Bearer " + accessToken },
+        }
+      );
+
       history.replace(`/classroom/${response.data.id}`);
     } catch (error) {
       console.log(error);
@@ -47,9 +55,9 @@ const AddClassModal = ({ isOpen, handleClose }) => {
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      <div className={classes.modal}>
-        <div className={classes.modalTitle}>Create class</div>
-        <form className={classes.modalForm}>
+      <div className={classes.addModal}>
+        <div className={classes.addModalTitle}>Create class</div>
+        <form className={classes.addModalForm}>
           <TextField
             inputRef={classNameEl}
             onChange={handleNameChange}
@@ -84,11 +92,11 @@ const AddClassModal = ({ isOpen, handleClose }) => {
             margin="dense"
           />
         </form>
-        <div className={classes.modalTool}>
+        <div className={classes.addModalTool}>
           <Stack direction="row">
             <Button
               variant="text"
-              className={classes.modalButton}
+              className={classes.addModalButton}
               color="inherit"
               onClick={handleClose}
             >
@@ -96,7 +104,7 @@ const AddClassModal = ({ isOpen, handleClose }) => {
             </Button>
             <Button
               variant="text"
-              className={classes.modalButton}
+              className={classes.addModalButton}
               disabled={!isValidForm}
               color="inherit"
               onClick={handleCreateClass}

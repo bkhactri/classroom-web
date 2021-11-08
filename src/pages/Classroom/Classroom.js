@@ -1,4 +1,5 @@
 import { React, useEffect, useState } from "react";
+// import { useSelector } from "react-redux";
 import { NavLink, useParams } from "react-router-dom";
 import Header from "../../components/Header/Header";
 import Container from "@mui/material/Container";
@@ -9,6 +10,7 @@ import classes from "./Classroom.module.css";
 import axiosClassroom from "../../api/classroom.axios";
 
 const Classroom = () => {
+  const accessToken = localStorage.getItem("accessToken");
   const { classroomId } = useParams();
   const [classroom, setClassroom] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -17,16 +19,19 @@ const Classroom = () => {
     const fetchClassroom = async () => {
       setIsLoading(true);
       try {
-        const result = await axiosClassroom.get(`/${classroomId}`);
+        const result = await axiosClassroom.get(`/${classroomId}`, {
+          headers: { Authorization: "Bearer " + accessToken },
+        });
         setClassroom(result.data);
         setIsLoading(false);
       } catch (error) {
+        setIsLoading(false);
         console.log(error);
       }
     };
 
     fetchClassroom();
-  }, [classroomId]);
+  }, [classroomId, accessToken]);
 
   return (
     <>

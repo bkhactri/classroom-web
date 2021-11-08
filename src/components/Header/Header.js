@@ -1,32 +1,45 @@
 import { React, useState } from "react";
+import { useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
-import Avatar from "@mui/material/Avatar";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import LinearProgress from "@mui/material/LinearProgress";
 import AddIcon from "@mui/icons-material/Add";
 import AddClassModal from "../Modal/AddClassModal";
+import JoinClassModal from "../Modal/JoinClassModal";
 import UserLogo from "../../assets/images/user-logo.png";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import classes from "./Header.module.css";
 import SchoolIcon from "@mui/icons-material/School";
+import { authActions } from "../../stores/authenticationStore";
 
 const Header = ({ loading }) => {
+  const history = useHistory();
+  const dispatch = useDispatch();
   const [isOpenUserMenu, setOpenUserMenu] = useState(null);
   const [isOpenUserTool, setOpenUserTool] = useState(null);
   const [isDrawerOpen, setDrawerOpen] = useState({ left: false });
-  const [isOpenModal, setOpenModal] = useState(false);
+  const [isOpenAddClassModal, setOpenAddClassModal] = useState(false);
+  const [isOpenJoinClassModal, setOpenJoinClassModal] = useState(false);
 
-  const handleOpenModal = () => {
+  const handleOpenAddClassModal = () => {
     setOpenUserTool(null);
-    setOpenModal(true);
+    setOpenAddClassModal(true);
   };
-  const handleCloseModal = () => setOpenModal(false);
+
+  const handleJoinAddClassModal = () => {
+    setOpenUserTool(null);
+    setOpenJoinClassModal(true);
+  };
+
+  const handleCloseAddClassModal = () => setOpenAddClassModal(false);
+  const handleCloseJoinClassModal = () => setOpenJoinClassModal(false);
   const handleCloseUserMenu = () => setOpenUserMenu(null);
   const handleUserMenu = (event) => setOpenUserMenu(event.currentTarget);
   const handleUserTool = (event) => setOpenUserTool(event.currentTarget);
@@ -42,9 +55,22 @@ const Header = ({ loading }) => {
     setDrawerOpen({ ...isDrawerOpen, [anchor]: open });
   };
 
+  const handleSignOut = () => {
+    dispatch(authActions.clearUser());
+    localStorage.removeItem("accessToken");
+    history.replace("/login");
+  };
+
   return (
     <>
-      <AddClassModal isOpen={isOpenModal} handleClose={handleCloseModal} />
+      <AddClassModal
+        isOpen={isOpenAddClassModal}
+        handleClose={handleCloseAddClassModal}
+      />
+      <JoinClassModal
+        isOpen={isOpenJoinClassModal}
+        handleClose={handleCloseJoinClassModal}
+      />
       <Sidebar isOpen={isDrawerOpen["left"]} toggleDrawerClose={toggleDrawer} />
       <Box sx={{ flexGrow: 1 }}>
         <AppBar
@@ -67,11 +93,11 @@ const Header = ({ loading }) => {
             >
               <MenuIcon />
             </IconButton>
-            <Avatar sx={{ m: 1, bgcolor: "#e3c77b" }}>
+            <div className={classes.logo}>
               <SchoolIcon />
-            </Avatar>
+            </div>
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              Classroom
+              eClassroom
             </Typography>
             <div className={classes.AddMoreClass}>
               <IconButton
@@ -89,8 +115,12 @@ const Header = ({ loading }) => {
                 onClose={handleCloseUserTool}
                 transformOrigin={{ vertical: "top", horizontal: "center" }}
               >
-                <MenuItem onClick={handleCloseUserTool}>Join class</MenuItem>
-                <MenuItem onClick={handleOpenModal}>Create class</MenuItem>
+                <MenuItem onClick={handleJoinAddClassModal}>
+                  Join class
+                </MenuItem>
+                <MenuItem onClick={handleOpenAddClassModal}>
+                  Create class
+                </MenuItem>
               </Menu>
             </div>
             <div className={classes.userSettings}>
@@ -109,7 +139,7 @@ const Header = ({ loading }) => {
                 onClose={handleCloseUserMenu}
               >
                 <MenuItem onClick={handleCloseUserMenu}>My account</MenuItem>
-                <MenuItem onClick={handleCloseUserMenu}>Sign out</MenuItem>
+                <MenuItem onClick={handleSignOut}>Sign out</MenuItem>
               </Menu>
             </div>
           </Toolbar>

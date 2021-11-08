@@ -1,25 +1,48 @@
-import React from "react";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { Link, useHistory } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
+import CircularProgress from "@mui/material/CircularProgress";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
-import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import SchoolIcon from "@mui/icons-material/School";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
+import axiosAuth from "../../api/auth.axios";
+import { authActions } from "../../stores/authenticationStore";
 
 const LoginPage = () => {
-  const handleSubmit = (event) => {
+  const history = useHistory();
+  const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    setIsLoading(true);
+
+    try {
+      const response = await axiosAuth.post("/login", {
+        email: data.get("email"),
+        password: data.get("password"),
+      });
+      const user = {
+        id: response.id,
+        accessToken: response.accessToken,
+      };
+      localStorage.setItem("accessToken", response.accessToken);
+      dispatch(authActions.setUser(user));
+      setIsLoading(false);
+      history.replace("/");
+    } catch (error) {
+      setIsLoading(false);
+      console.log(error);
+    }
   };
 
   return (
@@ -69,17 +92,22 @@ const LoginPage = () => {
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2, bgcolor: "primary.main" }}
+            disabled={isLoading}
           >
-            Sign In
+            {!isLoading ? (
+              "Sign In"
+            ) : (
+              <CircularProgress sx={{ color: "#fff" }} />
+            )}
           </Button>
           <Grid container>
             <Grid item xs>
-              <Link href="/reset-password" variant="body2">
+              <Link to="/reset-password" variant="body2">
                 Forgot password?
               </Link>
             </Grid>
             <Grid item>
-              <Link href="/signup" variant="body2">
+              <Link to="/signup" variant="body2">
                 {"Don't have an account? Sign Up"}
               </Link>
             </Grid>

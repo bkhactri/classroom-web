@@ -122,8 +122,11 @@
   left: 75px;
 }
 
-@media screen and (max-width: 767px) {
+@media screen and (max-width: 598px) {
   .classUpcoming {
     display: none;
+  }
+  .classUpcomingDetail {
+    margin-bottom: 20px;
   }
 }

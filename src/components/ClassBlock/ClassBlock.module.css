@@ -68,7 +68,12 @@
 }
 
 .classFunc {
-  line-height: 35px;
+  position: absolute;
+  color: #fff;
+  top: 15px;
+  right: 10px;
+  z-index: 2;
+  cursor: pointer;
 }
 
 .classAuthor {

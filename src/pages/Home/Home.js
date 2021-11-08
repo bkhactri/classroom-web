@@ -1,4 +1,5 @@
 import { React, useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
 import Header from "../../components/Header/Header";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
@@ -8,23 +9,32 @@ import ClassBlock from "../../components/ClassBlock/ClassBlock";
 import axiosClassroom from "../../api/classroom.axios";
 
 const Home = () => {
+  const accessToken = localStorage.getItem("accessToken");
+  const history = useHistory();
   const [classrooms, setClassrooms] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    if (!accessToken) {
+      history.replace("/login");
+    }
+
     const fetchClassrooms = async () => {
       setIsLoading(true);
       try {
-        const result = await axiosClassroom.get("/get-all");
+        const result = await axiosClassroom.get("/get-all", {
+          headers: { Authorization: "Bearer " + accessToken },
+        });
         setClassrooms(result.data);
         setIsLoading(false);
       } catch (error) {
+        setIsLoading(false);
         console.log(error);
       }
     };
 
     fetchClassrooms();
-  }, []);
+  }, [accessToken, history]);
 
   return (
     <>
