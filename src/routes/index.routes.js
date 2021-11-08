@@ -17,6 +17,12 @@ const AppRouter = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
+      if (!accessToken) {
+        if (window.location.pathname !== "/signup") {
+          history.replace("/login");
+        }
+      }
+
       try {
         const response = await axiosAuth.get("/", {
           headers: { Authorization: "Bearer " + accessToken },
@@ -36,7 +42,12 @@ const AppRouter = () => {
         console.log(error);
       }
     };
-    if (!isAuthenticated && accessToken) {
+
+    if (
+      !isAuthenticated &&
+      window.location.pathname !== "/login" &&
+      window.location.pathname !== "/signup"
+    ) {
       checkAuth();
     }
   }, [isAuthenticated, dispatch, history, accessToken]);
