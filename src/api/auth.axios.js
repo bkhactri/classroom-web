@@ -11,7 +11,7 @@ axiosAuth.interceptors.request.use(
     return req;
   },
   (error) => {
-    console.log(error);
+    // console.log(error);
     return Promise.reject(error);
   }
 );
@@ -21,7 +21,7 @@ axiosAuth.interceptors.response.use(
     return res.data;
   },
   (error) => {
-    console.log(error);
+    // console.log(error);
     return Promise.reject(error);
   }
 );

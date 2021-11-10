@@ -17,11 +17,11 @@ const AppRouter = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      if (!accessToken) {
-        if (window.location.pathname !== "/signup") {
-          history.replace("/login");
-        }
-      }
+      // if (!accessToken) {
+      //   if (window.location.pathname !== "/signup") {
+      //     history.replace("/login");
+      //   }
+      // }
 
       try {
         const response = await axiosAuth.get("/", {
@@ -33,7 +33,14 @@ const AppRouter = () => {
             accessToken: accessToken,
           };
           dispatch(authActions.setUser(user));
-          history.replace(window.location.pathname);
+          if (
+            window.location.pathname === "/login" ||
+            window.location.pathname === "/signup"
+          ) {
+            history.replace("/");
+          } else {
+            history.replace(window.location.pathname);
+          }
         }
       } catch (error) {
         if (window.location.pathname !== "/signup") {
@@ -44,9 +51,12 @@ const AppRouter = () => {
     };
 
     if (
-      !isAuthenticated &&
-      window.location.pathname !== "/login" &&
-      window.location.pathname !== "/signup"
+      (accessToken &&
+        (window.location.pathname === "/login" ||
+          window.location.pathname === "/signup")) ||
+      (!isAuthenticated &&
+        window.location.pathname !== "/login" &&
+        window.location.pathname !== "/signup")
     ) {
       checkAuth();
     }
