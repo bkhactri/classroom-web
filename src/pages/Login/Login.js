@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
@@ -13,37 +13,54 @@ import Box from "@mui/material/Box";
 import SchoolIcon from "@mui/icons-material/School";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
+import Alert from "@mui/material/Alert";
+
 import axiosAuth from "../../api/auth.axios";
 import { authActions } from "../../stores/authenticationStore";
+import { signInFormValidator } from "../../validators/formValidator";
 
 const LoginPage = () => {
   const history = useHistory();
   const dispatch = useDispatch();
+  const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  let timer;
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    setIsLoading(true);
-
-    try {
-      const response = await axiosAuth.post("/login", {
-        email: data.get("email"),
-        password: data.get("password"),
-      });
-      const user = {
-        id: response.id,
-        accessToken: response.accessToken,
-      };
-      localStorage.setItem("accessToken", response.accessToken);
-      dispatch(authActions.setUser(user));
-      setIsLoading(false);
-      history.replace("/");
-    } catch (error) {
-      setIsLoading(false);
-      console.log(error);
+    const errorFormCheck = signInFormValidator(data).error;
+    if (!errorFormCheck) {
+      setIsLoading(true);
+      try {
+        const response = await axiosAuth.post("/login", {
+          email: data.get("email"),
+          password: data.get("password"),
+        });
+        const user = {
+          id: response.id,
+          accessToken: response.accessToken,
+        };
+        localStorage.setItem("accessToken", response.accessToken);
+        setIsLoading(false);
+        timer = setTimeout(() => {
+          dispatch(authActions.setUser(user));
+          history.replace("/");
+        });
+      } catch (error) {
+        setIsLoading(false);
+        setError(error.response.data);
+      }
+    } else {
+      setError(errorFormCheck);
     }
   };
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [timer]);
 
   return (
     <Container component="main" maxWidth="sm">
@@ -59,9 +76,10 @@ const LoginPage = () => {
         <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
           <SchoolIcon />
         </Avatar>
-        <Typography component="h1" variant="h5">
+        <Typography component="h1" variant="h5" sx={{ mb: 2 }}>
           Sign in
         </Typography>
+        {error && <Alert severity="error">{error}</Alert>}
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
             margin="normal"

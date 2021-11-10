@@ -10,36 +10,39 @@ import CircularProgress from "@mui/material/CircularProgress";
 import SchoolIcon from "@mui/icons-material/School";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
+import Alert from "@mui/material/Alert";
+
 import axiosAuth from "../../api/auth.axios.js";
+import { signUpFormValidator } from "../../validators/formValidator";
 
 const RegisterPage = () => {
   const history = useHistory();
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+    const errorFormCheck = signUpFormValidator(data).error;
+    if (!errorFormCheck) {
+      setIsLoading(true);
 
-    setIsLoading(true);
-    console.log({
-      username: data.get("username"),
-      email: data.get("email"),
-      password: data.get("password"),
-      confirmPassword: data.get("confirmPassword"),
-    });
-    try {
-      const response = await axiosAuth.post("/signup", {
-        username: data.get("username"),
-        email: data.get("email"),
-        password: data.get("password"),
-      });
-      if (response) {
+      try {
+        const response = await axiosAuth.post("/signup", {
+          username: data.get("username"),
+          email: data.get("email"),
+          password: data.get("password"),
+        });
+        if (response) {
+          setIsLoading(false);
+          history.replace("/login");
+        }
+      } catch (error) {
         setIsLoading(false);
-        history.replace("/login");
+        setError(error.response.data);
       }
-    } catch (error) {
-      setIsLoading(false);
-      console.log(error);
+    } else {
+      setError(errorFormCheck);
     }
   };
 
@@ -57,9 +60,10 @@ const RegisterPage = () => {
         <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
           <SchoolIcon />
         </Avatar>
-        <Typography component="h1" variant="h5">
+        <Typography component="h1" variant="h5" sx={{ mb: 2 }}>
           Sign up
         </Typography>
+        {error && <Alert severity="error">{error}</Alert>}
         <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
           <Grid container spacing={2}>
             <Grid item xs={12}>

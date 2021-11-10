@@ -1,5 +1,6 @@
 import { React, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
+import { useSelector } from "react-redux";
 import Header from "../../components/Header/Header";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
@@ -9,7 +10,7 @@ import ClassBlock from "../../components/ClassBlock/ClassBlock";
 import axiosClassroom from "../../api/classroom.axios";
 
 const Home = () => {
-  const accessToken = localStorage.getItem("accessToken");
+  const accessToken = useSelector((state) => state.auth.token);
   const history = useHistory();
   const [classrooms, setClassrooms] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
