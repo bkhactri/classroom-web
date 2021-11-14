@@ -4,6 +4,13 @@ import { NavLink, useParams } from "react-router-dom";
 import Header from "../../components/Header/Header";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import IconButton from "@mui/material/IconButton";
+import MenuItem from "@mui/material/MenuItem";
+import Menu from "@mui/material/Menu";
+import LinkIcon from '@mui/icons-material/Link';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import Snackbar from '@mui/material/Snackbar';
 
 import UserLogo from "../../assets/images/user-logo.png";
 import classes from "./Classroom.module.css";
@@ -14,6 +21,8 @@ const Classroom = () => {
   const { classroomId } = useParams();
   const [classroom, setClassroom] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [inviteMenuAnchorEl, setInviteMenuAnchorEl] = useState(null);
+  const [snackBarMessage, setSnackBarMessage] = useState("");
 
   useEffect(() => {
     const fetchClassroom = async () => {
@@ -33,8 +42,31 @@ const Classroom = () => {
     fetchClassroom();
   }, [classroomId, accessToken]);
 
+  const handleOpenInviteMenu = (e) => setInviteMenuAnchorEl(e.currentTarget);
+  const handleCloseInviteMenu = () => setInviteMenuAnchorEl(null);
+  
+  const copyInviteLink = async () => {
+    await navigator.clipboard.writeText(`${window.location.origin}/join/${classroom.classCode}`);
+    setSnackBarMessage("Invite link copied");
+    setInviteMenuAnchorEl(null);
+  }
+
+  const copyClassCode = async () => {
+    await navigator.clipboard.writeText(classroom.classCode);
+    setSnackBarMessage("Class code copied");
+    setInviteMenuAnchorEl(null);
+  }
+
+  const handleCloseSnackBar = () => setSnackBarMessage("");
+
   return (
     <>
+      <Snackbar
+        open={Boolean(snackBarMessage)}
+        autoHideDuration={5000}
+        onClose={handleCloseSnackBar}
+        message={snackBarMessage}
+      />
       <Header loading={isLoading} />
       <Container classes={{ root: classes.classroomContainer }}>
         <div className={classes.classroomBanner}>
@@ -52,6 +84,29 @@ const Classroom = () => {
         <div className={classes.classStream}>
           <Grid container spacing={2} rowSpacing={2}>
             <Grid item sm={3} md={3} lg={3}>
+              <div className={classes.classInvite}>
+                <div className={classes.classInviteTitle}>
+                  <div style={{ height: "100%" }}>Class Code</div>
+                  <IconButton onClick={handleOpenInviteMenu}>
+                    <MoreVertIcon />
+                  </IconButton>
+                  <Menu
+                    open={Boolean(inviteMenuAnchorEl)}
+                    onClose={handleCloseInviteMenu}
+                    anchorEl={inviteMenuAnchorEl}
+                    anchorOrigin={{
+                      vertical: "bottom",
+                      horizontal: "left",
+                    }}
+                  >
+                    <MenuItem onClick={copyInviteLink}><LinkIcon />&nbsp; Copy class invite link</MenuItem>
+                    <MenuItem onClick={copyClassCode}><ContentCopyIcon />&nbsp; Copy class code</MenuItem>
+                  </Menu>
+                </div>
+                <div className={classes.classInviteDetail}>
+                  {classroom.classCode}
+                </div>
+              </div>
               <div className={classes.classUpcoming}>
                 <div className={classes.classUpcomingTitle}>Upcoming</div>
                 <div className={classes.classUpcomingDetail}>
