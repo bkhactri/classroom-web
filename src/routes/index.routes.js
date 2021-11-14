@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Switch, Route, useHistory } from "react-router-dom";
 import Home from "../pages/Home/Home";
 import Classroom from "../pages/Classroom/Classroom";
+import JoinClassroom from "../pages/JoinClassroom/JoinClassroom";
 import LoginPage from "../pages/Login/Login";
 import RegisterPage from "../pages/Register/Register";
 import PageNotFound from "../pages/PageNotFound/PageNotFound";
@@ -68,6 +69,7 @@ const AppRouter = () => {
         <>
           <Route path="/" exact component={Home}></Route>
           <Route path="/classroom/:classroomId" component={Classroom}></Route>
+          <Route path="/join/:classCode" component={JoinClassroom}/>
         </>
       )}
       {!isAuthenticated && (

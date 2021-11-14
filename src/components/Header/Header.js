@@ -19,6 +19,8 @@ import classes from "./Header.module.css";
 import SchoolIcon from "@mui/icons-material/School";
 import { authActions } from "../../stores/authenticationStore";
 
+import axiosAuth from "../../api/auth.axios";
+
 const Header = ({ loading }) => {
   const history = useHistory();
   const dispatch = useDispatch();
@@ -33,7 +35,7 @@ const Header = ({ loading }) => {
     setOpenAddClassModal(true);
   };
 
-  const handleJoinAddClassModal = () => {
+  const handleOpenJoinClassModal = () => {
     setOpenUserTool(null);
     setOpenJoinClassModal(true);
   };
@@ -55,10 +57,11 @@ const Header = ({ loading }) => {
     setDrawerOpen({ ...isDrawerOpen, [anchor]: open });
   };
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
     dispatch(authActions.clearUser());
     localStorage.removeItem("accessToken");
     history.replace("/login");
+    await axiosAuth.post("/logout");
   };
 
   return (
@@ -115,7 +118,7 @@ const Header = ({ loading }) => {
                 onClose={handleCloseUserTool}
                 transformOrigin={{ vertical: "top", horizontal: "center" }}
               >
-                <MenuItem onClick={handleJoinAddClassModal}>
+                <MenuItem onClick={handleOpenJoinClassModal}>
                   Join class
                 </MenuItem>
                 <MenuItem onClick={handleOpenAddClassModal}>
