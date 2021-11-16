@@ -16,22 +16,22 @@ export const validateEmail = (email) => {
 export const validatePassword = (password) => {
   let error;
   if (password.length < 6) {
-    error = "Minimum length of password is 6";
+    return (error = "Minimum length of password is 6");
   }
   if (password.length > 16) {
-    error = "Maximum length of password is 16";
+    return (error = "Maximum length of password is 16");
   }
   if (!password.match(/[a-z]+/)) {
-    error = "Password should include at least 1 lowercase letter";
+    return (error = "Password should include at least 1 lowercase letter");
   }
   if (!password.match(/[A-Z]+/)) {
-    error = "Password should include at least 1 uppercase letter";
+    return (error = "Password should include at least 1 uppercase letter");
   }
   if (!password.match(/[0-9]+/)) {
-    error = "Password should include at least 1 number";
+    return (error = "Password should include at least 1 number");
   }
   if (!password.match(/[$@#&!]+/)) {
-    error = "Password should include at least 1 special character";
+    return (error = "Password should include at least 1 special character");
   }
   return error;
 };

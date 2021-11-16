@@ -29,6 +29,7 @@ const Header = ({ loading }) => {
   const [isDrawerOpen, setDrawerOpen] = useState({ left: false });
   const [isOpenAddClassModal, setOpenAddClassModal] = useState(false);
   const [isOpenJoinClassModal, setOpenJoinClassModal] = useState(false);
+  const isHomePage = window.location.pathname === "/";
 
   const handleOpenAddClassModal = () => {
     setOpenUserTool(null);
@@ -62,6 +63,10 @@ const Header = ({ loading }) => {
     localStorage.removeItem("accessToken");
     history.replace("/login");
     await axiosAuth.post("/logout");
+  };
+
+  const handleNavigateAccountPage = () => {
+    history.replace("/account");
   };
 
   return (
@@ -102,30 +107,32 @@ const Header = ({ loading }) => {
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
               eClassroom
             </Typography>
-            <div className={classes.AddMoreClass}>
-              <IconButton
-                size="large"
-                aria-controls="add-class"
-                aria-haspopup="true"
-                onClick={handleUserTool}
-              >
-                <AddIcon />
-              </IconButton>
-              <Menu
-                id="add-class"
-                anchorEl={isOpenUserTool}
-                open={Boolean(isOpenUserTool)}
-                onClose={handleCloseUserTool}
-                transformOrigin={{ vertical: "top", horizontal: "center" }}
-              >
-                <MenuItem onClick={handleOpenJoinClassModal}>
-                  Join class
-                </MenuItem>
-                <MenuItem onClick={handleOpenAddClassModal}>
-                  Create class
-                </MenuItem>
-              </Menu>
-            </div>
+            {isHomePage && (
+              <div className={classes.AddMoreClass}>
+                <IconButton
+                  size="large"
+                  aria-controls="add-class"
+                  aria-haspopup="true"
+                  onClick={handleUserTool}
+                >
+                  <AddIcon />
+                </IconButton>
+                <Menu
+                  id="add-class"
+                  anchorEl={isOpenUserTool}
+                  open={Boolean(isOpenUserTool)}
+                  onClose={handleCloseUserTool}
+                  transformOrigin={{ vertical: "top", horizontal: "center" }}
+                >
+                  <MenuItem onClick={handleOpenJoinClassModal}>
+                    Join class
+                  </MenuItem>
+                  <MenuItem onClick={handleOpenAddClassModal}>
+                    Create class
+                  </MenuItem>
+                </Menu>
+              </div>
+            )}
             <div className={classes.userSettings}>
               <IconButton
                 size="large"
@@ -141,7 +148,9 @@ const Header = ({ loading }) => {
                 open={Boolean(isOpenUserMenu)}
                 onClose={handleCloseUserMenu}
               >
-                <MenuItem onClick={handleCloseUserMenu}>My account</MenuItem>
+                <MenuItem onClick={handleNavigateAccountPage}>
+                  My account
+                </MenuItem>
                 <MenuItem onClick={handleSignOut}>Sign out</MenuItem>
               </Menu>
             </div>

@@ -6,6 +6,7 @@ import Classroom from "../pages/Classroom/Classroom";
 import JoinClassroom from "../pages/JoinClassroom/JoinClassroom";
 import LoginPage from "../pages/Login/Login";
 import RegisterPage from "../pages/Register/Register";
+import AccountPage from "../pages/Account/Account";
 import PageNotFound from "../pages/PageNotFound/PageNotFound";
 import axiosAuth from "../api/auth.axios";
 import { authActions } from "../stores/authenticationStore";
@@ -18,12 +19,6 @@ const AppRouter = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      // if (!accessToken) {
-      //   if (window.location.pathname !== "/signup") {
-      //     history.replace("/login");
-      //   }
-      // }
-
       try {
         const response = await axiosAuth.get("/", {
           headers: { Authorization: "Bearer " + accessToken },
@@ -67,15 +62,16 @@ const AppRouter = () => {
     <Switch>
       {isAuthenticated && (
         <>
-          <Route path="/" exact component={Home}></Route>
-          <Route path="/classroom/:classroomId" component={Classroom}></Route>
-          <Route path="/join/:classCode" component={JoinClassroom}/>
+          <Route path="/" exact component={Home} />
+          <Route path="/classroom/:classroomId" component={Classroom} />
+          <Route path="/account" component={AccountPage} />
+          <Route path="/join/:classCode" component={JoinClassroom} />
         </>
       )}
       {!isAuthenticated && (
         <>
-          <Route path="/login" component={LoginPage}></Route>
-          <Route path="/signup" component={RegisterPage}></Route>
+          <Route path="/login" component={LoginPage} />
+          <Route path="/signup" component={RegisterPage} />
         </>
       )}
       <Route path="*" component={PageNotFound}></Route>
