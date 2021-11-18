@@ -98,7 +98,7 @@ const Classroom = () => {
         classroom={classroom}
         type={"STUDENT"}
       />
-      <Header loading={isLoading} />
+      <Header loading={isLoading} classroom={1} classID={classroomId}/>
       <Container classes={{ root: classes.classroomContainer }}>
         <div className={classes.classroomBanner}>
           <div className={classes.classroomBannerImg}>

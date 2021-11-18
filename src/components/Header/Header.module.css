@@ -9,3 +9,8 @@
   height: 35;
   border-radius: 50%;
 }
+
+.classOptions {
+  color: blue;
+  font-weight: bold;
+};

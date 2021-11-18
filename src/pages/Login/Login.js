@@ -14,6 +14,8 @@ import SchoolIcon from "@mui/icons-material/School";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Alert from "@mui/material/Alert";
+import GoogleIcon from '@mui/icons-material/Google';
+import { IconButton } from "@mui/material";
 
 import axiosAuth from "../../api/auth.axios";
 import { authActions } from "../../stores/authenticationStore";
@@ -131,6 +133,15 @@ const LoginPage = () => {
             </Grid>
           </Grid>
         </Box>
+        <Typography variant="h6" sx={{ mb: 2, marginTop: 2, marginBottom: 0 }}>
+          Or sign in with Google
+        </Typography>
+        <IconButton onClick={async () => {
+          const googleLoginURL = `${process.env.REACT_APP_API_END_POINT}/auth/google`;
+          window.location.href = googleLoginURL;
+        }}>
+          <GoogleIcon style={{color: "red", fontSize: 50}}/>
+        </IconButton>
       </Box>
     </Container>
   );

@@ -10,6 +10,8 @@ import AccountPage from "../pages/Account/Account";
 import PageNotFound from "../pages/PageNotFound/PageNotFound";
 import axiosAuth from "../api/auth.axios";
 import { authActions } from "../stores/authenticationStore";
+import LoginSuccess from "../pages/Login/LoginSuccess";
+import ClassroomPeople from "../pages/ClassroomPeople/ClassroomPeople";
 
 const AppRouter = () => {
   const dispatch = useDispatch();
@@ -49,10 +51,13 @@ const AppRouter = () => {
     if (
       (accessToken &&
         (window.location.pathname === "/login" ||
-          window.location.pathname === "/signup")) ||
+          window.location.pathname === "/signup"|| 
+          window.location.pathname !== "/loginSucess")) ||
       (!isAuthenticated &&
         window.location.pathname !== "/login" &&
-        window.location.pathname !== "/signup")
+        window.location.pathname !== "/signup" &&
+        window.location.pathname !== "/loginSucess"
+        )
     ) {
       checkAuth();
     }
@@ -66,12 +71,14 @@ const AppRouter = () => {
           <Route path="/classroom/:classroomId" component={Classroom} />
           <Route path="/account" component={AccountPage} />
           <Route path="/join/:classroomId/:classCode" component={JoinClassroom} />
+          <Route path="/classroom-people/:classroomId" component={ClassroomPeople}></Route>
         </>
       )}
       {!isAuthenticated && (
         <>
-          <Route path="/login" component={LoginPage} />
-          <Route path="/signup" component={RegisterPage} />
+          <Route path="/login" component={LoginPage}></Route>
+          <Route path="/signup" component={RegisterPage}></Route>
+          <Route path="/loginSucess" component={LoginSuccess}></Route>
         </>
       )}
       <Route path="*" component={PageNotFound}></Route>
