@@ -70,7 +70,7 @@ const ClassroomPeople = () => {
         onClose={handleCloseSnackBar}
         message={snackBarMessage}
       />
-      <Header loading={isLoading} />
+      <Header loading={isLoading} classroom={2} classID={classroomId}/>
       <Container classes={{ root: classes.classroomPeopleContainer }}>
 
         <List>
@@ -85,9 +85,9 @@ const ClassroomPeople = () => {
 
 
         <List>
-          <ListItem style={{display:'flex', alignItems:'start'}} divider>
+          <ListItem style={{display:'flex', justifyContent:'space-between'}} divider>
             <Typography variant="h4" className={classes.bigfont}>Classmates</Typography>
-            <Typography variant="h5" className={classes.bigfont}>Classmates</Typography>
+            <Typography variant="p" className={classes.fontNumClass}>{getNumStudent()} students</Typography>
           </ListItem>
           <Divider className={classes.dividerBlue}/>
 

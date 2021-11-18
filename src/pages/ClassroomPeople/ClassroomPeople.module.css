@@ -28,6 +28,10 @@
   color: blue;
 }
 
+.fontNumClass{
+  color: blue;
+}
+
 @media screen and (max-width: 598px) {
   .classUpcoming {
     display: none;
