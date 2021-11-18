@@ -1,28 +1,37 @@
 import { React, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 import { NavLink, useParams } from "react-router-dom";
 import Header from "../../components/Header/Header";
+import InviteEmailModal from "../../components/Modal/InviteEmailModal";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import IconButton from "@mui/material/IconButton";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
-import LinkIcon from '@mui/icons-material/Link';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import Snackbar from '@mui/material/Snackbar';
+import LinkIcon from "@mui/icons-material/Link";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import Snackbar from "@mui/material/Snackbar";
+import Button from "@mui/material/Button";
+import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
+import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 
 import UserLogo from "../../assets/images/user-logo.png";
 import classes from "./Classroom.module.css";
 import axiosClassroom from "../../api/classroom.axios";
 
 const Classroom = () => {
+  const history = useHistory();
   const accessToken = useSelector((state) => state.auth.token);
   const { classroomId } = useParams();
   const [classroom, setClassroom] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [inviteMenuAnchorEl, setInviteMenuAnchorEl] = useState(null);
   const [snackBarMessage, setSnackBarMessage] = useState("");
+  const [isOpenInviteTeacherModal, setOpenInviteTeacherModal] = useState(false);
+  const [isOpenInviteStudentModal, setOpenInviteStudentModal] = useState(false);
+  const [role, setRole] = useState("");
 
   useEffect(() => {
     const fetchClassroom = async () => {
@@ -32,30 +41,38 @@ const Classroom = () => {
           headers: { Authorization: "Bearer " + accessToken },
         });
         setClassroom(result.data);
+        setRole(result.data.participants[0].role);
         setIsLoading(false);
       } catch (error) {
         setIsLoading(false);
-        console.log(error);
+        history.replace("/");
       }
     };
 
     fetchClassroom();
-  }, [classroomId, accessToken]);
+  }, [classroomId, accessToken, history]);
 
   const handleOpenInviteMenu = (e) => setInviteMenuAnchorEl(e.currentTarget);
   const handleCloseInviteMenu = () => setInviteMenuAnchorEl(null);
-  
+
+  const handleOpenTeacherInviteModal = () => setOpenInviteTeacherModal(true);
+  const handleCloseTeacherInviteModal = () => setOpenInviteTeacherModal(false);
+  const handleOpenStudentInviteModal = () => setOpenInviteStudentModal(true);
+  const handleCloseStudentInviteModal = () => setOpenInviteStudentModal(false);
+
   const copyInviteLink = async () => {
-    await navigator.clipboard.writeText(`${window.location.origin}/join/${classroom.classCode}`);
+    await navigator.clipboard.writeText(
+      `${window.location.origin}/join/${classroom.id}/${classroom.classCode}`
+    );
     setSnackBarMessage("Invite link copied");
     setInviteMenuAnchorEl(null);
-  }
+  };
 
   const copyClassCode = async () => {
     await navigator.clipboard.writeText(classroom.classCode);
     setSnackBarMessage("Class code copied");
     setInviteMenuAnchorEl(null);
-  }
+  };
 
   const handleCloseSnackBar = () => setSnackBarMessage("");
 
@@ -66,6 +83,20 @@ const Classroom = () => {
         autoHideDuration={5000}
         onClose={handleCloseSnackBar}
         message={snackBarMessage}
+      />
+
+      <InviteEmailModal
+        isOpen={isOpenInviteTeacherModal}
+        handleClose={handleCloseTeacherInviteModal}
+        classroom={classroom}
+        type={"TEACHER"}
+      />
+
+      <InviteEmailModal
+        isOpen={isOpenInviteStudentModal}
+        handleClose={handleCloseStudentInviteModal}
+        classroom={classroom}
+        type={"STUDENT"}
       />
       <Header loading={isLoading} />
       <Container classes={{ root: classes.classroomContainer }}>
@@ -83,10 +114,10 @@ const Classroom = () => {
         </div>
         <div className={classes.classStream}>
           <Grid container spacing={2} rowSpacing={2}>
-            <Grid item sm={3} md={3} lg={3}>
+            <Grid item xs={12} sm={3} md={3} lg={3}>
               <div className={classes.classInvite}>
                 <div className={classes.classInviteTitle}>
-                  <div style={{ height: "100%" }}>Class Code</div>
+                  <div style={{ height: "100%" }}>Class Invitation</div>
                   <IconButton onClick={handleOpenInviteMenu}>
                     <MoreVertIcon />
                   </IconButton>
@@ -99,14 +130,53 @@ const Classroom = () => {
                       horizontal: "left",
                     }}
                   >
-                    <MenuItem onClick={copyInviteLink}><LinkIcon />&nbsp; Copy class invite link</MenuItem>
-                    <MenuItem onClick={copyClassCode}><ContentCopyIcon />&nbsp; Copy class code</MenuItem>
+                    <MenuItem
+                      className={classes.classInviteMenuItem}
+                      onClick={copyInviteLink}
+                    >
+                      <LinkIcon />
+                      &nbsp; Copy class invite link
+                    </MenuItem>
+                    <MenuItem
+                      className={classes.classInviteMenuItem}
+                      onClick={copyClassCode}
+                    >
+                      <ContentCopyIcon />
+                      &nbsp; Copy class code
+                    </MenuItem>
                   </Menu>
                 </div>
                 <div className={classes.classInviteDetail}>
                   {classroom.classCode}
                 </div>
+
+                {role === "TEACHER" && (
+                  <Grid
+                    container
+                    flexDirection="column"
+                    alignItems={{ md: "center", sm: "stretch" }}
+                  >
+                    <Grid
+                      item
+                      component={Button}
+                      onClick={handleOpenTeacherInviteModal}
+                    >
+                      <PersonAddAltIcon />
+                      &nbsp; Invite teachers
+                    </Grid>
+
+                    <Grid
+                      item
+                      component={Button}
+                      onClick={handleOpenStudentInviteModal}
+                    >
+                      <PersonAddAlt1Icon />
+                      &nbsp; Invite students
+                    </Grid>
+                  </Grid>
+                )}
               </div>
+
               <div className={classes.classUpcoming}>
                 <div className={classes.classUpcomingTitle}>Upcoming</div>
                 <div className={classes.classUpcomingDetail}>

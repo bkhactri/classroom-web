@@ -22,20 +22,29 @@ const JoinClassModal = ({ isOpen, handleClose }) => {
 
   const handleJoinClass = async () => {
     const classCode = classCodeEl.current.value;
-    history.push(`/join/${classCode}`);
+    history.push(`/join/c/${classCode}`);
   };
 
   return (
     <Modal
       open={isOpen}
-      onClose={handleClose}
+      onClose={() => {
+        setValidId(false);
+        handleClose();
+      }}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
       <div className={classes.joinModal}>
         <div className={classes.joinModalHeader}>
           <div className={classes.joinModalCloseButton}>
-            <IconButton size="large" onClick={handleClose}>
+            <IconButton
+              size="large"
+              onClick={() => {
+                setValidId(false);
+                handleClose();
+              }}
+            >
               <CloseIcon />
             </IconButton>
           </div>

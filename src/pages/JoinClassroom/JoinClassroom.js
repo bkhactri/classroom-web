@@ -15,7 +15,7 @@ import axiosClassroom from "../../api/classroom.axios";
 const JoinClassroom = (props) => {
   const history = useHistory();
   const accessToken = useSelector((state) => state.auth.token);
-  const { classCode } = useParams();
+  const { classroomId, classCode } = useParams();
   const [joinInfo, setJoinInfo] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
@@ -24,7 +24,7 @@ const JoinClassroom = (props) => {
       setIsLoading(true);
       try {
         const res = await axiosClassroom.get("/join", {
-          params: { code: classCode },
+          params: { id: classroomId, code: classCode },
           headers: { Authorization: "Bearer " + accessToken },
         });
         setJoinInfo(res.data);
@@ -34,14 +34,14 @@ const JoinClassroom = (props) => {
         history.replace("/");
         Swal.fire({
           title: "Error!",
-          text: error.response.data.err,
+          text: error.response.data,
           icon: "error",
         });
       }
     };
 
     fetchJoinInfo();
-  }, [history, classCode, accessToken]);
+  }, [history, classroomId, classCode, accessToken]);
 
   const joinClass = async () => {
     setIsLoading(true);
