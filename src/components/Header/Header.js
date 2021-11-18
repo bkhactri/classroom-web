@@ -87,7 +87,7 @@ const Header = ({ loading, classroom = 0, classID = '' }) =>
         handleClose={handleCloseJoinClassModal}
       />
       <Sidebar isOpen={isDrawerOpen["left"]} toggleDrawerClose={toggleDrawer} />
-      <Box sx={{ flexGrow: 1 }}>
+      <Box sx={{ flexGrow: 0 }}>
         <AppBar
           position="sticky"
           sx={{
@@ -112,7 +112,7 @@ const Header = ({ loading, classroom = 0, classID = '' }) =>
               <div className={classes.logo}>
                 <SchoolIcon />
               </div>
-              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              <Typography variant="h6" component="div" sx={{ flexGrow: 0 }}>
                 eClassroom
               </Typography>
             </div>

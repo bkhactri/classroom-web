@@ -47,13 +47,13 @@ const ClassroomPeople = () => {
       return participants.map((participant) => {
         if (roles.includes(participant["role"])){
           return(
-            <>
+            <div key={participant["userID"]}>
               <ListItem key={participant["userID"]}>
                 <img className={classes.avatar} src={UserLogo} alt="avatar"/>
                 <Typography variant="p" className={classes.studentName}>{participant["user"]["username"]}</Typography>
               </ListItem>
               <Divider/>                  
-            </>
+            </div>
           )             
         };
         return null;
