@@ -16,6 +16,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableRow from "@mui/material/TableRow";
 import Collapse from "@mui/material/Collapse";
 import Alert from "@mui/material/Alert";
+import CircularProgress from '@mui/material/CircularProgress';
 
 import axiosMail from "../../api/mail.axios";
 import { validateEmail } from "../../validators/fieldValidator";
@@ -26,6 +27,7 @@ const InviteEmailModal = ({ isOpen, handleClose, classroom, type }) => {
   const [inputEmail, setInputEmail] = useState("");
   const [isFieldValid, setFieldValid] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setLoading] = useState(false);
 
   const handleInputChange = (event) => {
     setFieldValid(!!event.target.value);
@@ -52,6 +54,8 @@ const InviteEmailModal = ({ isOpen, handleClose, classroom, type }) => {
   };
 
   const sendMail = () => {
+    setLoading(true);
+
     axiosMail
       .post(
         `/${type.toLowerCase()}`,
@@ -70,7 +74,9 @@ const InviteEmailModal = ({ isOpen, handleClose, classroom, type }) => {
       })
       .catch((err) => {
         console.error("err=>", err.response.data);
-      });
+      }).finally(() => {
+        setLoading(false);
+      })
   };
 
   const destroyState = () => {
@@ -83,7 +89,8 @@ const InviteEmailModal = ({ isOpen, handleClose, classroom, type }) => {
   return (
     <Modal
       open={isOpen}
-      onClose={() => {
+      onClose={(event) => {
+        if (isLoading) return;
         destroyState();
         handleClose();
       }}
@@ -158,9 +165,11 @@ const InviteEmailModal = ({ isOpen, handleClose, classroom, type }) => {
           fullWidth
           variant="contained"
           color="success"
-          disabled={emails.length === 0}
+          disabled={emails.length === 0 || isLoading}
           onClick={sendMail}
         >
+          {isLoading && <CircularProgress color="success" size={25} />}
+          &nbsp;
           Send mail
         </Button>
       </Container>
