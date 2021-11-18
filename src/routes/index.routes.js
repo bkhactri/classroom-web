@@ -9,6 +9,8 @@ import RegisterPage from "../pages/Register/Register";
 import PageNotFound from "../pages/PageNotFound/PageNotFound";
 import axiosAuth from "../api/auth.axios";
 import { authActions } from "../stores/authenticationStore";
+import LoginSuccess from "../pages/Login/LoginSuccess";
+import ClassroomPeople from "../pages/ClassroomPeople/ClassroomPeople";
 
 const AppRouter = () => {
   const dispatch = useDispatch();
@@ -25,6 +27,32 @@ const AppRouter = () => {
       // }
 
       try {
+
+        // const urlParams = new URLSearchParams(window.location.search);
+        // const userId = urlParams.get('id');
+        // if (userId != null){
+        //   const accToken = urlParams.get('accessToken');
+        //   const user = {
+        //     id: userId,
+        //     accessToken: accToken,
+        //   };
+        //   localStorage.setItem("accessToken", accToken);
+        //   dispatch(authActions.setUser(user));
+        //   history.replace("/");
+        // }
+
+        // if (window.location.pathname === "/loginSucess"){
+        //   const response = await axiosAuth.get("/getUserAuthData", {withCredentials: true});
+        //   const user = {
+        //     id: response.id,
+        //     accessToken: response.accessToken,
+        //   };
+        //   console.log('user', user);
+        //   localStorage.setItem("accessToken", response.accessToken);
+        //   dispatch(authActions.setUser(user));
+        // }
+
+
         const response = await axiosAuth.get("/", {
           headers: { Authorization: "Bearer " + accessToken },
         });
@@ -69,6 +97,7 @@ const AppRouter = () => {
         <>
           <Route path="/" exact component={Home}></Route>
           <Route path="/classroom/:classroomId" component={Classroom}></Route>
+          <Route path="/classroom-people/:classroomId" component={ClassroomPeople}></Route>
           <Route path="/join/:classCode" component={JoinClassroom}/>
         </>
       )}
@@ -76,6 +105,7 @@ const AppRouter = () => {
         <>
           <Route path="/login" component={LoginPage}></Route>
           <Route path="/signup" component={RegisterPage}></Route>
+          <Route path="/loginSucess" component={LoginSuccess}></Route>
         </>
       )}
       <Route path="*" component={PageNotFound}></Route>

@@ -1,0 +1,38 @@
+.classroomPeopleContainer {
+  margin-top: 40px;
+  max-width: 700px !important;
+}
+
+.dividerBlue{
+  background: blue;
+  border-bottom-width: 10;
+}
+
+.studentName{
+  color: black;
+  margin-left: 20px !important;
+  font-weight: normal;
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+
+.avatar {
+  width: 35;
+  height: 35;
+  border-radius: 50%;
+}
+
+
+.bigfont{
+  color: blue;
+}
+
+@media screen and (max-width: 598px) {
+  .classUpcoming {
+    display: none;
+  }
+  .classUpcomingDetail {
+    margin-bottom: 20px;
+  }
+}
