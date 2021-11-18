@@ -65,7 +65,7 @@ const AppRouter = () => {
           <Route path="/" exact component={Home} />
           <Route path="/classroom/:classroomId" component={Classroom} />
           <Route path="/account" component={AccountPage} />
-          <Route path="/join/:classCode" component={JoinClassroom} />
+          <Route path="/join/:classroomId/:classCode" component={JoinClassroom} />
         </>
       )}
       {!isAuthenticated && (

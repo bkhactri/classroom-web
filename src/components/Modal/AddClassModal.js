@@ -51,7 +51,10 @@ const AddClassModal = ({ isOpen, handleClose }) => {
   return (
     <Modal
       open={isOpen}
-      onClose={handleClose}
+      onClose={() => {
+        setValidForm(false);
+        handleClose();
+      }}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
@@ -98,7 +101,10 @@ const AddClassModal = ({ isOpen, handleClose }) => {
               variant="text"
               className={classes.addModalButton}
               color="inherit"
-              onClick={handleClose}
+              onClick={() => {
+                setValidForm(false);
+                handleClose();
+              }}
             >
               Cancel
             </Button>
