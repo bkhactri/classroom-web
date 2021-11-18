@@ -150,7 +150,7 @@ const Classroom = () => {
                   {classroom.classCode}
                 </div>
 
-                {role === "TEACHER" && (
+                {(role === "TEACHER" || role === "OWNER") && (
                   <Grid
                     container
                     flexDirection="column"
