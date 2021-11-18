@@ -1,15 +1,14 @@
 import { React, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { NavLink, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import Header from "../../components/Header/Header";
 import Container from "@mui/material/Container";
 import Snackbar from '@mui/material/Snackbar';
 
 import UserLogo from "../../assets/images/user-logo.png";
 import classes from "./ClassroomPeople.module.css";
-import { makeStyles } from "@mui/styles";
 import axiosClassroom from "../../api/classroom.axios";
-import { Typography, List, Divider, ListItem, ListItemText } from "@mui/material";
+import { Typography, List, Divider, ListItem } from "@mui/material";
 
 const ClassroomPeople = () => {
   const accessToken = useSelector((state) => state.auth.token);
@@ -56,7 +55,8 @@ const ClassroomPeople = () => {
               <Divider/>                  
             </>
           )             
-        }
+        };
+        return null;
       })
     } 
     return null;

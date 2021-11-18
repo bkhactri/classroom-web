@@ -27,32 +27,6 @@ const AppRouter = () => {
       // }
 
       try {
-
-        // const urlParams = new URLSearchParams(window.location.search);
-        // const userId = urlParams.get('id');
-        // if (userId != null){
-        //   const accToken = urlParams.get('accessToken');
-        //   const user = {
-        //     id: userId,
-        //     accessToken: accToken,
-        //   };
-        //   localStorage.setItem("accessToken", accToken);
-        //   dispatch(authActions.setUser(user));
-        //   history.replace("/");
-        // }
-
-        // if (window.location.pathname === "/loginSucess"){
-        //   const response = await axiosAuth.get("/getUserAuthData", {withCredentials: true});
-        //   const user = {
-        //     id: response.id,
-        //     accessToken: response.accessToken,
-        //   };
-        //   console.log('user', user);
-        //   localStorage.setItem("accessToken", response.accessToken);
-        //   dispatch(authActions.setUser(user));
-        // }
-
-
         const response = await axiosAuth.get("/", {
           headers: { Authorization: "Bearer " + accessToken },
         });
@@ -82,10 +56,13 @@ const AppRouter = () => {
     if (
       (accessToken &&
         (window.location.pathname === "/login" ||
-          window.location.pathname === "/signup")) ||
+          window.location.pathname === "/signup"|| 
+          window.location.pathname !== "/loginSucess")) ||
       (!isAuthenticated &&
         window.location.pathname !== "/login" &&
-        window.location.pathname !== "/signup")
+        window.location.pathname !== "/signup" &&
+        window.location.pathname !== "/loginSucess"
+        )
     ) {
       checkAuth();
     }
