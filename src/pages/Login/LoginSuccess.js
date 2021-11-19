@@ -6,30 +6,34 @@ import { useHistory } from "react-router-dom";
 
 
 const LoginSuccess = (props) => {
-    const history = useHistory();
-    const dispatch = useDispatch();
-    useEffect(() => {
-        const getUserAuthData = () => {
-            const query = new URLSearchParams(props.location.search);
-            const id = query.get('id');
-            const accessToken = query.get('accessToken');
+  const history = useHistory();
+  const dispatch = useDispatch();
+  let timer;
+  useEffect(() => {
+    const getUserAuthData = () => {
+      const query = new URLSearchParams(props.location.search);
+      const id = query.get('id');
+      const accessToken = query.get('accessToken');
 
-            if (!id){
-                return;
-            }
+      if (!id){
+          return;
+      }
 
-            // console.log('user', id, accessToken);
-            const user = {
-                id: id,
-                accessToken: accessToken,
-            };
-            localStorage.setItem("accessToken", accessToken);
-            dispatch(authActions.setUser(user));
-            history.replace('/');
-        };
-        getUserAuthData();
-    });    
-    return <div>Login Successful</div>;
+      // console.log('user', id, accessToken);
+      const user = {
+          id: id,
+          accessToken: accessToken,
+      };
+      localStorage.setItem("accessToken", accessToken);
+      dispatch(authActions.setUser(user));
+      timer = setTimeout(() => {
+          dispatch(authActions.setUser(user));
+          history.replace("/");
+        });
+    };
+    getUserAuthData();
+  });    
+  return <div>Login Successful</div>;
 }
 
 export default LoginSuccess;
