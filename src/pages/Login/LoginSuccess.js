@@ -8,7 +8,6 @@ import { useHistory } from "react-router-dom";
 const LoginSuccess = (props) => {
   const history = useHistory();
   const dispatch = useDispatch();
-  let timer;
   useEffect(() => {
     const getUserAuthData = () => {
       const query = new URLSearchParams(props.location.search);
@@ -26,7 +25,7 @@ const LoginSuccess = (props) => {
       };
       localStorage.setItem("accessToken", accessToken);
       dispatch(authActions.setUser(user));
-      timer = setTimeout(() => {
+      setTimeout(() => {
           dispatch(authActions.setUser(user));
           history.replace("/");
         });
