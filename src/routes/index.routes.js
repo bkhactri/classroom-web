@@ -12,6 +12,7 @@ import axiosAuth from "../api/auth.axios";
 import { authActions } from "../stores/authenticationStore";
 import LoginSuccess from "../pages/Login/LoginSuccess";
 import ClassroomPeople from "../pages/ClassroomPeople/ClassroomPeople";
+import GradeStructure from "../pages/GradeStructure/GradeStructure";
 
 const AppRouter = () => {
   const dispatch = useDispatch();
@@ -71,7 +72,8 @@ const AppRouter = () => {
           <Route path="/classroom/:classroomId" component={Classroom} />
           <Route path="/account" component={AccountPage} />
           <Route path="/join/:classroomId/:classCode" component={JoinClassroom} />
-          <Route path="/classroom-people/:classroomId" component={ClassroomPeople}></Route>
+          <Route path="/classroom-people/:classroomId" component={ClassroomPeople} />
+          <Route path="/grade-structure/:classroomId" component={GradeStructure} />
         </>
       )}
       {!isAuthenticated && (

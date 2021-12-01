@@ -98,7 +98,7 @@ const Classroom = () => {
         classroom={classroom}
         type={"STUDENT"}
       />
-      <Header loading={isLoading} classroom={1} classID={classroomId}/>
+      <Header loading={isLoading} classroom={1} classID={classroomId} />
       <Container classes={{ root: classes.classroomContainer }}>
         <div className={classes.classroomBanner}>
           <div className={classes.classroomBannerImg}>
@@ -115,8 +115,8 @@ const Classroom = () => {
         <div className={classes.classStream}>
           <Grid container spacing={2} rowSpacing={2}>
             <Grid item xs={12} sm={3} md={3} lg={3}>
-              <div className={classes.classInvite}>
-                <div className={classes.classInviteTitle}>
+              <div className={classes.classLeft}>
+                <div className={classes.classLeftTitle}>
                   <div style={{ height: "100%" }}>Class Invitation</div>
                   <IconButton onClick={handleOpenInviteMenu}>
                     <MoreVertIcon />
@@ -146,7 +146,7 @@ const Classroom = () => {
                     </MenuItem>
                   </Menu>
                 </div>
-                <div className={classes.classInviteDetail}>
+                <div className={classes.classLeftDetail}>
                   {classroom.classCode}
                 </div>
 
@@ -175,6 +175,25 @@ const Classroom = () => {
                     </Grid>
                   </Grid>
                 )}
+              </div>
+
+              <div className={classes.classLeft}>
+                <div className={classes.classLeftTitle}>
+                  <div style={{ height: "100%" }}>Grade Structure</div>
+                  <Button
+                    component={NavLink}
+                    to={`/grade-structure/${classroomId}`}
+                  >
+                    Edit
+                  </Button>
+                </div>
+                <div className={classes.classLeftDetail}>
+                  {classroom.grades?.map((grade) => (
+                    <div key={grade.name}>
+                      <b>{grade.name}:</b> {grade.point}
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <div className={classes.classUpcoming}>
