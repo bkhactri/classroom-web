@@ -13,6 +13,7 @@ import { authActions } from "../stores/authenticationStore";
 import LoginSuccess from "../pages/Login/LoginSuccess";
 import ClassroomPeople from "../pages/ClassroomPeople/ClassroomPeople";
 import GradeStructure from "../pages/GradeStructure/GradeStructure";
+import ClassroomGrades from "../pages/ClassroomGrades/ClassroomGrades";
 
 const AppRouter = () => {
   const dispatch = useDispatch();
@@ -52,13 +53,12 @@ const AppRouter = () => {
     if (
       (accessToken &&
         (window.location.pathname === "/login" ||
-          window.location.pathname === "/signup"|| 
-          window.location.pathname !== "/loginSucess")) ||
+          window.location.pathname === "/signup" ||
+          window.location.pathname === "/loginSucess")) ||
       (!isAuthenticated &&
         window.location.pathname !== "/login" &&
         window.location.pathname !== "/signup" &&
-        window.location.pathname !== "/loginSucess"
-        )
+        window.location.pathname !== "/loginSucess")
     ) {
       checkAuth();
     }
@@ -69,11 +69,26 @@ const AppRouter = () => {
       {isAuthenticated && (
         <>
           <Route path="/" exact component={Home} />
-          <Route path="/classroom/:classroomId" component={Classroom} />
           <Route path="/account" component={AccountPage} />
-          <Route path="/join/:classroomId/:classCode" component={JoinClassroom} />
-          <Route path="/classroom-people/:classroomId" component={ClassroomPeople} />
-          <Route path="/grade-structure/:classroomId" component={GradeStructure} />
+          <Route
+            path="/join/:classroomId/:classCode"
+            component={JoinClassroom}
+          />
+          <Route path="/classroom/:classroomId" component={Classroom} exact />
+          <Route
+            path="/classroom/:classroomId/people"
+            component={ClassroomPeople}
+            exact
+          />
+          <Route
+            path="/classroom/:classroomId/grades"
+            component={ClassroomGrades}
+            exact
+          />
+          <Route
+            path="/grade-structure/:classroomId"
+            component={GradeStructure}
+          />
         </>
       )}
       {!isAuthenticated && (
