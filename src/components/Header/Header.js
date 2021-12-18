@@ -17,13 +17,26 @@ import UserLogo from "../../assets/images/user-logo.png";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import classes from "./Header.module.css";
 import SchoolIcon from "@mui/icons-material/School";
-import { List, Divider, ListItem, ListItemText} from "@mui/material";
+import { List, ListItem, ListItemText } from "@mui/material";
 import { authActions } from "../../stores/authenticationStore";
-
+import { makeStyles } from "@mui/styles";
 import axiosAuth from "../../api/auth.axios";
 
-const Header = ({ loading, classroom = 0, classID = '' }) =>
-{
+const useStyles = makeStyles({
+  selected: {
+    backgroundColor: "transparent !important",
+    borderRadius: "5px !important",
+    borderBottom: "4px solid #1967d2 !important",
+    color: "#1967d2 !important",
+    fontWeight: "bold !important",
+    "&:hover": {
+      backgroundColor: "#c9deff !important",
+    },
+  },
+});
+
+const Header = ({ loading, classroom = 0, classID = "" }) => {
+  const styles = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
   const [isOpenUserMenu, setOpenUserMenu] = useState(null);
@@ -69,11 +82,11 @@ const Header = ({ loading, classroom = 0, classID = '' }) =>
 
   const handleNavigateAccountPage = () => {
     history.replace("/account");
-  }
+  };
   const handleGoToClassroomOption = (location) => {
     return () => {
-      history.replace(`/${location}/${classID}`);
-    }
+      history.replace(`/classroom/${classID}/${location}`);
+    };
   };
 
   return (
@@ -97,8 +110,14 @@ const Header = ({ loading, classroom = 0, classID = '' }) =>
             borderBottom: "1px solid #ede8e8",
           }}
         >
-          <Toolbar style={{display: 'flex', justifyContent: 'space-between'}}>
-            <div style={{ display: 'flex' , flexDirection: 'row' , alignItems: 'center'}}>
+          <Toolbar style={{ display: "flex", justifyContent: "space-between" }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
               <IconButton
                 size="large"
                 edge="start"
@@ -117,22 +136,45 @@ const Header = ({ loading, classroom = 0, classID = '' }) =>
               </Typography>
             </div>
 
-            {classroom !== 0 ? 
+            {classroom !== 0 ? (
               <List
-                sx={{ display: 'flex' ,flexGrow: 0, flexDirection: 'row' }}>
-                <ListItem button onClick={handleGoToClassroomOption('classroom')}>
-                  <ListItemText primary="Stream" 
-                    className={classroom === 1 ? classes.classOptions : null}/>
+                sx={{ display: "flex", flexGrow: 0, flexDirection: "row" }}
+                className={classes.ListDesktop}
+              >
+                <ListItem
+                  button
+                  selected={classroom === 1}
+                  classes={{ selected: styles.selected }}
+                  onClick={handleGoToClassroomOption("")}
+                >
+                  <ListItemText primary="Stream" />
                 </ListItem>
-                <Divider orientation="vertical" flexItem />
-                <ListItem button onClick={handleGoToClassroomOption('classroom-people')}>
-                  <ListItemText primary="People" 
-                    className={classroom === 2 ? classes.classOptions : null}/>
+                <ListItem
+                  button
+                  selected={classroom === 2}
+                  classes={{ selected: styles.selected }}
+                  onClick={handleGoToClassroomOption("people")}
+                >
+                  <ListItemText primary="People" />
+                </ListItem>
+                <ListItem
+                  button
+                  selected={classroom === 3}
+                  classes={{ selected: styles.selected }}
+                  onClick={handleGoToClassroomOption("grades")}
+                >
+                  <ListItemText primary="Grades" />
                 </ListItem>
               </List>
-            : null}
+            ) : null}
 
-            <div style={{ display: 'flex' , flexDirection: 'row' , alignItems: 'center'}}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
               {isHomePage && (
                 <div className={classes.AddMoreClass}>
                   <IconButton
@@ -182,11 +224,47 @@ const Header = ({ loading, classroom = 0, classID = '' }) =>
               </div>
             </div>
           </Toolbar>
+
+          <Toolbar sx={{ margin: "0 auto" }} className={classes.ListMobile}>
+            {classroom !== 0 ? (
+              <List
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                }}
+              >
+                <ListItem
+                  button
+                  selected={classroom === 1}
+                  classes={{ selected: styles.selected }}
+                  onClick={handleGoToClassroomOption("")}
+                >
+                  <ListItemText primary="Stream" />
+                </ListItem>
+                <ListItem
+                  button
+                  selected={classroom === 2}
+                  classes={{ selected: styles.selected }}
+                  onClick={handleGoToClassroomOption("people")}
+                >
+                  <ListItemText primary="People" />
+                </ListItem>
+                <ListItem
+                  button
+                  selected={classroom === 3}
+                  classes={{ selected: styles.selected }}
+                  onClick={handleGoToClassroomOption("grades")}
+                >
+                  <ListItemText primary="Grades" />
+                </ListItem>
+              </List>
+            ) : null}
+          </Toolbar>
         </AppBar>
       </Box>
       {loading ? <LinearProgress /> : null}
     </>
   );
-}
+};
 
 export default Header;

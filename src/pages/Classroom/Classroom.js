@@ -3,7 +3,6 @@ import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { NavLink, useParams } from "react-router-dom";
 import Header from "../../components/Header/Header";
-import InviteEmailModal from "../../components/Modal/InviteEmailModal";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -14,8 +13,6 @@ import LinkIcon from "@mui/icons-material/Link";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import Snackbar from "@mui/material/Snackbar";
 import Button from "@mui/material/Button";
-import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
-import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 
 import UserLogo from "../../assets/images/user-logo.png";
 import classes from "./Classroom.module.css";
@@ -29,8 +26,6 @@ const Classroom = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [inviteMenuAnchorEl, setInviteMenuAnchorEl] = useState(null);
   const [snackBarMessage, setSnackBarMessage] = useState("");
-  const [isOpenInviteTeacherModal, setOpenInviteTeacherModal] = useState(false);
-  const [isOpenInviteStudentModal, setOpenInviteStudentModal] = useState(false);
   const [role, setRole] = useState("");
 
   useEffect(() => {
@@ -54,11 +49,6 @@ const Classroom = () => {
 
   const handleOpenInviteMenu = (e) => setInviteMenuAnchorEl(e.currentTarget);
   const handleCloseInviteMenu = () => setInviteMenuAnchorEl(null);
-
-  const handleOpenTeacherInviteModal = () => setOpenInviteTeacherModal(true);
-  const handleCloseTeacherInviteModal = () => setOpenInviteTeacherModal(false);
-  const handleOpenStudentInviteModal = () => setOpenInviteStudentModal(true);
-  const handleCloseStudentInviteModal = () => setOpenInviteStudentModal(false);
 
   const copyInviteLink = async () => {
     await navigator.clipboard.writeText(
@@ -84,20 +74,6 @@ const Classroom = () => {
         onClose={handleCloseSnackBar}
         message={snackBarMessage}
       />
-
-      <InviteEmailModal
-        isOpen={isOpenInviteTeacherModal}
-        handleClose={handleCloseTeacherInviteModal}
-        classroom={classroom}
-        type={"TEACHER"}
-      />
-
-      <InviteEmailModal
-        isOpen={isOpenInviteStudentModal}
-        handleClose={handleCloseStudentInviteModal}
-        classroom={classroom}
-        type={"STUDENT"}
-      />
       <Header loading={isLoading} classroom={1} classID={classroomId} />
       <Container classes={{ root: classes.classroomContainer }}>
         <div className={classes.classroomBanner}>
@@ -117,8 +93,11 @@ const Classroom = () => {
             <Grid item xs={12} sm={3} md={3} lg={3}>
               <div className={classes.classLeft}>
                 <div className={classes.classLeftTitle}>
-                  <div style={{ height: "100%" }}>Class Invitation</div>
-                  <IconButton onClick={handleOpenInviteMenu}>
+                  <div style={{ height: "100%" }}>Class Code</div>
+                  <IconButton
+                    onClick={handleOpenInviteMenu}
+                    sx={{ position: "absolute", top: "10px", right: "5px" }}
+                  >
                     <MoreVertIcon />
                   </IconButton>
                   <Menu
@@ -149,52 +128,36 @@ const Classroom = () => {
                 <div className={classes.classLeftDetail}>
                   {classroom.classCode}
                 </div>
-
-                {(role === "TEACHER" || role === "OWNER") && (
-                  <Grid
-                    container
-                    flexDirection="column"
-                    alignItems={{ md: "center", sm: "stretch" }}
-                  >
-                    <Grid
-                      item
-                      component={Button}
-                      onClick={handleOpenTeacherInviteModal}
-                    >
-                      <PersonAddAltIcon />
-                      &nbsp; Invite teachers
-                    </Grid>
-
-                    <Grid
-                      item
-                      component={Button}
-                      onClick={handleOpenStudentInviteModal}
-                    >
-                      <PersonAddAlt1Icon />
-                      &nbsp; Invite students
-                    </Grid>
-                  </Grid>
-                )}
               </div>
 
-              <div className={classes.classLeft}>
-                <div className={classes.classLeftTitle}>
-                  <div style={{ height: "100%" }}>Grade Structure</div>
-                  <Button
-                    component={NavLink}
-                    to={`/grade-structure/${classroomId}`}
-                  >
-                    Edit
-                  </Button>
+              {role !== "STUDENT" && (
+                <div className={classes.classLeft}>
+                  <div className={classes.classLeftTitle}>
+                    <div style={{ height: "100%" }}>Grade Structure</div>
+                  </div>
+                  <div className={classes.classLeftDetail}>
+                    {classroom.grades?.map((grade) => (
+                      <div key={grade.name}>
+                        <b>{grade.name}:</b> {grade.point}
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{ width: "100%" }}>
+                    <Button
+                      component={NavLink}
+                      to={`/grade-structure/${classroomId}`}
+                      sx={{
+                        width: "100%",
+                        fontWeight: "bold",
+                        color: "#3c4043",
+                        margin: "0 auto",
+                      }}
+                    >
+                      Edit
+                    </Button>
+                  </div>
                 </div>
-                <div className={classes.classLeftDetail}>
-                  {classroom.grades?.map((grade) => (
-                    <div key={grade.name}>
-                      <b>{grade.name}:</b> {grade.point}
-                    </div>
-                  ))}
-                </div>
-              </div>
+              )}
 
               <div className={classes.classUpcoming}>
                 <div className={classes.classUpcomingTitle}>Upcoming</div>

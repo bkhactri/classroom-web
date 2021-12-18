@@ -13,4 +13,22 @@
 .classOptions {
   color: blue;
   font-weight: bold;
-};
+}
+
+.ListDesktop {
+  display: flex !important;
+}
+
+.ListMobile {
+  display: none !important;
+}
+
+@media screen and (max-width: 767px) {
+  .ListDesktop {
+    display: none !important;
+  }
+
+  .ListMobile {
+    display: flex !important;
+  }
+}

@@ -12,9 +12,9 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Collapse from "@mui/material/Collapse";
 import Alert from "@mui/material/Alert";
-import CircularProgress from '@mui/material/CircularProgress';
+import CircularProgress from "@mui/material/CircularProgress";
 import Fab from "@mui/material/Fab";
-import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 
 import Grade from "../../components/Grade/Grade";
@@ -176,7 +176,7 @@ const GradeStructure = (props) => {
             sx={{ mb: 5 }}
             onClick={() => history.goBack()}
           >
-            <ArrowUpwardIcon />
+            <ArrowBackIcon />
           </Fab>
           <Typography variant="h5" mb={4}>
             Grade Structure
@@ -185,7 +185,7 @@ const GradeStructure = (props) => {
           <Grid container>
             <Grid item xs={8}>
               <Typography variant="h5" color="blue">
-                Name
+                Grade Name
               </Typography>
             </Grid>
             <Grid item>
@@ -212,8 +212,7 @@ const GradeStructure = (props) => {
             disabled={isLoading}
           >
             {isLoading && <CircularProgress color="success" size={25} />}
-            &nbsp;
-            Save Order
+            &nbsp; Save Order
           </Button>
         </Box>
       </Container>
@@ -242,7 +241,7 @@ const GradeStructure = (props) => {
 
           <TextField
             fullWidth
-            label="Name"
+            label="Grade Name"
             variant="standard"
             value={inputName}
             onChange={handleNameChange}
@@ -259,8 +258,13 @@ const GradeStructure = (props) => {
           <Button
             onClick={addGrade}
             disabled={!inputName || !inputPoint || isLoading}
+            sx={{
+              marginTop: 2,
+              textTransform: "capitalize",
+              fontWeight: "bold",
+            }}
           >
-            Add
+            Add New Grade
           </Button>
         </Box>
       </Container>

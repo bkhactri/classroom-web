@@ -3,12 +3,12 @@
   max-width: 700px !important;
 }
 
-.dividerBlue{
-  background: blue;
+.dividerBlue {
+  background: #1967d2;
   border-bottom-width: 10;
 }
 
-.studentName{
+.studentName {
   color: black;
   margin-left: 20px !important;
   font-weight: normal;
@@ -16,20 +16,27 @@
   padding-bottom: 15px;
 }
 
-
 .avatar {
   width: 35;
   height: 35;
   border-radius: 50%;
 }
 
-
-.bigfont{
-  color: blue;
+.bigfont {
+  color: #1967d2;
 }
 
-.fontNumClass{
-  color: blue;
+.fontNumClass {
+  color: #1967d2;
+  margin-right: 20px !important;
+  font-weight: bold;
+}
+
+.participantHeader {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 }
 
 @media screen and (max-width: 598px) {
