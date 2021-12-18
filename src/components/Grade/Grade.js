@@ -56,7 +56,7 @@ const Grade = ({ grade, index, saveGrade, deleteGrade, isLoading }) => {
     }
 
     if (!invalid) {
-      saveGrade(grade.name, { name: inputName, point: inputPoint });
+      saveGrade({ id: grade.id, name: inputName, point: inputPoint });
       setEditEnabled(false);
     }
 
@@ -76,7 +76,7 @@ const Grade = ({ grade, index, saveGrade, deleteGrade, isLoading }) => {
       denyButtonText: `No`,
     }).then((result) => {
       if (result.isConfirmed) {
-        deleteGrade(grade.name);
+        deleteGrade(grade.id);
       }
     });
   };

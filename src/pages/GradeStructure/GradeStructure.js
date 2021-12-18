@@ -1,4 +1,4 @@
-import { Fragment, React, useEffect, useState } from "react";
+import { Fragment, React, useEffect, useState, useCallback } from "react";
 import { useHistory } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -12,14 +12,14 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Collapse from "@mui/material/Collapse";
 import Alert from "@mui/material/Alert";
-import CircularProgress from "@mui/material/CircularProgress";
 import Fab from "@mui/material/Fab";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
+import debounce from "lodash/debounce";
 
 import Grade from "../../components/Grade/Grade";
 
-import axiosClassroom from "../../api/classroom.axios";
+import axiosGrade from "../../api/grade.axios";
 
 const GradeStructure = (props) => {
   const accessToken = useSelector((state) => state.auth.token);
@@ -37,10 +37,10 @@ const GradeStructure = (props) => {
     const fetchClassroom = async () => {
       setIsLoading(true);
       try {
-        const result = await axiosClassroom.get(`/${classroomId}`, {
+        const result = await axiosGrade.get(`/structure/${classroomId}`, {
           headers: { Authorization: "Bearer " + accessToken },
         });
-        setGrades(result.data.grades || []);
+        setGrades(result || []);
         setIsLoading(false);
       } catch (error) {
         setIsLoading(false);
@@ -50,13 +50,8 @@ const GradeStructure = (props) => {
     fetchClassroom();
   }, [accessToken, classroomId]);
 
-  const savingGrades = async (latestGrades) => {
-    return await axiosClassroom.put(
-      `/${classroomId}`,
-      { grades: latestGrades },
-      { headers: { Authorization: "Bearer " + accessToken } }
-    );
-  };
+  // eslint-disable-next-line
+  const debounceSaveOrder = useCallback(debounce((latestGrades) => saveOrder(latestGrades), 1000), []);
 
   const handleNameChange = (event) => {
     setInputName(event.target.value);
@@ -93,12 +88,20 @@ const GradeStructure = (props) => {
     if (!invalid) {
       setIsLoading(true);
 
-      const newGrades = grades.concat({ name: inputName, point: inputPoint });
-      setGrades(newGrades);
-      setInputName("");
-      setInputPoint("");
-
-      savingGrades(newGrades).finally(() => setIsLoading(false));
+      axiosGrade.post(
+        '/structure',
+        { name: inputName, point: inputPoint, classroomId },
+        { headers: { Authorization: "Bearer " + accessToken } }
+      )
+        .then((gradeStructure) => {
+          const newGrades = grades.concat(gradeStructure);
+          setGrades(newGrades);
+        })
+        .finally(() => {
+          setInputName("");
+          setInputPoint("");
+          setIsLoading(false);
+        });
     }
 
     setTimer(
@@ -108,30 +111,64 @@ const GradeStructure = (props) => {
     );
   };
 
-  const saveGrade = (originalName, newGrade) => {
+  const saveGrade = (newGrade) => {
     setIsLoading(true);
 
-    const newGrades = grades.map((grade) => {
-      return originalName === grade.name ? newGrade : grade;
-    });
-    setGrades(newGrades);
-
-    savingGrades(newGrades).finally(() => setIsLoading(false));
+    axiosGrade.put(
+      `/structure/${newGrade.id}`,
+      newGrade,
+      { headers: { Authorization: "Bearer " + accessToken } }
+    )
+      .then(() => {
+        const newGrades = grades.map((grade) => {
+          return newGrade.id === grade.id ? newGrade : grade;
+        });
+        setGrades(newGrades);
+      })
+      .finally(() => setIsLoading(false));
   };
 
-  const deleteGrade = (name) => {
+  const deleteGrade = (toBeDeleteGradeId) => {
     setIsLoading(true);
 
-    const newGrades = grades.filter((grade) => name !== grade.name);
-    setGrades(newGrades);
+    axiosGrade.delete(
+      `/structure/${toBeDeleteGradeId}`,
+      { headers: { Authorization: "Bearer " + accessToken } }
+    )
+      .then(() => {
+        let count = 0;
+        const newGrades = grades
+          .filter((grade) => toBeDeleteGradeId !== grade.id)
+          .map((grade) => {
+            grade.order = count++;
 
-    savingGrades(newGrades).finally(() => setIsLoading(false));
+            return grade;
+          });
+
+        // Finalize the order numbers
+        saveOrder(newGrades);
+      })
+      .finally(() => setIsLoading(false));
   };
 
-  const saveOrder = () => {
+  const saveOrder =  (latestGrades = grades) => {
     setIsLoading(true);
 
-    savingGrades(grades).finally(() => setIsLoading(false));
+    // Ensure all grade structures have the correct order numnber
+    let count = 0;
+    const finalizedGrades = latestGrades.map((grade) => {
+      grade.order = count++;
+
+      return grade;
+    })
+
+    setGrades(finalizedGrades);
+
+    axiosGrade.put(
+      '/structure',
+      { gradeStructures: finalizedGrades },
+      { headers: { Authorization: "Bearer " + accessToken } }
+    ).finally(() => setIsLoading(false));
   };
 
   const onDragEnd = (result) => {
@@ -154,6 +191,7 @@ const GradeStructure = (props) => {
       result.destination.index
     );
 
+    debounceSaveOrder(items);
     setGrades(items);
   };
 
@@ -204,16 +242,6 @@ const GradeStructure = (props) => {
               </Fragment>
             ))}
           </Grid>
-          <Button
-            variant="contained"
-            fullWidth
-            sx={{ mt: 2 }}
-            onClick={saveOrder}
-            disabled={isLoading}
-          >
-            {isLoading && <CircularProgress color="success" size={25} />}
-            &nbsp; Save Order
-          </Button>
         </Box>
       </Container>
 
@@ -285,7 +313,7 @@ const GradeStructure = (props) => {
                   <div {...provided.droppableProps} ref={provided.innerRef}>
                     {grades.map((grade, index) => (
                       <Grade
-                        key={grade.name}
+                        key={grade.id}
                         grade={grade}
                         index={index}
                         saveGrade={saveGrade}
