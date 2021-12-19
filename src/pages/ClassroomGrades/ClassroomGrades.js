@@ -14,13 +14,7 @@ import Button from "@mui/material/Button";
 import axiosClassroom from "../../api/classroom.axios";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import IconButton from "@mui/material/IconButton";
-import MenuItem from "@mui/material/MenuItem";
-import Menu from "@mui/material/Menu";
-import Typography from '@mui/material/Typography';
-import LinkIcon from "@mui/icons-material/Link";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import GradeBlock from "../../components/Grade/GradeBlock";
 
 const columns = [
   { id: "name", label: "Name" },
@@ -45,6 +39,49 @@ const rows = [
   createData("India", "IN", 1324171354),
 ];
 
+const studentGrades = [
+  {
+    name: "Nguyen Van A",
+    id: 1,
+    grades: [
+      {
+        idEx: 0,
+        exName: "Ex 1",
+        maxGrade: 100,
+        currentGrade: 21,
+        state: "editing"
+      },
+      {
+        idEx: 1,
+        exName: "Ex 2",
+        maxGrade: 100,
+        currentGrade: 10,
+        state: "editing"
+      }
+    ]
+  },
+  {
+    name: "Nguyen Van B",
+    id: 2,
+    grades: [
+      {
+        idEx: 0,
+        exName: "Ex 1",
+        maxGrade: 100,
+        currentGrade: 51,
+        state: "editing"
+      },
+      {
+        idEx: 1,
+        exName: "Ex 2",
+        maxGrade: 100,
+        currentGrade: 70,
+        state: "editing"
+      }
+    ]
+  }
+]
+
 const ClassroomGrades = () => {
   // eslint-disable-next-line
   const history = useHistory();
@@ -53,19 +90,10 @@ const ClassroomGrades = () => {
   const [students, setStudents] = useState([]);
   // eslint-disable-next-line
   const [gradeRows, setGradeRows] = useState([]);
-  const [grades, setGrades] = useState([]);
+  const [grades, setGrades] = useState(studentGrades);
   const [isLoading, setIsLoading] = useState(false);
   const { classroomId } = useParams();
 
-
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
-  const handleClickGradeOption = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleCloseGradeOption = () => {
-    setAnchorEl(null);
-  };
 
 
   useEffect(() => {
@@ -98,75 +126,7 @@ const ClassroomGrades = () => {
 
     fetchStudentsGrades();
   }, [classroomId, accessToken]);
-
-
-  const gradeOption = (
-    <div>
-        <IconButton
-          id="basic-button"
-          aria-controls="basic-menu"
-          onClick={handleClickGradeOption}
-        >
-          <MoreVertIcon />
-        </IconButton>
-        <Menu
-          id="basic-menu"
-          anchorEl={anchorEl}
-          open={open}
-          onClose={handleCloseGradeOption}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'right',
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'right',
-          }}
-
-          MenuListProps={{
-            'aria-labelledby': 'basic-button',
-          }}
-        >
-          <MenuItem onClick={handleCloseGradeOption}>Return</MenuItem>
-          <MenuItem onClick={handleCloseGradeOption}>View submission</MenuItem>
-        </Menu>
-    </div>
-  )
-
-  const gradeCell = (cellState) => (
-    <Grid
-      container
-      spacing={0}
-      direction="row"
-      alignItems="center"
-      justifyContent="center"
-      style={{ minHeight: '5vh', maxWidth: '100%' }}
-    >
-      <Grid item xs={9} style={{textAlign: "center"}}>
-
-        {cellState === 0 ? 
-          <Typography variant="subtitle2" style={{fontWeight:'bold'}}>
-            {75} / {90}
-          </Typography>
-        : <Typography variant="subtitle2" style={{fontWeight:'bold'}}>
-            {70} / {90}
-          </Typography>
-        }
-
-        {cellState === 1 ? 
-          <Typography variant="caption" display="block">
-            Not turned in
-          </Typography>
-        : null
-        }
-
-        
-      </Grid>
-      <Grid item xs={3}>
-        {gradeOption}
-      </Grid>
-    </Grid>
-  )
+  
 
   return (
     <Fragment>
@@ -250,7 +210,7 @@ const ClassroomGrades = () => {
                           {/* {column.format && typeof value === "number"
                             ? column.format(value)
                             : value} */}
-                            {gradeCell(0)}
+                          <GradeBlock maxGrade={100} currentGrade={12} blockState={1}/>
 
                         </TableCell>
                       );
