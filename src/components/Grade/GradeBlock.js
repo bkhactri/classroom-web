@@ -33,6 +33,10 @@ const GradeBlock = ({maxGrade, currentGrade, blockState}) => {
     setValues({ ...values, [prop]: event.target.value });
   };
 
+  const handleOnClickOnBlock = () => {
+    setStatus('editing');
+  }
+
 
   const gradeOption = (
     <div>
@@ -82,6 +86,7 @@ const GradeBlock = ({maxGrade, currentGrade, blockState}) => {
         {cellState === 'editing' ? 
           <FormControl variant="standard">
             <Input 
+              autoFocus
               id="standard-adornment-weight"
               value={values.weight}
               onChange={handleChange('weight')}
@@ -96,6 +101,7 @@ const GradeBlock = ({maxGrade, currentGrade, blockState}) => {
               inputProps={{
                 'aria-label': 'weight',
               }}
+              onBlur={() => {setStatus('normal')}}
             />
           </FormControl>
         : <Typography variant="subtitle2" style={{fontWeight:'bold'}}>
@@ -119,9 +125,11 @@ const GradeBlock = ({maxGrade, currentGrade, blockState}) => {
   )
 
   return (
-    <>
+    <div
+      onClick={handleOnClickOnBlock}
+    >
       {gradeCell(status)}
-    </>
+    </div>
   )
 
 }
