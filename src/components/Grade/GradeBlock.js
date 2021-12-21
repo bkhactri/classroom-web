@@ -12,9 +12,8 @@ import MenuItem from '@mui/material/MenuItem';
 
 
 
-const GradeBlock = ({maxGrade, currentGrade, blockState}) => {
+const GradeBlock = ({maxGrade, currentGrade, setGradeHandler}) => {
 
-  const [status, setStatus] = useState('normal');
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -25,17 +24,34 @@ const GradeBlock = ({maxGrade, currentGrade, blockState}) => {
     setAnchorEl(null);
   };
 
-  const [values, setValues] = useState({
-    weight: currentGrade
-  });
-
-  const handleChange = (prop) => (event) => {
-    setValues({ ...values, [prop]: event.target.value });
+  const handleChange = (event) => {
+    const newGradeValue = event.target.value;
+    console.log('handleChange', newGradeValue);
+    const newGrade = {...currentGrade, currentPoint: newGradeValue};
+    setGradeHandler(newGrade);
   };
 
-  const handleOnClickOnBlock = () => {
-    setStatus('editing');
+  const changeGrade = (propName, newValue) => {
+    const newGrade = {...currentGrade, [propName]: newValue};
+    setGradeHandler(newGrade);
   }
+
+  const handleOnClickOnBlock = () => {
+    changeGrade('status', 'editing');
+  }
+  const handleOnClickReturn = () => {
+    changeGrade('status', 'returned');
+    handleCloseGradeOption();
+  }
+  const handleOnBlur = (event, relatedTarget) => {
+    if (currentGrade.currentPoint !== null && currentGrade.status !== 'returned'){
+      changeGrade('status', 'draft');
+    } else {
+      changeGrade('status', 'blank');
+    }
+  }
+
+
 
 
   const gradeOption = (
@@ -66,11 +82,26 @@ const GradeBlock = ({maxGrade, currentGrade, blockState}) => {
             'aria-labelledby': 'basic-button',
           }}
         >
-          <MenuItem onClick={handleCloseGradeOption}>Return</MenuItem>
+          <MenuItem
+            id='return-menu'
+            onClick={handleOnClickReturn}
+            onMouseDown={(e) => {e.preventDefault()}}
+          >Return</MenuItem>
           <MenuItem onClick={handleCloseGradeOption}>View submission</MenuItem>
         </Menu>
     </div>
   )
+
+  const gradeColor = () => {
+    if (currentGrade.status === 'draft'){
+      return 'green';
+    }
+    return 'black';
+  }
+
+  const isBlank = () => {
+    return currentGrade.status === 'blank' || currentGrade.currentPoint === null;
+  }
 
   const gradeCell = (cellState) => (
     <Grid
@@ -88,30 +119,34 @@ const GradeBlock = ({maxGrade, currentGrade, blockState}) => {
             <Input 
               autoFocus
               id="standard-adornment-weight"
-              value={values.weight}
-              onChange={handleChange('weight')}
-              InputProps={{
-                inputProps: {
-                    style: { textAlign: "right" },
-                }
-              }}
-              style={{textAlign: "center"}}
+              value={currentGrade.currentPoint}
+              onChange={handleChange}
               endAdornment={<InputAdornment position="end">/ {maxGrade}</InputAdornment>}
               aria-describedby="standard-weight-helper-text"
               inputProps={{
                 'aria-label': 'weight',
+                'style': { textAlign: 'right' }
               }}
-              onBlur={() => {setStatus('normal')}}
+              onBlur={handleOnBlur}
             />
           </FormControl>
-        : <Typography variant="subtitle2" style={{fontWeight:'bold'}}>
-            {currentGrade} / {maxGrade}
+         : cellState === 'draft' || cellState === 'returned'?
+        
+          <Typography variant="subtitle2" style=
+              {{
+                fontWeight:'bold', 
+                color: gradeColor()
+              }}>
+
+            {currentGrade.currentPoint} / {maxGrade}
           </Typography>
+
+          : null
         }
 
-        {cellState === 'normal' ? 
+        {cellState === 'draft' ? 
           <Typography variant="caption" display="block">
-            Not turned in
+            Draft
           </Typography>
         : null
         }
@@ -128,7 +163,7 @@ const GradeBlock = ({maxGrade, currentGrade, blockState}) => {
     <div
       onClick={handleOnClickOnBlock}
     >
-      {gradeCell(status)}
+      {gradeCell(currentGrade.status)}
     </div>
   )
 

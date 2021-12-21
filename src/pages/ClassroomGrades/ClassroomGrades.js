@@ -15,6 +15,8 @@ import axiosClassroom from "../../api/classroom.axios";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import GradeBlock from "../../components/Grade/GradeBlock";
+import { ExportXLSX } from "../../components/Excel/ExelExporter";
+
 
 const columns = [
   { id: "name", label: "Name" },
@@ -40,46 +42,45 @@ const rows = [
 ];
 
 const studentGrades = [
+  [
+    {
+      studentID: 0,
+      currentPoint: "",
+      status: 'blank',
+      gradeStructureId: 0,
+    }
+  ],
+  [
+    {
+      studentID: 0,
+      currentPoint: "",
+      status: 'draft',
+      gradeStructureId: 1,
+    },
+  ]
+]
+
+const initialStudents = [
   {
-    name: "Nguyen Van A",
-    id: 1,
-    grades: [
-      {
-        idEx: 0,
-        exName: "Ex 1",
-        maxGrade: 100,
-        currentGrade: 21,
-        state: "editing"
-      },
-      {
-        idEx: 1,
-        exName: "Ex 2",
-        maxGrade: 100,
-        currentGrade: 10,
-        state: "editing"
-      }
-    ]
+    id: 0,
+    fullname: 'Nguyen Van A',
+    classroomId: 0
+  }
+]
+
+const gradeStructures = [
+  {
+    id: 0,
+    name: "Ex 1",
+    maxPoint: 100,
+    classroomId: 0
   },
   {
-    name: "Nguyen Van B",
-    id: 2,
-    grades: [
-      {
-        idEx: 0,
-        exName: "Ex 1",
-        maxGrade: 100,
-        currentGrade: 51,
-        state: "editing"
-      },
-      {
-        idEx: 1,
-        exName: "Ex 2",
-        maxGrade: 100,
-        currentGrade: 70,
-        state: "editing"
-      }
-    ]
-  }
+    id: 1,
+    name: "Ex 2",
+    maxPoint: 90,
+    classroomId: 0
+  },
 ]
 
 const ClassroomGrades = () => {
@@ -94,6 +95,50 @@ const ClassroomGrades = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { classroomId } = useParams();
 
+
+  const createTableBody = () => {
+    let rows = [];
+
+    students.forEach((student, i) => {
+        let row = [];
+        row.push(student);
+        grades.forEach(grade => {
+          row.push(grade[i]);
+        })
+        rows.push(row);
+    })
+    return rows;
+  }
+
+  const tableRows = createTableBody();
+
+  const getGradeStructureFromId = (id) => {
+    for (let i = 0; i < gradeStructures.length; i++){
+      const structure = gradeStructures[i];
+      if (structure['id'] === id){
+        return structure;
+      }
+    }
+    return null;
+  }
+
+  const setGradeHanler = (rowIndex, gradeStructureIndex) => {
+    console.log('previousGrades', grades);
+      return (newGrade) => {
+        setGrades((previousGrades) => {
+          console.log('newGrade', newGrade);
+          console.log('previousGrades', previousGrades);
+          const newGrades = [...previousGrades];
+
+          console.log('index', rowIndex, gradeStructureIndex);
+          
+          newGrades[gradeStructureIndex][rowIndex] = newGrade;
+          console.log('newGrades', newGrades);
+
+          return newGrades;
+        })
+      } 
+  }
 
 
   useEffect(() => {
@@ -115,8 +160,10 @@ const ClassroomGrades = () => {
           (participant) => participant["role"] === "STUDENT"
         );
 
-        setGrades(classroomGrades.data.grades || []);
-        setStudents(students);
+        setGrades(studentGrades);
+        setStudents(initialStudents);
+        setGradeRows(gradeStructures);
+
         setIsLoading(false);
       } catch (error) {
         setIsLoading(false);
@@ -184,22 +231,23 @@ const ClassroomGrades = () => {
             </TableHead>
 
             <TableBody>
-              {rows.map((row) => {
+              {tableRows.map((row, rowIndex) => {
+                console.log('tableRows', tableRows);
                 return (
                   <TableRow
                     hover
                     tabIndex={-1}
-                    key={row.code}
+                    key={row[0].id}
                     style={{
                       borderBottom: "1px solid #e0e0e0",
                     }}
                   >
-                    {columns.map((column, index) => {
-                      const value = row[column.id];
+                    {row.map((value, index) => {
+                      const gradeStructure = getGradeStructureFromId(value['gradeStructureId']);
                       return (
                         <TableCell
-                          key={column.id}
-                          align={column.align}
+                          key={index}
+                          align={'center'}
                           style={{
                             width: index === 0 ? 220 : 100,
                             height: 35,
@@ -207,11 +255,19 @@ const ClassroomGrades = () => {
                             position: index === 0 ? "sticky" : "",
                           }}
                         >
-                          {/* {column.format && typeof value === "number"
-                            ? column.format(value)
-                            : value} */}
-                          <GradeBlock maxGrade={100} currentGrade={12} blockState={1}/>
+                          {
+                            index !== 0 ?
 
+                            <GradeBlock 
+                          
+                              maxGrade={gradeStructure.maxPoint}
+                              currentGrade={value}
+                              setGradeHandler={setGradeHanler(rowIndex, index-1)}                              
+                              />
+
+                             : value.fullname
+                          }
+                          
                         </TableCell>
                       );
                     })}
@@ -220,6 +276,7 @@ const ClassroomGrades = () => {
                 );
               })}
             </TableBody>
+
           </Table>
         </TableContainer>
       </Paper>
