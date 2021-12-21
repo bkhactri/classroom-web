@@ -1,0 +1,7 @@
+.MuiDataGrid-columnHeader {
+  border-bottom: 1px solid rgba(224, 224, 224, 1);
+}
+
+.MuiDataGrid-columnSeparator {
+  display: none;
+}

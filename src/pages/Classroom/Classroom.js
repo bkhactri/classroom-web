@@ -17,12 +17,14 @@ import Button from "@mui/material/Button";
 import UserLogo from "../../assets/images/user-logo.png";
 import classes from "./Classroom.module.css";
 import axiosClassroom from "../../api/classroom.axios";
+import axiosGrade from "../../api/grade.axios";
 
 const Classroom = () => {
   const history = useHistory();
   const accessToken = useSelector((state) => state.auth.token);
   const { classroomId } = useParams();
   const [classroom, setClassroom] = useState({});
+  const [gradesStructure, setGradesStructure] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [inviteMenuAnchorEl, setInviteMenuAnchorEl] = useState(null);
   const [snackBarMessage, setSnackBarMessage] = useState("");
@@ -32,11 +34,17 @@ const Classroom = () => {
     const fetchClassroom = async () => {
       setIsLoading(true);
       try {
-        const result = await axiosClassroom.get(`/${classroomId}`, {
+        const classroom = await axiosClassroom.get(`/${classroomId}`, {
           headers: { Authorization: "Bearer " + accessToken },
         });
-        setClassroom(result.data);
-        setRole(result.data.participants[0].role);
+
+        const grades = await axiosGrade.get(`/structure/${classroomId}`, {
+          headers: { Authorization: "Bearer " + accessToken },
+        });
+
+        setGradesStructure(grades);
+        setClassroom(classroom.data);
+        setRole(classroom.data.participants[0].role);
         setIsLoading(false);
       } catch (error) {
         setIsLoading(false);
@@ -136,11 +144,13 @@ const Classroom = () => {
                     <div style={{ height: "100%" }}>Grade Structure</div>
                   </div>
                   <div className={classes.classLeftDetail}>
-                    {classroom.grades?.map((grade) => (
-                      <div key={grade.name}>
-                        <b>{grade.name}:</b> {grade.point}
-                      </div>
-                    ))}
+                    {gradesStructure && gradesStructure.length > 0
+                      ? gradesStructure?.map((grade) => (
+                          <div key={grade.name}>
+                            <b>{grade.name}:</b> {grade.point}
+                          </div>
+                        ))
+                      : "No Grade Found"}
                   </div>
                   <div style={{ width: "100%" }}>
                     <Button
@@ -151,9 +161,13 @@ const Classroom = () => {
                         fontWeight: "bold",
                         color: "#3c4043",
                         margin: "0 auto",
+                        paddingBottom: "10px",
+                        textTransform: "capitalize",
                       }}
                     >
-                      Edit
+                      {gradesStructure && gradesStructure.length > 0
+                        ? "Edit"
+                        : "Add Grade"}
                     </Button>
                   </div>
                 </div>
@@ -162,7 +176,7 @@ const Classroom = () => {
               <div className={classes.classUpcoming}>
                 <div className={classes.classUpcomingTitle}>Upcoming</div>
                 <div className={classes.classUpcomingDetail}>
-                  Woohoo, no work due soon!
+                  No work due soon
                 </div>
                 <NavLink
                   to="/classroom/1/view-all"
