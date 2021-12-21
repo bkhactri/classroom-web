@@ -1,4 +1,4 @@
-import { React, useState, useEffect, Fragment } from "react";
+import { React, useState, useEffect, Fragment, useRef } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Header from "../../components/Header/Header";
@@ -13,8 +13,13 @@ import Paper from "@mui/material/Paper";
 // import Button from "@mui/material/Button";
 // import FileUploadIcon from "@mui/icons-material/FileUpload";
 // import FileDownloadIcon from "@mui/icons-material/FileDownload";
-import { DataGridPro } from "@mui/x-data-grid-pro";
+import { DataGridPro, GridToolbarContainer } from "@mui/x-data-grid-pro";
+import Button from "@mui/material/Button";
+
 import axiosClassroom from "../../api/classroom.axios";
+import axiosStudentIdentifcation from "../../api/student-identification.axios";
+
+import { downloadFile } from "../../utils/index";
 
 const columns = [
   { field: "id", headerName: "ID", width: 220 },
@@ -77,6 +82,7 @@ const ClassroomGrades = () => {
   const [grades, setGrades] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const { classroomId } = useParams();
+  const inputFileStudentRef = useRef();
 
   useEffect(() => {
     const fetchStudentsGrades = async () => {
@@ -109,6 +115,50 @@ const ClassroomGrades = () => {
     fetchStudentsGrades();
   }, [classroomId, accessToken]);
 
+  // Student Identification
+  const downloadStudentTemplate = () => {
+    axiosStudentIdentifcation
+      .get("/template", {
+        headers: { Authorization: "Bearer " + accessToken },
+      })
+      .then((csvString) => {
+        const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+
+        downloadFile(blob, "student-identification-template.csv");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const chooseStudentFile = () => {
+    inputFileStudentRef.current.click();
+  };
+
+  const uploadStudentFile = () => {
+    const formData = new FormData();
+    formData.append("file", inputFileStudentRef.current.files[0]);
+    formData.append("classroomId", classroomId);
+
+    axiosStudentIdentifcation
+      .post("/upload", formData, {
+        headers: {
+          Authorization: "Bearer " + accessToken,
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then(() => {
+        console.log("upload student complete");
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        inputFileStudentRef.current.files = null;
+        inputFileStudentRef.current.value = "";
+      });
+  };
+
   // console.log(grades, "grades");
   // console.log(students, "students");
   const cellChange = (e) => {
@@ -117,6 +167,14 @@ const ClassroomGrades = () => {
 
   return (
     <Fragment>
+      <input
+        type="file"
+        accept=".csv"
+        ref={inputFileStudentRef}
+        onChange={uploadStudentFile}
+        hidden
+      ></input>
+
       <Header loading={isLoading} classroom={3} classID={classroomId} />
       <Paper sx={{ width: "100%", height: "90vh" }}>
         <DataGridPro
@@ -130,6 +188,18 @@ const ClassroomGrades = () => {
           initialState={{ pinnedColumns: { left: ["id"] } }}
           showCellRightBorder
           onCellEditCommit={(e) => cellChange(e)}
+          components={{
+            Toolbar: () => {
+              return (
+                <GridToolbarContainer>
+                  <Button onClick={downloadStudentTemplate}>
+                    Download Template
+                  </Button>
+                  <Button onClick={chooseStudentFile}>Upload Student</Button>
+                </GridToolbarContainer>
+              );
+            },
+          }}
         />
       </Paper>
     </Fragment>
