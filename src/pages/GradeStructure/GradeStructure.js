@@ -51,7 +51,10 @@ const GradeStructure = (props) => {
   }, [accessToken, classroomId]);
 
   // eslint-disable-next-line
-  const debounceSaveOrder = useCallback(debounce((latestGrades) => saveOrder(latestGrades), 1000), []);
+  const debounceSaveOrder = useCallback(
+    debounce((latestGrades) => saveOrder(latestGrades), 1000),
+    []
+  );
 
   const handleNameChange = (event) => {
     setInputName(event.target.value);
@@ -88,11 +91,12 @@ const GradeStructure = (props) => {
     if (!invalid) {
       setIsLoading(true);
 
-      axiosGrade.post(
-        '/structure',
-        { name: inputName, point: inputPoint, classroomId },
-        { headers: { Authorization: "Bearer " + accessToken } }
-      )
+      axiosGrade
+        .post(
+          "/structure",
+          { name: inputName, point: inputPoint, classroomId },
+          { headers: { Authorization: "Bearer " + accessToken } }
+        )
         .then((gradeStructure) => {
           const newGrades = grades.concat(gradeStructure);
           setGrades(newGrades);
@@ -114,11 +118,10 @@ const GradeStructure = (props) => {
   const saveGrade = (newGrade) => {
     setIsLoading(true);
 
-    axiosGrade.put(
-      `/structure/${newGrade.id}`,
-      newGrade,
-      { headers: { Authorization: "Bearer " + accessToken } }
-    )
+    axiosGrade
+      .put(`/structure/${newGrade.id}`, newGrade, {
+        headers: { Authorization: "Bearer " + accessToken },
+      })
       .then(() => {
         const newGrades = grades.map((grade) => {
           return newGrade.id === grade.id ? newGrade : grade;
@@ -131,10 +134,10 @@ const GradeStructure = (props) => {
   const deleteGrade = (toBeDeleteGradeId) => {
     setIsLoading(true);
 
-    axiosGrade.delete(
-      `/structure/${toBeDeleteGradeId}`,
-      { headers: { Authorization: "Bearer " + accessToken } }
-    )
+    axiosGrade
+      .delete(`/structure/${toBeDeleteGradeId}`, {
+        headers: { Authorization: "Bearer " + accessToken },
+      })
       .then(() => {
         let count = 0;
         const newGrades = grades
@@ -151,7 +154,7 @@ const GradeStructure = (props) => {
       .finally(() => setIsLoading(false));
   };
 
-  const saveOrder =  (latestGrades = grades) => {
+  const saveOrder = (latestGrades = grades) => {
     setIsLoading(true);
 
     // Ensure all grade structures have the correct order numnber
@@ -160,15 +163,17 @@ const GradeStructure = (props) => {
       grade.order = count++;
 
       return grade;
-    })
+    });
 
     setGrades(finalizedGrades);
 
-    axiosGrade.put(
-      '/structure',
-      { gradeStructures: finalizedGrades },
-      { headers: { Authorization: "Bearer " + accessToken } }
-    ).finally(() => setIsLoading(false));
+    axiosGrade
+      .put(
+        "/structure",
+        { gradeStructures: finalizedGrades },
+        { headers: { Authorization: "Bearer " + accessToken } }
+      )
+      .finally(() => setIsLoading(false));
   };
 
   const onDragEnd = (result) => {

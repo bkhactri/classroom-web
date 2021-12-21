@@ -3,39 +3,66 @@ import { useHistory, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Header from "../../components/Header/Header";
 import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Grid from "@mui/material/Grid";
-import Button from "@mui/material/Button";
+// import Table from "@mui/material/Table";
+// import TableBody from "@mui/material/TableBody";
+// import TableCell from "@mui/material/TableCell";
+// import TableContainer from "@mui/material/TableContainer";
+// import TableHead from "@mui/material/TableHead";
+// import TableRow from "@mui/material/TableRow";
+// import Grid from "@mui/material/Grid";
+// import Button from "@mui/material/Button";
+// import FileUploadIcon from "@mui/icons-material/FileUpload";
+// import FileDownloadIcon from "@mui/icons-material/FileDownload";
+import { DataGridPro } from "@mui/x-data-grid-pro";
 import axiosClassroom from "../../api/classroom.axios";
-import FileUploadIcon from "@mui/icons-material/FileUpload";
-import FileDownloadIcon from "@mui/icons-material/FileDownload";
 
 const columns = [
-  { id: "name", label: "Name" },
-  { id: "code", label: "ISO\u00a0Code" },
+  { field: "id", headerName: "ID", width: 220 },
   {
-    id: "population",
-    label: "Population",
-    align: "right",
-    format: (value) => value.toLocaleString("en-US"),
+    field: "firstName",
+    headerName: "First name",
+    width: 150,
+    editable: true,
+  },
+  {
+    field: "lastName",
+    headerName: "Last name",
+    width: 150,
+    editable: true,
+  },
+  {
+    field: "age",
+    headerName: "Age",
+    width: 150,
+    editable: true,
+  },
+  {
+    field: "fullName",
+    headerName: "Full name",
+    editable: true,
+    width: 150,
   },
 ];
 
-function createData(name, code, population, size) {
-  const density = population / size;
-  return { name, code, population, size, density };
-}
-
 const rows = [
-  createData("India", "IN", 1324171354),
-  createData("China", "CN", 1403500365),
-  createData("Italy", "IT", 60483973),
-  createData("India", "IN", 1324171354),
+  { id: 1, lastName: "Snow", firstName: "Jon", age: 35 },
+  { id: 2, lastName: "Lannister", firstName: "Cersei", age: 42 },
+  { id: 3, lastName: "Lannister", firstName: "Jaime", age: 45 },
+  { id: 4, lastName: "Stark", firstName: "Arya", age: 16 },
+  { id: 5, lastName: "Targaryen", firstName: "Daenerys", age: null },
+  { id: 6, lastName: "Melisandre", firstName: null, age: 150 },
+  { id: 7, lastName: "Clifford", firstName: "Ferrara", age: 44 },
+  { id: 8, lastName: "Frances", firstName: "Rossini", age: 36 },
+  { id: 9, lastName: "Roxie", firstName: "Harvey", age: 65 },
+  { id: 10, lastName: "Snow", firstName: "Jon", age: 35 },
+  { id: 11, lastName: "Lannister", firstName: "Cersei", age: 42 },
+  { id: 12, lastName: "Lannister", firstName: "Jaime", age: 45 },
+  { id: 13, lastName: "Lannister", firstName: "Jaime", age: 45 },
+  { id: 14, lastName: "Lannister", firstName: "Jaime", age: 45 },
+  { id: 15, lastName: "Lannister", firstName: "Jaime", age: 45 },
+  { id: 16, lastName: "Lannister", firstName: "Jaime", age: 45 },
+  { id: 17, lastName: "Lannister", firstName: "Jaime", age: 45 },
+  { id: 18, lastName: "Lannister", firstName: "Jaime", age: 45 },
 ];
 
 const ClassroomGrades = () => {
@@ -46,6 +73,7 @@ const ClassroomGrades = () => {
   const [students, setStudents] = useState([]);
   // eslint-disable-next-line
   const [gradeRows, setGradeRows] = useState([]);
+  // eslint-disable-next-line
   const [grades, setGrades] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const { classroomId } = useParams();
@@ -81,98 +109,28 @@ const ClassroomGrades = () => {
     fetchStudentsGrades();
   }, [classroomId, accessToken]);
 
+  // console.log(grades, "grades");
+  // console.log(students, "students");
+  const cellChange = (e) => {
+    console.log(e);
+  };
+
   return (
     <Fragment>
       <Header loading={isLoading} classroom={3} classID={classroomId} />
-      <Paper sx={{ width: "100%", boxShadow: "none" }}>
-        <TableContainer sx={{ maxHeight: "90vh" }}>
-          <Table stickyHeader sx={{ width: "100%" }}>
-            <TableHead>
-              <TableRow
-                style={{
-                  borderBottom: "1px solid #e0e0e0",
-                }}
-              >
-                <TableCell
-                  style={{
-                    width: 220,
-                    height: 60,
-                    borderRight: "1px solid #e0e0e0",
-                  }}
-                >
-                  <Grid container flexDirection="column">
-                    <Grid
-                      item
-                      component={Button}
-                      sx={{ textTransform: "capitalize", fontWeight: "bold" }}
-                    >
-                      <FileUploadIcon />
-                      &nbsp; Upload List
-                    </Grid>
-
-                    <Grid
-                      item
-                      component={Button}
-                      sx={{ textTransform: "capitalize", fontWeight: "bold" }}
-                    >
-                      <FileDownloadIcon />
-                      &nbsp; Download List
-                    </Grid>
-                  </Grid>
-                </TableCell>
-                {grades.map((grade) => (
-                  <TableCell
-                    key={grade.name}
-                    style={{
-                      width: 100,
-                      height: 60,
-                      borderRight: "1px solid #e0e0e0",
-                    }}
-                  >
-                    {grade.name}
-                  </TableCell>
-                ))}
-                <TableCell style={{ position: "sticky" }}></TableCell>
-              </TableRow>
-            </TableHead>
-
-            <TableBody>
-              {rows.map((row) => {
-                return (
-                  <TableRow
-                    hover
-                    tabIndex={-1}
-                    key={row.code}
-                    style={{
-                      borderBottom: "1px solid #e0e0e0",
-                    }}
-                  >
-                    {columns.map((column, index) => {
-                      const value = row[column.id];
-                      return (
-                        <TableCell
-                          key={column.id}
-                          align={column.align}
-                          style={{
-                            width: index === 0 ? 220 : 100,
-                            height: 35,
-                            borderRight: "1px solid #e0e0e0",
-                            position: index === 0 ? "sticky" : "",
-                          }}
-                        >
-                          {column.format && typeof value === "number"
-                            ? column.format(value)
-                            : value}
-                        </TableCell>
-                      );
-                    })}
-                    <TableCell style={{ position: "relative" }}></TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </TableContainer>
+      <Paper sx={{ width: "100%", height: "90vh" }}>
+        <DataGridPro
+          rows={rows}
+          columns={columns}
+          rowsPerPageOptions={[rows.length]}
+          hideFooterPagination
+          hideFooterSelectedRowCount
+          hideFooter
+          pinnedColumns={{ left: ["id"] }}
+          initialState={{ pinnedColumns: { left: ["id"] } }}
+          showCellRightBorder
+          onCellEditCommit={(e) => cellChange(e)}
+        />
       </Paper>
     </Fragment>
   );
