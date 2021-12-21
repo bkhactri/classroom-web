@@ -19,6 +19,7 @@ import { ExportXLSX } from "../../components/Excel/ExelExporter";
 import { Typography } from "@mui/material";
 import UserLogo from "../../assets/images/user-logo.png";
 import { Box } from "@mui/system";
+import GradeStructureBlock from "../../components/Grade/GradeStructureBlock";
 
 
 // Grades where each array is a column
@@ -115,7 +116,6 @@ const ClassroomGrades = () => {
           row.push(grade[i]);
           row[1].totalCurrentPoint = addNumber(row[1].totalCurrentPoint, grade[i].currentPoint);
           row[1].totalMaxPoint = addNumber(row[1].totalMaxPoint, grade[i].maxPoint);
-          console.log('maxpoint', row[1].totalMaxPoint);
         })
         rows.push(row);
     })
@@ -135,14 +135,11 @@ const ClassroomGrades = () => {
   }
 
   const setGradeHanler = (rowIndex, gradeStructureIndex) => {
-    console.log('previousGrades', grades);
       return (newGrade) => {
         setGrades((previousGrades) => {
           console.log('newGrade', newGrade);
           console.log('previousGrades', previousGrades);
           const newGrades = [...previousGrades];
-
-          console.log('index', rowIndex, gradeStructureIndex);
           
           newGrades[gradeStructureIndex][rowIndex] = newGrade;
           console.log('newGrades', newGrades);
@@ -150,6 +147,26 @@ const ClassroomGrades = () => {
           return newGrades;
         })
       } 
+  }
+
+  const returnAllGrades = (gradeStructureIndex) => {
+    return () => {
+      setGrades((previousGrades) => {
+        console.log('returnAllGrades', gradeStructureIndex);
+        const newGrades = [...previousGrades];        
+        
+        for (let i = 0; i < previousGrades[0].length; i++){
+          const status = newGrades[gradeStructureIndex][i].status;
+          if (status === 'draft'){
+            console.log('return ......');
+            newGrades[gradeStructureIndex][i].status = 'returned';
+          }
+        }
+
+        console.log('newGrades ex', newGrades);
+        return newGrades;
+      })
+    }
   }
 
 
@@ -226,25 +243,45 @@ const ClassroomGrades = () => {
                     </Grid>
                   </Grid>
                 </TableCell>
-                {grades.map((grade) => (
-                  <TableCell
-                    key={grade.name}
+
+                <TableCell
+                    key={'total'}
                     style={{
                       width: 100,
                       height: 60,
+                      textAlign: 'center',
                       borderRight: "1px solid #e0e0e0",
                     }}
                   >
-                    {grade.name}
+                    <Typography variant="h6" display="block" gutterBottom style={{color: 'blue'}}>
+                        Total
+                    </Typography>
+                  
                   </TableCell>
-                ))}
+
+                {gradeRows.map((grade, index) => {
+                  return (
+                    <TableCell
+                      key={grade.id}
+                      style={{
+                        width: 100,
+                        height: 60,
+                        borderRight: "1px solid #e0e0e0",
+                      }}
+                    >
+                      <GradeStructureBlock 
+                        gradeStructure={grade}
+                        returnAllGrades={returnAllGrades(index)}
+                      />
+                    </TableCell>
+                  )})}
+
                 <TableCell style={{ position: "sticky" }}></TableCell>
               </TableRow>
             </TableHead>
 
             <TableBody>
               {tableRows.map((row, rowIndex) => {
-                console.log('tableRows', tableRows);
                 return (
                   <TableRow
                     hover
