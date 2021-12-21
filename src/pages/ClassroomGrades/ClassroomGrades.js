@@ -21,37 +21,20 @@ import UserLogo from "../../assets/images/user-logo.png";
 import { Box } from "@mui/system";
 
 
-
-
-const columns = [
-  { id: "name", label: "Name" },
-  { id: "code", label: "ISO\u00a0Code" },
-  {
-    id: "population",
-    label: "Population",
-    align: "right",
-    format: (value) => value.toLocaleString("en-US"),
-  },
-];
-
-function createData(name, code, population, size) {
-  const density = population / size;
-  return { name, code, population, size, density };
-}
-
-const rows = [
-  createData("India", "IN", 1324171354),
-  createData("China", "CN", 1403500365),
-  createData("Italy", "IT", 60483973),
-  createData("India", "IN", 1324171354),
-];
-
+// Grades where each array is a column
 const studentGrades = [
   [
     {
       studentID: 0,
       currentPoint: "",
       status: 'blank',
+      gradeStructureId: 0,
+      maxPoint: 100
+    },
+    {
+      studentID: 1,
+      currentPoint: 17,
+      status: 'draft',
       gradeStructureId: 0,
       maxPoint: 100
     }
@@ -64,6 +47,13 @@ const studentGrades = [
       gradeStructureId: 1,
       maxPoint: 90
     },
+    {
+      studentID: 1,
+      currentPoint: 25,
+      status: 'returned',
+      gradeStructureId: 1,
+      maxPoint: 90
+    },
   ]
 ]
 
@@ -71,6 +61,11 @@ const initialStudents = [
   {
     id: 0,
     fullname: 'Nguyen Van A',
+    classroomId: 0
+  },
+  {
+    id: 1,
+    fullname: 'Nguyen Thi B',
     classroomId: 0
   }
 ]

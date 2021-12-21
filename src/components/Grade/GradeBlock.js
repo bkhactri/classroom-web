@@ -26,6 +26,11 @@ const GradeBlock = ({maxGrade, currentGrade, setGradeHandler}) => {
 
   const handleChange = (event) => {
     const newGradeValue = event.target.value;
+
+    if (isNaN(newGradeValue) || newGradeValue > currentGrade.maxPoint){
+      return;
+    }
+
     console.log('handleChange', newGradeValue);
     const newGrade = {...currentGrade, currentPoint: newGradeValue};
     setGradeHandler(newGrade);
@@ -59,6 +64,14 @@ const GradeBlock = ({maxGrade, currentGrade, setGradeHandler}) => {
       changeGrade('status', 'draft');
     } else {
       changeGrade('status', 'blank');
+    }
+  }
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      if (currentGrade.status === 'editing'){
+        changeGrade('status', 'draft');
+      }
     }
   }
 
@@ -173,6 +186,7 @@ const GradeBlock = ({maxGrade, currentGrade, setGradeHandler}) => {
   return (
     <div
       onClick={handleOnClickOnBlock}
+      onKeyDown={handleKeyDown}
     >
       {gradeCell(currentGrade.status)}
     </div>
