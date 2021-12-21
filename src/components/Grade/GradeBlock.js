@@ -37,17 +37,25 @@ const GradeBlock = ({maxGrade, currentGrade, setGradeHandler}) => {
     setGradeHandler(newGrade);
   }
 
-  const handleOnClickOnBlock = () => {
-    console.log('click on block');
+  const handleOnClickOnInput = () => {
+    console.log('click on input');
     changeGrade('status', 'editing');
   }
+
+  const handleOnClickOnBlock= () => {
+    console.log('click on block');
+    if (currentGrade.status === 'blank'){
+      changeGrade('status', 'editing');
+    }
+  }
+
   const handleOnClickReturn = () => {
     changeGrade('status', 'returned');
     handleCloseGradeOption();
   }
   const handleOnBlur = (event, relatedTarget) => {
     console.log('on blur change from', currentGrade.status);
-    if (currentGrade.currentPoint !== null && currentGrade.status !== 'returned'){
+    if (currentGrade.currentPoint !== "" && currentGrade.status !== 'returned'){
       changeGrade('status', 'draft');
     } else {
       changeGrade('status', 'blank');
@@ -115,7 +123,7 @@ const GradeBlock = ({maxGrade, currentGrade, setGradeHandler}) => {
       justifyContent="center"
       style={{ minHeight: '5vh', maxWidth: '100%' }}
     >
-      <Grid item xs={9} style={{textAlign: "right"}} onClick={handleOnClickOnBlock}>
+      <Grid item xs={9} style={{textAlign: "right"}} onClick={handleOnClickOnInput}>
 
         {cellState === 'editing' ? 
           <FormControl variant="standard">
@@ -127,7 +135,7 @@ const GradeBlock = ({maxGrade, currentGrade, setGradeHandler}) => {
               endAdornment={<InputAdornment position="end">/ {maxGrade}</InputAdornment>}
               aria-describedby="standard-weight-helper-text"
               inputProps={{
-                'aria-label': 'weight',
+                'aria-label': 'grade',
                 'style': { textAlign: 'right' }
               }}
               onBlur={handleOnBlur}
@@ -164,6 +172,7 @@ const GradeBlock = ({maxGrade, currentGrade, setGradeHandler}) => {
 
   return (
     <div
+      onClick={handleOnClickOnBlock}
     >
       {gradeCell(currentGrade.status)}
     </div>

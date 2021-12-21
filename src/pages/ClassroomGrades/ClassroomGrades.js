@@ -16,6 +16,11 @@ import FileUploadIcon from "@mui/icons-material/FileUpload";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import GradeBlock from "../../components/Grade/GradeBlock";
 import { ExportXLSX } from "../../components/Excel/ExelExporter";
+import { Typography } from "@mui/material";
+import UserLogo from "../../assets/images/user-logo.png";
+import { Box } from "@mui/system";
+
+
 
 
 const columns = [
@@ -48,14 +53,16 @@ const studentGrades = [
       currentPoint: "",
       status: 'blank',
       gradeStructureId: 0,
+      maxPoint: 100
     }
   ],
   [
     {
       studentID: 0,
       currentPoint: "",
-      status: 'draft',
+      status: 'blank',
       gradeStructureId: 1,
+      maxPoint: 90
     },
   ]
 ]
@@ -83,6 +90,10 @@ const gradeStructures = [
   },
 ]
 
+const addNumber = (n1, n2) => {
+  return +n1 + +n2;
+}
+
 const ClassroomGrades = () => {
   // eslint-disable-next-line
   const history = useHistory();
@@ -95,15 +106,21 @@ const ClassroomGrades = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { classroomId } = useParams();
 
-
   const createTableBody = () => {
     let rows = [];
 
     students.forEach((student, i) => {
         let row = [];
         row.push(student);
+        row.push({
+          totalCurrentPoint: 0,
+          totalMaxPoint: 0
+        })
         grades.forEach(grade => {
           row.push(grade[i]);
+          row[1].totalCurrentPoint = addNumber(row[1].totalCurrentPoint, grade[i].currentPoint);
+          row[1].totalMaxPoint = addNumber(row[1].totalMaxPoint, grade[i].maxPoint);
+          console.log('maxpoint', row[1].totalMaxPoint);
         })
         rows.push(row);
     })
@@ -247,25 +264,42 @@ const ClassroomGrades = () => {
                       return (
                         <TableCell
                           key={index}
-                          align={'center'}
                           style={{
                             width: index === 0 ? 220 : 100,
                             height: 35,
+                            textAlign: 'center',
                             borderRight: "1px solid #e0e0e0",
                             position: index === 0 ? "sticky" : "",
                           }}
                         >
                           {
-                            index !== 0 ?
+                            index === 0 ?
+                            
+                            <div style={{display:'flex', alignItems: 'center'}}>
+                              <img src={UserLogo} alt="avatar" />
+                              <Box ml={2}>
+                                <Typography 
+                                  variant="p"
+                                  gutterBottom
+                                  style={{fontWeight:"bold", verticalAlign:'center'}}>
+                                  {value.fullname}
+                                </Typography>
+                              </Box>
+                            </div>
+
+                            : index === 1 ?
+                            
+                            <Typography variant='h6' style={{color:'red'}}>
+                              {value.totalCurrentPoint} / {value.totalMaxPoint}
+                            </Typography>
+                             
+                            :
 
                             <GradeBlock 
-                          
-                              maxGrade={gradeStructure.maxPoint}
-                              currentGrade={value}
-                              setGradeHandler={setGradeHanler(rowIndex, index-1)}                              
+                                maxGrade={gradeStructure.maxPoint}
+                                currentGrade={value}
+                                setGradeHandler={setGradeHanler(rowIndex, index-2)}                              
                               />
-
-                             : value.fullname
                           }
                           
                         </TableCell>
