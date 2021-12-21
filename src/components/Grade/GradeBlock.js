@@ -32,11 +32,13 @@ const GradeBlock = ({maxGrade, currentGrade, setGradeHandler}) => {
   };
 
   const changeGrade = (propName, newValue) => {
+    console.log('status change', newValue);
     const newGrade = {...currentGrade, [propName]: newValue};
     setGradeHandler(newGrade);
   }
 
   const handleOnClickOnBlock = () => {
+    console.log('click on block');
     changeGrade('status', 'editing');
   }
   const handleOnClickReturn = () => {
@@ -44,6 +46,7 @@ const GradeBlock = ({maxGrade, currentGrade, setGradeHandler}) => {
     handleCloseGradeOption();
   }
   const handleOnBlur = (event, relatedTarget) => {
+    console.log('on blur change from', currentGrade.status);
     if (currentGrade.currentPoint !== null && currentGrade.status !== 'returned'){
       changeGrade('status', 'draft');
     } else {
@@ -112,7 +115,7 @@ const GradeBlock = ({maxGrade, currentGrade, setGradeHandler}) => {
       justifyContent="center"
       style={{ minHeight: '5vh', maxWidth: '100%' }}
     >
-      <Grid item xs={9} style={{textAlign: "right"}}>
+      <Grid item xs={9} style={{textAlign: "right"}} onClick={handleOnClickOnBlock}>
 
         {cellState === 'editing' ? 
           <FormControl variant="standard">
@@ -161,7 +164,6 @@ const GradeBlock = ({maxGrade, currentGrade, setGradeHandler}) => {
 
   return (
     <div
-      onClick={handleOnClickOnBlock}
     >
       {gradeCell(currentGrade.status)}
     </div>
