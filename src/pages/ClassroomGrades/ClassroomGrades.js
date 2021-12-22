@@ -65,14 +65,18 @@ const ClassroomGrades = () => {
 
         const gradeColumns = constantColumns.concat(gradesArray);
 
-        const gradeRows = students.map((student) =>
-          mapGradeToStudent(student.id, grades, gradeBoard)
-        );
+        const gradeRows = students.map((student) => {
+          return {
+            id: student.id,
+            fullName: student.name,
+            ...mapGradeToStudent(student.id, grades, gradeBoard),
+          };
+        });
 
         console.log(gradeRows, "gradeRows");
 
         setGradeColumns(gradeColumns);
-        // setGradeRows(gradeRows);
+        setGradeRows(gradeRows);
 
         setIsLoading(false);
       } catch (error) {
@@ -88,11 +92,15 @@ const ClassroomGrades = () => {
     const row = {};
     gradeStructures.forEach((gs) => {
       const grade = gradeBoards.find((gb) => {
-        return (gb.gradeStructureId =
-          gs.id && gb.studentIdentificationId === studentId);
+        return (
+          gb.gradeStructureId === gs.id &&
+          gb.studentIdentificationId === studentId
+        );
       });
 
-      row[grade.gradeStructureId] = grade.point;
+      if (grade) {
+        row[grade.gradeStructureId] = grade.point;
+      }
     });
 
     return row;
