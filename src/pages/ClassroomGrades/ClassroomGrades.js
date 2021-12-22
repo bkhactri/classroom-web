@@ -125,25 +125,17 @@ const ClassroomGrades = () => {
     inputFileStudentRef.current.click();
   };
 
-  const uploadStudentFile = () => {
+  const uploadStudentFile = async () => {
     const formData = new FormData();
     formData.append("file", inputFileStudentRef.current.files[0]);
     formData.append("classroomId", classroomId);
 
-    axiosStudentIdentifcation
+    await axiosStudentIdentifcation
       .post("/upload", formData, {
         headers: {
           Authorization: "Bearer " + accessToken,
           "Content-Type": "multipart/form-data",
         },
-      })
-      .then((resData) => {
-        const gradeRows = resData.map((student, index) => ({
-          id: student[0],
-          fullName: student[1],
-        }));
-
-        setGradeRows(gradeRows);
       })
       .catch((err) => {
         console.log(err);
@@ -151,6 +143,46 @@ const ClassroomGrades = () => {
       .finally(() => {
         inputFileStudentRef.current.files = null;
         inputFileStudentRef.current.value = "";
+      });
+
+    const students = await axiosStudentIdentifcation.get(
+      `/getByClass/${classroomId}`,
+      {
+        headers: { Authorization: "Bearer " + accessToken },
+      }
+    );
+
+    const grades = await axiosGrade.get(`/structure/${classroomId}`, {
+      headers: { Authorization: "Bearer " + accessToken },
+    });
+
+    const gradeBoard = await axiosGrade.get(`/getGradeBoard/${classroomId}`, {
+      headers: { Authorization: "Bearer " + accessToken },
+    });
+
+    const tempGradeRows = students.map((student) => {
+      return {
+        id: student[0],
+        fullName: student[1],
+        ...mapGradeToStudent(student.id, grades, gradeBoard),
+      };
+    });
+
+    setGradeRows(tempGradeRows);
+  };
+
+  const downloadGradeTemplate = () => {
+    axiosGrade
+      .get("/template", {
+        headers: { Authorization: "Bearer " + accessToken },
+      })
+      .then((csvString) => {
+        const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+
+        downloadFile(blob, "grade-template.csv");
+      })
+      .catch((err) => {
+        console.log(err);
       });
   };
 
@@ -219,13 +251,16 @@ const ClassroomGrades = () => {
                 <GridToolbarContainer>
                   <GridToolbarExport />
                   <Button onClick={downloadStudentTemplate}>
-                    Download Template
+                    Download Student Template
+                  </Button>
+                  <Button onClick={downloadGradeTemplate}>
+                    Download Grade Template
                   </Button>
                   <Button onClick={chooseStudentFile}>Upload Student</Button>
                 </GridToolbarContainer>
               );
             },
-            ColumnMenu: CustomColumnMenuComponent,
+            ColumnMenu: CustomColumnMenuComponent
           }}
         />
       </Paper>

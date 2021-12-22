@@ -1,11 +1,14 @@
+import { useRef } from "react";
+import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 import {
   GridColumnMenuContainer,
   SortGridMenuItems,
 } from "@mui/x-data-grid-pro";
-import { useSelector } from "react-redux";
 import Button from "@mui/material/Button";
 import classes from "./ColumnMenu.module.css";
-import { useParams } from "react-router-dom";
+import { downloadFile } from "../../utils/index";
+
 import axiosGrade from "../../api/grade.axios";
 
 const CustomColumnMenuComponent = (props) => {
@@ -33,6 +36,52 @@ const CustomColumnMenuComponent = (props) => {
       throw new Error(err);
     }
   };
+  const inputFileGradeRef = useRef();
+
+  const chooseGradeFile = () => {
+    inputFileGradeRef.current.click();
+  };
+
+  const uploadGradeFile = () => {
+    const formData = new FormData();
+    formData.append("file", inputFileGradeRef.current.files[0]);
+    formData.append("classroomId", classroomId);
+    formData.append("gradeStructureId", currentColumn.field);
+
+    axiosGrade
+      .post("/upload", formData, {
+        headers: {
+          Authorization: "Bearer " + accessToken,
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((resData) => {
+        console.log(resData, "res");
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        inputFileGradeRef.current.files = null;
+        inputFileGradeRef.current.value = "";
+      });
+  };
+
+  const exportColumn = () => {
+    axiosGrade
+      .get(`/export/${classroomId}/${currentColumn.field}`, {
+        headers: { Authorization: "Bearer " + accessToken },
+      })
+      .then((csvString) => {
+        const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+
+        const gradeStructureName = currentColumn.headerName.split("/")[0];
+        downloadFile(blob, `${gradeStructureName}.csv`);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   return (
     <GridColumnMenuContainer
@@ -41,6 +90,13 @@ const CustomColumnMenuComponent = (props) => {
       ownerState={{ color }}
       {...other}
     >
+      <input
+        type="file"
+        accept=".csv"
+        ref={inputFileGradeRef}
+        onChange={uploadGradeFile}
+        hidden
+      />
       <SortGridMenuItems onClick={hideMenu} column={currentColumn} />
       {currentColumn.field !== "id" && currentColumn.field !== "fullName" ? (
         <div>
@@ -53,10 +109,14 @@ const CustomColumnMenuComponent = (props) => {
             </Button>
           </li>
           <li>
-            <Button className={classes.Button}>Import Grade</Button>
+            <Button className={classes.Button} onClick={chooseGradeFile}>
+              Import Grade
+            </Button>
           </li>
           <li>
-            <Button className={classes.Button}>Export Column</Button>
+            <Button className={classes.Button} onClick={exportColumn}>
+              Export Column
+            </Button>
           </li>
         </div>
       ) : null}
