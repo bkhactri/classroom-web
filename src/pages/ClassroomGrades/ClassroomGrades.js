@@ -125,17 +125,27 @@ const ClassroomGrades = () => {
     inputFileStudentRef.current.click();
   };
 
-  const uploadStudentFile = async () => {
+  const uploadStudentFile = () => {
     const formData = new FormData();
     formData.append("file", inputFileStudentRef.current.files[0]);
     formData.append("classroomId", classroomId);
 
-    await axiosStudentIdentifcation
+    axiosStudentIdentifcation
       .post("/upload", formData, {
         headers: {
           Authorization: "Bearer " + accessToken,
           "Content-Type": "multipart/form-data",
         },
+      })
+      .then((resData) => {
+        const tempGradeRows = [].concat(gradeRows);
+        resData.forEach((student) => {
+          const tempRow = tempGradeRows.find((row) => row.id === student[0]);
+
+          tempRow.fullName = student[1];
+        })
+
+        setGradeRows(tempGradeRows);
       })
       .catch((err) => {
         console.log(err);
@@ -144,31 +154,6 @@ const ClassroomGrades = () => {
         inputFileStudentRef.current.files = null;
         inputFileStudentRef.current.value = "";
       });
-
-    const students = await axiosStudentIdentifcation.get(
-      `/getByClass/${classroomId}`,
-      {
-        headers: { Authorization: "Bearer " + accessToken },
-      }
-    );
-
-    const grades = await axiosGrade.get(`/structure/${classroomId}`, {
-      headers: { Authorization: "Bearer " + accessToken },
-    });
-
-    const gradeBoard = await axiosGrade.get(`/getGradeBoard/${classroomId}`, {
-      headers: { Authorization: "Bearer " + accessToken },
-    });
-
-    const tempGradeRows = students.map((student) => {
-      return {
-        id: student[0],
-        fullName: student[1],
-        ...mapGradeToStudent(student.id, grades, gradeBoard),
-      };
-    });
-
-    setGradeRows(tempGradeRows);
   };
 
   const downloadGradeTemplate = () => {
