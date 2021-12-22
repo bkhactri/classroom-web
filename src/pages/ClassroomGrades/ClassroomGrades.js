@@ -3,7 +3,11 @@ import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Header from "../../components/Header/Header";
 import Paper from "@mui/material/Paper";
-import { GridToolbarContainer, DataGridPro } from "@mui/x-data-grid-pro";
+import {
+  GridToolbarContainer,
+  DataGridPro,
+  GridToolbarExport,
+} from "@mui/x-data-grid-pro";
 import Button from "@mui/material/Button";
 import Snackbar from "@mui/material/Snackbar";
 // import axiosClassroom from "../../api/classroom.axios";
@@ -52,9 +56,6 @@ const ClassroomGrades = () => {
           }
         );
 
-        console.log(grades, "grades");
-        console.log(gradeBoard, "gradeBoard");
-
         const gradesArray = grades.map((grade) => ({
           field: grade.id,
           headerName: `${grade.name} / ${grade.point}`,
@@ -72,8 +73,6 @@ const ClassroomGrades = () => {
             ...mapGradeToStudent(student.id, grades, gradeBoard),
           };
         });
-
-        console.log(gradeRows, "gradeRows");
 
         setGradeColumns(gradeColumns);
         setGradeRows(gradeRows);
@@ -218,6 +217,7 @@ const ClassroomGrades = () => {
             Toolbar: () => {
               return (
                 <GridToolbarContainer>
+                  <GridToolbarExport />
                   <Button onClick={downloadStudentTemplate}>
                     Download Template
                   </Button>
