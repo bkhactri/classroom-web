@@ -138,14 +138,15 @@ const ClassroomGrades = () => {
         },
       })
       .then((resData) => {
-        const tempGradeRows = [].concat(gradeRows);
-        resData.forEach((student) => {
-          const tempRow = tempGradeRows.find((row) => row.id === student[0]);
+        setGradeRows(gradeRows.map((gradeRow) => {
+          const student = resData.find((item) => item[0] === gradeRow.id);
 
-          tempRow.fullName = student[1];
-        })
-
-        setGradeRows(tempGradeRows);
+          if (student?.length === 2) {
+            gradeRow.fullName = student[1];
+          }
+    
+          return gradeRow;
+        }));
       })
       .catch((err) => {
         console.log(err);
@@ -170,6 +171,18 @@ const ClassroomGrades = () => {
         console.log(err);
       });
   };
+
+  const uploadGrade = (resData, gradeStructureId) => {    
+    setGradeRows(gradeRows.map((gradeRow) => {
+      const grade = resData.find((item) => item[0] === gradeRow.id);
+
+      if (grade?.length === 2) {
+        gradeRow[gradeStructureId] = grade[1];
+      }
+      
+      return gradeRow;
+    }));
+  }
 
   const onCellChange = async (event) => {
     const { id, field, value } = event;
@@ -246,6 +259,9 @@ const ClassroomGrades = () => {
               );
             },
             ColumnMenu: CustomColumnMenuComponent
+          }}
+          componentsProps={{
+            columnMenu: { uploadGrade }
           }}
         />
       </Paper>
