@@ -138,15 +138,29 @@ const ClassroomGrades = () => {
         },
       })
       .then((resData) => {
-        setGradeRows(gradeRows.map((gradeRow) => {
-          const student = resData.find((item) => item[0] === gradeRow.id);
+        const idList = gradeRows.map((gradeRow) => gradeRow.id);
+        const newGradeRows = resData
+          .filter((student) => !idList.includes(student[0]))
+          .map((student) => {
+            return {
+              id: student[0],
+              fullName: student[1],
+            }
+          });
 
-          if (student?.length === 2) {
-            gradeRow.fullName = student[1];
-          }
-    
-          return gradeRow;
-        }));
+        setGradeRows(
+          gradeRows
+            .map((gradeRow) => {
+              const student = resData.find((item) => item[0] === gradeRow.id);
+
+              if (student?.length === 2) {
+                gradeRow.fullName = student[1];
+              }
+        
+              return gradeRow;
+            })
+            .concat(newGradeRows)
+        );
       })
       .catch((err) => {
         console.log(err);

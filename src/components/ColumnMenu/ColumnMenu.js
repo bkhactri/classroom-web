@@ -75,8 +75,8 @@ const CustomColumnMenuComponent = (props) => {
       .then((csvString) => {
         const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
 
-        const gradeStructureName = currentColumn.headerName.split("/")[0];
-        downloadFile(blob, `${gradeStructureName}.csv`);
+        const gradeStructureName = currentColumn.headerName.split("/")[0].trim();
+        downloadFile(blob, `${gradeStructureName}-grades.csv`);
       })
       .catch((err) => {
         console.log(err);
