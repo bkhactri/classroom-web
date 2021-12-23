@@ -14,7 +14,7 @@ import axiosGrade from "../../api/grade.axios";
 const CustomColumnMenuComponent = (props) => {
   const { classroomId } = useParams();
   const accessToken = useSelector((state) => state.auth.token);
-  const { hideMenu, currentColumn, color, ...other } = props;
+  const { hideMenu, currentColumn, color, uploadGrade, ...other } = props;
 
   const handleColumnFinalized = async () => {
     const gradeId = currentColumn.field;
@@ -56,7 +56,7 @@ const CustomColumnMenuComponent = (props) => {
         },
       })
       .then((resData) => {
-        console.log(resData, "res");
+        uploadGrade(resData, currentColumn.field);
       })
       .catch((err) => {
         console.log(err);
