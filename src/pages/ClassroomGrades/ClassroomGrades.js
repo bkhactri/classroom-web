@@ -78,7 +78,7 @@ const ClassroomGrades = () => {
               <strong>{grade.point}</strong>
             </div>
           ),
-          valueFormatter: (params) => {
+          renderCell: (params) => {
             return `${
               params.value === null || params.value === undefined
                 ? ""
@@ -342,6 +342,7 @@ const ClassroomGrades = () => {
           hideFooterPagination
           hideFooterSelectedRowCount
           hideFooter
+          disableSelectionOnClick
           pinnedColumns={{ left: ["id", "fullName"] }}
           initialState={{ pinnedColumns: { left: ["id", "fullName"] } }}
           showCellRightBorder
