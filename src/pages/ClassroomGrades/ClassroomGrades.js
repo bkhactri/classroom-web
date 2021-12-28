@@ -17,11 +17,11 @@ import { downloadFile } from "../../utils/index";
 import CustomColumnMenuComponent from "../../components/ColumnMenu/ColumnMenu";
 
 const constantColumns = [
-  { field: "id", headerName: "ID", width: 80 },
+  { field: "id", headerName: "ID", width: 150 },
   {
     field: "fullName",
     headerName: "Name",
-    width: 150,
+    width: 200,
   },
 ];
 
@@ -33,6 +33,7 @@ const ClassroomGrades = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { classroomId } = useParams();
   const inputFileStudentRef = useRef();
+  let downloadGradeTemplateVisible = useRef(false);
 
   useEffect(() => {
     const fetchStudentsGrades = async () => {
@@ -49,6 +50,10 @@ const ClassroomGrades = () => {
           headers: { Authorization: "Bearer " + accessToken },
         });
 
+        if (grades.length) {
+          downloadGradeTemplateVisible.current = true;
+        }
+
         const gradeBoard = await axiosGrade.get(
           `/getGradeBoard/${classroomId}`,
           {
@@ -56,26 +61,58 @@ const ClassroomGrades = () => {
           }
         );
 
+        const gradeSum = grades.reduce((a, c) => {
+          return a + +c.point;
+        }, 0);
+
+        // Forming columns
         const gradesArray = grades.map((grade) => ({
           field: grade.id,
-          headerName: `${grade.name} / ${grade.point}`,
+          headerName: grade.name,
           width: 150,
           type: "number",
           editable: true,
+          renderHeader: (params) => (
+            <div>
+              {grade.name + " / "}
+              <strong>{grade.point}</strong>
+            </div>
+          ),
+          renderCell: (params) => {
+            return `${
+              params.value === null || params.value === undefined
+                ? ""
+                : params.value
+            } / ${grade.point}`;
+          },
+          preProcessEditCellProps: (params) => {
+            const hasError =
+              Number(params.props.value) > Number(grade.point) ||
+              isNaN(params.props.value);
+            return { ...params.props, error: hasError };
+          },
+          gradePercentage: (grade.point / gradeSum) * 10,
+          gradePoint: grade.point,
         }));
 
-        const gradeColumns = constantColumns.concat(gradesArray);
+        const columns = constantColumns.concat(gradesArray).concat({
+          field: "total",
+          headerName: "Total",
+          width: 150,
+          type: "number",
+        });
 
-        const gradeRows = students.map((student) => {
+        // Forming rows
+        const rows = students.map((student) => {
           return {
             id: student.id,
             fullName: student.name,
-            ...mapGradeToStudent(student.id, grades, gradeBoard),
+            ...mapGradeToStudent(student.id, grades, gradeBoard, columns),
           };
         });
 
-        setGradeColumns(gradeColumns);
-        setGradeRows(gradeRows);
+        setGradeColumns(columns);
+        setGradeRows(rows);
 
         setIsLoading(false);
       } catch (error) {
@@ -87,8 +124,14 @@ const ClassroomGrades = () => {
     fetchStudentsGrades();
   }, [classroomId, accessToken]);
 
-  const mapGradeToStudent = (studentId, gradeStructures, gradeBoards) => {
-    const row = {};
+  const mapGradeToStudent = (
+    studentId,
+    gradeStructures,
+    gradeBoards,
+    columns
+  ) => {
+    const row = { total: 0 };
+
     gradeStructures.forEach((gs) => {
       const grade = gradeBoards.find((gb) => {
         return (
@@ -96,11 +139,17 @@ const ClassroomGrades = () => {
           gb.studentIdentificationId === studentId
         );
       });
+      const gradePercentage = columns.find(
+        (col) => col.field === gs.id
+      )?.gradePercentage;
 
-      if (grade) {
+      if (grade && gradePercentage) {
         row[grade.gradeStructureId] = grade.point;
+        row.total += (+grade.point / +gs.point) * gradePercentage;
       }
     });
+
+    row.total = row.total ? row.total.toFixed(2) : null;
 
     return row;
   };
@@ -156,7 +205,7 @@ const ClassroomGrades = () => {
               if (student?.length === 2) {
                 gradeRow.fullName = student[1];
               }
-        
+
               return gradeRow;
             })
             .concat(newGradeRows)
@@ -173,7 +222,7 @@ const ClassroomGrades = () => {
 
   const downloadGradeTemplate = () => {
     axiosGrade
-      .get("/template", {
+      .get(`/template/${classroomId}`, {
         headers: { Authorization: "Bearer " + accessToken },
       })
       .then((csvString) => {
@@ -186,17 +235,40 @@ const ClassroomGrades = () => {
       });
   };
 
-  const uploadGrade = (resData, gradeStructureId) => {    
-    setGradeRows(gradeRows.map((gradeRow) => {
-      const grade = resData.find((item) => item[0] === gradeRow.id);
-
-      if (grade?.length === 2) {
-        gradeRow[gradeStructureId] = grade[1];
+  const calculateTotal = (id, field, value) => {
+    let total = 0;
+    const changedRow = gradeRows.find((row) => row.id === id);
+    gradeColumns.forEach((col) => {
+      if (col.field === field) {
+        total += (+value / +col.gradePoint) * col.gradePercentage;
+        return;
       }
-      
-      return gradeRow;
-    }));
-  }
+
+      if (col.gradePercentage) {
+        total +=
+          (+changedRow[col.field] / +col.gradePoint) * col.gradePercentage;
+      }
+    });
+
+    return total;
+  };
+
+  const uploadGrade = (resData, gradeStructureId) => {
+    setGradeRows(
+      gradeRows.map((gradeRow) => {
+        const grade = resData.find((item) => item[0] === gradeRow.id);
+
+        if (grade?.length === 2) {
+          gradeRow[gradeStructureId] = grade[1];
+
+          const total = calculateTotal(gradeRow.id, gradeStructureId, grade[1]);
+          gradeRow.total = total;
+        }
+
+        return gradeRow;
+      })
+    );
+  };
 
   const onCellChange = async (event) => {
     const { id, field, value } = event;
@@ -217,6 +289,14 @@ const ClassroomGrades = () => {
       );
 
       if (response) {
+        const total = calculateTotal(id, field, value);
+
+        setGradeRows(
+          gradeRows.map((row) =>
+            row.id === id ? { ...row, [field]: value, total } : row
+          )
+        );
+
         setSnackBarMessage(`Add grade in for ${id}`);
       }
 
@@ -245,7 +325,16 @@ const ClassroomGrades = () => {
         hidden
       />
       <Header loading={isLoading} classroom={3} classID={classroomId} />
-      <Paper sx={{ width: "100%", height: "90vh" }}>
+      <Paper
+        sx={{
+          width: "100%",
+          height: "90vh",
+          "& .Mui-error": {
+            color: "crimson",
+            bgcolor: "pink",
+          },
+        }}
+      >
         <DataGridPro
           rows={gradeRows}
           columns={gradeColumns}
@@ -253,6 +342,7 @@ const ClassroomGrades = () => {
           hideFooterPagination
           hideFooterSelectedRowCount
           hideFooter
+          disableSelectionOnClick
           pinnedColumns={{ left: ["id", "fullName"] }}
           initialState={{ pinnedColumns: { left: ["id", "fullName"] } }}
           showCellRightBorder
@@ -265,17 +355,19 @@ const ClassroomGrades = () => {
                   <Button onClick={downloadStudentTemplate}>
                     Download Student Template
                   </Button>
-                  <Button onClick={downloadGradeTemplate}>
-                    Download Grade Template
-                  </Button>
                   <Button onClick={chooseStudentFile}>Upload Student</Button>
+                  {downloadGradeTemplateVisible.current && (
+                    <Button onClick={downloadGradeTemplate}>
+                      Download Grade Template
+                    </Button>
+                  )}
                 </GridToolbarContainer>
               );
             },
-            ColumnMenu: CustomColumnMenuComponent
+            ColumnMenu: CustomColumnMenuComponent,
           }}
           componentsProps={{
-            columnMenu: { uploadGrade }
+            columnMenu: { uploadGrade },
           }}
         />
       </Paper>

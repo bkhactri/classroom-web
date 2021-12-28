@@ -98,7 +98,7 @@ const Grade = ({ grade, index, saveGrade, deleteGrade, isLoading }) => {
               justifyContent: "center",
             }}
           >
-            <Box>
+            <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
               <TextField
                 variant="filled"
                 label="Name"
@@ -148,7 +148,7 @@ const Grade = ({ grade, index, saveGrade, deleteGrade, isLoading }) => {
               <DeleteIcon />
             </IconButton>
           </Box>
-          <DragHandleIcon sx={{ alignSelf: "center" }} />
+          <DragHandleIcon fontSize="large" sx={{ alignSelf: "center", ml: 1 }} />
         </Box>
       )}
     </Draggable>
