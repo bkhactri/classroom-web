@@ -75,8 +75,7 @@ const CustomColumnMenuComponent = (props) => {
       .then((csvString) => {
         const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
 
-        const gradeStructureName = currentColumn.headerName.split("/")[0].trim();
-        downloadFile(blob, `${gradeStructureName}-grades.csv`);
+        downloadFile(blob, `${currentColumn.headerName}-grades.csv`);
       })
       .catch((err) => {
         console.log(err);
@@ -98,7 +97,7 @@ const CustomColumnMenuComponent = (props) => {
         hidden
       />
       <SortGridMenuItems onClick={hideMenu} column={currentColumn} />
-      {currentColumn.field !== "id" && currentColumn.field !== "fullName" ? (
+      { !["id", "fullName", "total"].includes(currentColumn.field) ? (
         <div>
           <li>
             <Button

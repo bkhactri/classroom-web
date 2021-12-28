@@ -227,7 +227,7 @@ const GradeStructure = (props) => {
 
           <Grid container>
             <Grid item xs={8}>
-              <Typography variant="h5" color="blue">
+              <Typography variant="h5" color="primary">
                 Grade Name
               </Typography>
             </Grid>
