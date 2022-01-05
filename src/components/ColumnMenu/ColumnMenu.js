@@ -97,16 +97,8 @@ const CustomColumnMenuComponent = (props) => {
         hidden
       />
       <SortGridMenuItems onClick={hideMenu} column={currentColumn} />
-      { !["id", "fullName", "total"].includes(currentColumn.field) ? (
+      {!["id", "fullName", "total"].includes(currentColumn.field) ? (
         <div>
-          <li>
-            <Button
-              className={classes.Button}
-              onClick={() => handleColumnFinalized()}
-            >
-              Finalized
-            </Button>
-          </li>
           <li>
             <Button className={classes.Button} onClick={chooseGradeFile}>
               Import Grade
@@ -115,6 +107,14 @@ const CustomColumnMenuComponent = (props) => {
           <li>
             <Button className={classes.Button} onClick={exportColumn}>
               Export Column
+            </Button>
+          </li>
+          <li>
+            <Button
+              className={classes.Button}
+              onClick={() => handleColumnFinalized()}
+            >
+              Finalized
             </Button>
           </li>
         </div>
