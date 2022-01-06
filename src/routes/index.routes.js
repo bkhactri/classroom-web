@@ -14,6 +14,8 @@ import LoginSuccess from "../pages/Login/LoginSuccess";
 import ClassroomPeople from "../pages/ClassroomPeople/ClassroomPeople";
 import GradeStructure from "../pages/GradeStructure/GradeStructure";
 import ClassroomGrades from "../pages/ClassroomGrades/ClassroomGrades";
+import ResetPassword from "../pages/ResetPassword/ResetPassword";
+import ChangePassword from "../pages/ResetPassword/ChangePassword";
 
 const AppRouter = () => {
   const dispatch = useDispatch();
@@ -54,11 +56,15 @@ const AppRouter = () => {
       (accessToken &&
         (window.location.pathname === "/login" ||
           window.location.pathname === "/signup" ||
-          window.location.pathname === "/loginSucess")) ||
+          window.location.pathname === "/loginSucess" ||
+          window.location.pathname === "/reset-password" ||
+          window.location.pathname.includes("change-password"))) ||
       (!isAuthenticated &&
         window.location.pathname !== "/login" &&
         window.location.pathname !== "/signup" &&
-        window.location.pathname !== "/loginSucess")
+        window.location.pathname !== "/loginSucess" &&
+        window.location.pathname !== "/reset-password" &&
+        !window.location.pathname.includes("change-password"))
     ) {
       checkAuth();
     }
@@ -94,6 +100,11 @@ const AppRouter = () => {
       {!isAuthenticated && (
         <>
           <Route path="/login" component={LoginPage}></Route>
+          <Route path="/reset-password" component={ResetPassword}></Route>
+          <Route
+            path="/change-password/:resetToken"
+            component={ChangePassword}
+          ></Route>
           <Route path="/signup" component={RegisterPage}></Route>
           <Route path="/loginSucess" component={LoginSuccess}></Route>
         </>
