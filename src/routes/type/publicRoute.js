@@ -1,15 +1,13 @@
-import React from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
 
-const PublicRoute = ({ isAuthenticated }) =>
-  !isAuthenticated ? (
-    <Outlet />
-  ) : (
-    <Navigate
-      to={{
-        pathname: "/",
-      }}
-    />
-  );
+const PublicRoute = ({ isAuthenticated }) => {
+  const navigate = useNavigate();
+  useEffect(() => {
+    navigate(window.location.pathname);
+  }, [navigate]);
+
+  return !isAuthenticated && <Outlet />;
+};
 
 export default PublicRoute;

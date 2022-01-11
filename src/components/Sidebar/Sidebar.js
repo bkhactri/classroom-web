@@ -17,11 +17,8 @@ const Sidebar = ({ isOpen, toggleDrawerClose }) => {
     >
       <div className={classes.drawerLink}>
         <NavLink
-          exact
+          exact="true"
           to="/"
-          activeStyle={{
-            backgroundColor: "#e3eefc",
-          }}
           style={{ textDecoration: "none" }}
           className={classes.drawerItem}
         >
@@ -32,9 +29,6 @@ const Sidebar = ({ isOpen, toggleDrawerClose }) => {
         </NavLink>
         <NavLink
           to="/to-do"
-          activeStyle={{
-            backgroundColor: "#e3eefc",
-          }}
           style={{ textDecoration: "none" }}
           className={classes.drawerItem}
         >

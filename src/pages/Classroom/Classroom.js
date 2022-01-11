@@ -180,9 +180,6 @@ const Classroom = () => {
                 </div>
                 <NavLink
                   to="/classroom/1/view-all"
-                  activeStyle={{
-                    backgroundColor: "#e3eefc",
-                  }}
                   className={classes.classViewAllWork}
                 >
                   View All
