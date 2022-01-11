@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link, useHistory } from "react-router-dom";
+import React, { useState, Fragment } from "react";
+import { Link } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -11,12 +11,20 @@ import SchoolIcon from "@mui/icons-material/School";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Alert from "@mui/material/Alert";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import Header from "../../components/Header/Header";
 
+import GmailLogo from "../../assets/gmail.png";
+import GMXLogo from "../../assets/gmx.png";
+import IcloudLogo from "../../assets/icloud.png";
+import OutLookLogo from "../../assets/outlook.png";
+import ZohoLogo from "../../assets/zoho.png";
 import axiosAuth from "../../api/auth.axios.js";
 import { signUpFormValidator } from "../../validators/formValidator";
 
 const RegisterPage = () => {
-  const history = useHistory();
+  const [hasSendMail, setHasSendMail] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -34,8 +42,9 @@ const RegisterPage = () => {
           password: data.get("password"),
         });
         if (response) {
+          localStorage.setItem("c_user", response.accepted[0]);
           setIsLoading(false);
-          history.replace("/login");
+          setHasSendMail(true);
         }
       } catch (error) {
         setIsLoading(false);
@@ -47,91 +56,192 @@ const RegisterPage = () => {
   };
 
   return (
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <Box
-        sx={{
-          marginTop: 8,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
-        <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-          <SchoolIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5" sx={{ mb: 2 }}>
-          Sign up
-        </Typography>
-        {error && <Alert severity="error">{error}</Alert>}
-        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <TextField
-                required
-                fullWidth
-                id="Username"
-                label="Username"
-                name="username"
-                autoComplete="username"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="new-password"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                required
-                fullWidth
-                name="confirmPassword"
-                label="Confirm Password"
-                type="password"
-                id="confirm-password"
-                autoComplete="confirm-password"
-              />
-            </Grid>
-          </Grid>
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2, bgcolor: "secondary.main" }}
-            disabled={isLoading}
-          >
-            {!isLoading ? (
-              "Sign Up"
-            ) : (
-              <CircularProgress sx={{ color: "#fff" }} />
-            )}
-          </Button>
-          <Grid container justifyContent="flex-end">
-            <Grid item>
-              <Link to="/login" variant="body2">
-                Already have an account? Sign in
-              </Link>
-            </Grid>
-          </Grid>
+    <Fragment>
+      <Header loading={isLoading} />
+      <Container component="main" maxWidth="sm">
+        <CssBaseline />
+        <Box
+          sx={{
+            marginTop: 8,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+            <SchoolIcon />
+          </Avatar>
+          <Typography component="h1" variant="h5" sx={{ mb: 2 }}>
+            Sign up
+          </Typography>
+          {hasSendMail ? (
+            <Fragment>
+              <Typography
+                component="h1"
+                variant="h5"
+                sx={{ mb: 4, textAlign: "center" }}
+              >
+                We have send a verify mail to your email please check and
+                confirm your email
+              </Typography>
+
+              <List
+                sx={{
+                  width: "100%",
+                  bgcolor: "background.paper",
+                  display: "flex",
+                  flexDirection: "row",
+                  textAlign: "center",
+                  alignItems: "center",
+                }}
+              >
+                <ListItem>
+                  <a href="https://gmail.com" target="_blank" rel="noreferrer">
+                    <img
+                      style={{ width: "80px", height: "80px" }}
+                      src={GmailLogo}
+                      alt=""
+                    />
+                  </a>
+                </ListItem>
+                <ListItem>
+                  <a
+                    href="https://outlook.live.com"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <img
+                      style={{ width: "80px", height: "80px" }}
+                      src={OutLookLogo}
+                      alt=""
+                    />
+                  </a>
+                </ListItem>
+                <ListItem>
+                  <a
+                    href="https://www.gmx.com"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <img
+                      style={{ width: "80px", height: "80px" }}
+                      src={GMXLogo}
+                      alt=""
+                    />
+                  </a>
+                </ListItem>
+                <ListItem>
+                  <a
+                    href="https://www.icloud.com/mail"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <img
+                      style={{ width: "80px", height: "80px" }}
+                      src={IcloudLogo}
+                      alt=""
+                    />
+                  </a>
+                </ListItem>
+                <ListItem>
+                  <a
+                    href="https://mail.zoho.com/"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <img
+                      style={{ width: "80px", height: "80px" }}
+                      src={ZohoLogo}
+                      alt=""
+                    />
+                  </a>
+                </ListItem>
+              </List>
+            </Fragment>
+          ) : (
+            <Fragment>
+              {error && <Alert severity="error">{error}</Alert>}
+              <Box
+                component="form"
+                noValidate
+                onSubmit={handleSubmit}
+                sx={{ mt: 3 }}
+              >
+                <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    <TextField
+                      required
+                      fullWidth
+                      id="Username"
+                      label="Username"
+                      name="username"
+                      autoComplete="username"
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      required
+                      fullWidth
+                      id="email"
+                      label="Email Address"
+                      name="email"
+                      autoComplete="email"
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      required
+                      fullWidth
+                      name="password"
+                      label="Password"
+                      type="password"
+                      id="password"
+                      autoComplete="new-password"
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      required
+                      fullWidth
+                      name="confirmPassword"
+                      label="Confirm Password"
+                      type="password"
+                      id="confirm-password"
+                      autoComplete="confirm-password"
+                    />
+                  </Grid>
+                </Grid>
+                <Grid container sx={{ mt: 2 }}>
+                  <Grid item>
+                    <Link to="/login" variant="body2">
+                      Already have an account? Sign in
+                    </Link>
+                  </Grid>
+                </Grid>
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  sx={{
+                    mt: 3,
+                    mb: 2,
+                    bgcolor: "secondary.main",
+                    height: "50px",
+                  }}
+                  disabled={isLoading}
+                >
+                  {!isLoading ? (
+                    "Sign Up"
+                  ) : (
+                    <CircularProgress sx={{ color: "#fff" }} />
+                  )}
+                </Button>
+              </Box>
+            </Fragment>
+          )}
         </Box>
-      </Box>
-    </Container>
+      </Container>
+    </Fragment>
   );
 };
 

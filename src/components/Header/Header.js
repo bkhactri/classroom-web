@@ -1,6 +1,6 @@
 import { React, useState } from "react";
-import { useDispatch } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -19,6 +19,7 @@ import classes from "./Header.module.css";
 import SchoolIcon from "@mui/icons-material/School";
 import { List, ListItem, ListItemText } from "@mui/material";
 import { authActions } from "../../stores/authenticationStore";
+import { userInfoActions } from "../../stores/userInfoStore";
 import { makeStyles } from "@mui/styles";
 import axiosAuth from "../../api/auth.axios";
 
@@ -36,8 +37,9 @@ const useStyles = makeStyles({
 });
 
 const Header = ({ loading, classroom = 0, classID = "" }) => {
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const styles = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isOpenUserMenu, setOpenUserMenu] = useState(null);
   const [isOpenUserTool, setOpenUserTool] = useState(null);
@@ -74,18 +76,19 @@ const Header = ({ loading, classroom = 0, classID = "" }) => {
   };
 
   const handleSignOut = async () => {
-    dispatch(authActions.clearUser());
+    dispatch(authActions.loggedOut());
+    dispatch(userInfoActions.clearUser());
     localStorage.removeItem("accessToken");
-    history.replace("/login");
+    navigate("/login");
     await axiosAuth.post("/logout");
   };
 
   const handleNavigateAccountPage = () => {
-    history.replace("/account");
+    navigate("/account");
   };
   const handleGoToClassroomOption = (location) => {
     return () => {
-      history.replace(`/classroom/${classID}/${location}`);
+      navigate(`/classroom/${classID}/${location}`);
     };
   };
 
@@ -118,16 +121,19 @@ const Header = ({ loading, classroom = 0, classID = "" }) => {
                 alignItems: "center",
               }}
             >
-              <IconButton
-                size="large"
-                edge="start"
-                color="inherit"
-                aria-label="menu"
-                sx={{ mr: 1 }}
-                onClick={toggleDrawer("left", true)}
-              >
-                <MenuIcon />
-              </IconButton>
+              {isAuthenticated && (
+                <IconButton
+                  size="large"
+                  edge="start"
+                  color="inherit"
+                  aria-label="menu"
+                  sx={{ mr: 1 }}
+                  onClick={toggleDrawer("left", true)}
+                >
+                  <MenuIcon />
+                </IconButton>
+              )}
+
               <div className={classes.logo}>
                 <SchoolIcon />
               </div>
@@ -201,27 +207,29 @@ const Header = ({ loading, classroom = 0, classID = "" }) => {
                   </Menu>
                 </div>
               )}
-              <div className={classes.userSettings}>
-                <IconButton
-                  size="large"
-                  aria-controls="menu-appbar"
-                  aria-haspopup="true"
-                  onClick={handleUserMenu}
-                >
-                  <img className={classes.avatar} src={UserLogo} alt="logo" />
-                </IconButton>
-                <Menu
-                  id="menu-appbar"
-                  anchorEl={isOpenUserMenu}
-                  open={Boolean(isOpenUserMenu)}
-                  onClose={handleCloseUserMenu}
-                >
-                  <MenuItem onClick={handleNavigateAccountPage}>
-                    My account
-                  </MenuItem>
-                  <MenuItem onClick={handleSignOut}>Sign out</MenuItem>
-                </Menu>
-              </div>
+              {isAuthenticated && (
+                <div className={classes.userSettings}>
+                  <IconButton
+                    size="large"
+                    aria-controls="menu-appbar"
+                    aria-haspopup="true"
+                    onClick={handleUserMenu}
+                  >
+                    <img className={classes.avatar} src={UserLogo} alt="logo" />
+                  </IconButton>
+                  <Menu
+                    id="menu-appbar"
+                    anchorEl={isOpenUserMenu}
+                    open={Boolean(isOpenUserMenu)}
+                    onClose={handleCloseUserMenu}
+                  >
+                    <MenuItem onClick={handleNavigateAccountPage}>
+                      My account
+                    </MenuItem>
+                    <MenuItem onClick={handleSignOut}>Sign out</MenuItem>
+                  </Menu>
+                </div>
+              )}
             </div>
           </Toolbar>
 

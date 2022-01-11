@@ -1,5 +1,5 @@
 import { React, useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Header from "../../components/Header/Header";
 import Container from "@mui/material/Container";
@@ -11,13 +11,13 @@ import axiosClassroom from "../../api/classroom.axios";
 
 const Home = () => {
   const accessToken = useSelector((state) => state.auth.token);
-  const history = useHistory();
+  const navigate = useNavigate();
   const [classrooms, setClassrooms] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (!accessToken) {
-      history.replace("/login");
+      navigate("/login");
     }
 
     const fetchClassrooms = async () => {
@@ -35,7 +35,7 @@ const Home = () => {
     };
 
     fetchClassrooms();
-  }, [accessToken, history]);
+  }, [accessToken, navigate]);
 
   return (
     <>

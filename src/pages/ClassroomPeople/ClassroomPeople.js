@@ -1,5 +1,5 @@
 import { React, useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import Header from "../../components/Header/Header";
@@ -14,7 +14,7 @@ import { Typography, List, Divider, ListItem } from "@mui/material";
 import InviteEmailModal from "../../components/Modal/InviteEmailModal";
 
 const ClassroomPeople = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const accessToken = useSelector((state) => state.auth.token);
   const { classroomId } = useParams();
   const [participants, setParticipants] = useState([]);
@@ -59,13 +59,13 @@ const ClassroomPeople = () => {
         setIsLoading(false);
       } catch (error) {
         setIsLoading(false);
-        history.replace("/");
+        navigate("/");
       }
     };
 
     fetchClassroom();
     fetchParticipants();
-  }, [classroomId, accessToken, history]);
+  }, [classroomId, accessToken, navigate]);
 
   const handleCloseSnackBar = () => setSnackBarMessage("");
 
