@@ -1,5 +1,5 @@
 import { Fragment, React, useEffect, useState, useCallback } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Header from "../../components/Header/Header";
@@ -23,7 +23,7 @@ import axiosGrade from "../../api/grade.axios";
 
 const GradeStructure = (props) => {
   const accessToken = useSelector((state) => state.auth.token);
-  const history = useHistory();
+  const navigate = useNavigate();
   const { classroomId } = useParams();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -217,7 +217,7 @@ const GradeStructure = (props) => {
             title="Back to classroom"
             aria-label="back"
             sx={{ mb: 5 }}
-            onClick={() => history.goBack()}
+            onClick={() => navigate(-1)}
           >
             <ArrowBackIcon />
           </Fab>

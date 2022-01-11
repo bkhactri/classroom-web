@@ -1,5 +1,5 @@
 import { React, useEffect, useState } from "react";
-import { Link, useParams, useHistory } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Header from "../../components/Header/Header";
 import Card from "@mui/material/Card";
@@ -13,7 +13,7 @@ import Swal from "sweetalert2";
 import axiosClassroom from "../../api/classroom.axios";
 
 const JoinClassroom = (props) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const accessToken = useSelector((state) => state.auth.token);
   const { classroomId, classCode } = useParams();
   const [joinInfo, setJoinInfo] = useState({});
@@ -31,7 +31,7 @@ const JoinClassroom = (props) => {
         setIsLoading(false);
       } catch (error) {
         setIsLoading(false);
-        history.replace("/");
+        navigate("/");
         Swal.fire({
           title: "Error!",
           text: error.response.data,
@@ -41,7 +41,7 @@ const JoinClassroom = (props) => {
     };
 
     fetchJoinInfo();
-  }, [history, classroomId, classCode, accessToken]);
+  }, [navigate, classroomId, classCode, accessToken]);
 
   const joinClass = async () => {
     setIsLoading(true);
@@ -52,7 +52,7 @@ const JoinClassroom = (props) => {
       });
 
       setIsLoading(false);
-      history.push(`/classroom/${joinInfo.classroomId}`);
+      navigate(`/classroom/${joinInfo.classroomId}`);
     } catch (error) {
       setIsLoading(false);
       Swal.fire({

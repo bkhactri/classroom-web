@@ -1,6 +1,6 @@
 import { React, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { NavLink, useParams } from "react-router-dom";
 import Header from "../../components/Header/Header";
 import Container from "@mui/material/Container";
@@ -20,7 +20,7 @@ import axiosClassroom from "../../api/classroom.axios";
 import axiosGrade from "../../api/grade.axios";
 
 const Classroom = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const accessToken = useSelector((state) => state.auth.token);
   const { classroomId } = useParams();
   const [classroom, setClassroom] = useState({});
@@ -48,12 +48,12 @@ const Classroom = () => {
         setIsLoading(false);
       } catch (error) {
         setIsLoading(false);
-        history.replace("/");
+        navigate("/");
       }
     };
 
     fetchClassroom();
-  }, [classroomId, accessToken, history]);
+  }, [classroomId, accessToken, navigate]);
 
   const handleOpenInviteMenu = (e) => setInviteMenuAnchorEl(e.currentTarget);
   const handleCloseInviteMenu = () => setInviteMenuAnchorEl(null);

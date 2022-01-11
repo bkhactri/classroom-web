@@ -1,5 +1,5 @@
 import { React, useState, useRef } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
@@ -12,7 +12,7 @@ import classes from "./Modal.module.css";
 import Container from "@mui/material/Container";
 
 const JoinClassModal = ({ isOpen, handleClose }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [isValidId, setValidId] = useState(false);
   const classCodeEl = useRef(null);
 
@@ -22,7 +22,7 @@ const JoinClassModal = ({ isOpen, handleClose }) => {
 
   const handleJoinClass = async () => {
     const classCode = classCodeEl.current.value;
-    history.push(`/join/c/${classCode}`);
+    navigate(`/join/c/${classCode}`);
   };
 
   return (

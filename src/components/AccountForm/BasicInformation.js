@@ -9,11 +9,14 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
 
 import axiosUser from "../../api/user.axios";
+import axiosAuth from "../../api/auth.axios";
 
 const BasicInformation = ({ accountInfo }) => {
   const accessToken = useSelector((state) => state.auth.token);
+  const isUserActive = useSelector((state) => state.userInfo.isActive);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [hasSendMail, setHasSendMail] = useState(false);
   const [isFieldChange, setIsFieldChange] = useState(false);
   const [currentInfo, setCurrentInfo] = useState({
     displayName: "",
@@ -29,6 +32,25 @@ const BasicInformation = ({ accountInfo }) => {
     });
   }, [accountInfo]);
 
+  const handleClickSendVeryEmail = async () => {
+    try {
+      setIsLoading(true);
+
+      const response = await axiosAuth.post("/sendVerifyEmail", {
+        email: currentInfo.email,
+      });
+
+      if (response) {
+        localStorage.setItem("c_user", response.accepted[0]);
+        setIsLoading(false);
+        setHasSendMail(true);
+      }
+    } catch (error) {
+      setIsLoading(false);
+      throw new Error(error);
+    }
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -41,8 +63,6 @@ const BasicInformation = ({ accountInfo }) => {
       displayName: displayName !== accountInfo.displayName ? displayName : null,
       username: username !== accountInfo.username ? username : null,
     };
-
-    console.log(newUserData);
 
     setIsLoading(true);
 
@@ -137,6 +157,42 @@ const BasicInformation = ({ accountInfo }) => {
         value={currentInfo.email || ""}
         autoComplete="email"
       />
+      {!isUserActive && (
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            mt: 1,
+          }}
+        >
+          {!hasSendMail ? (
+            <>
+              <Typography sx={{ fontSize: "15px", color: "red", mr: 1 }}>
+                Your email is not verified
+              </Typography>
+              <Typography
+                sx={{
+                  color: "green",
+                  fontSize: "15px",
+                  cursor: "pointer",
+                  textTransform: "capitalize",
+                  fontWeight: "bold",
+                  "&:hover": {
+                    textDecoration: "underline",
+                  },
+                }}
+                onClick={handleClickSendVeryEmail}
+              >
+                Send me verify email
+              </Typography>
+            </>
+          ) : (
+            <Typography sx={{ fontSize: "15px", color: "red", mr: 1 }}>
+              We have send a verify mail to your email, please check
+            </Typography>
+          )}
+        </Box>
+      )}
       <Box sx={{ mt: 2 }}>
         <Button
           type="submit"
