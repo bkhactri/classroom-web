@@ -7,6 +7,7 @@ import AccountPage from "../../pages/Account/Account";
 import ClassroomPeople from "../../pages/ClassroomPeople/ClassroomPeople";
 import GradeStructure from "../../pages/GradeStructure/GradeStructure";
 import ClassroomGrades from "../../pages/ClassroomGrades/ClassroomGrades";
+import MyGrades from "../../pages/MyGrades/MyGrades";
 
 const privateRoutes = [
   {
@@ -37,6 +38,11 @@ const privateRoutes = [
   {
     path: "classroom/:classroomId/grades",
     component: () => <ClassroomGrades />,
+    exact: true,
+  },
+  {
+    path: "classroom/:classroomId/myGrades",
+    component: () => <MyGrades />,
     exact: true,
   },
   {

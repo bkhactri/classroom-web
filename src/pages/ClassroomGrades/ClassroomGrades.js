@@ -1,6 +1,6 @@
 import { React, useState, useEffect, Fragment, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import Header from "../../components/Header/Header";
 import Paper from "@mui/material/Paper";
 import {
@@ -10,11 +10,13 @@ import {
 } from "@mui/x-data-grid-pro";
 import Button from "@mui/material/Button";
 import Snackbar from "@mui/material/Snackbar";
-// import axiosClassroom from "../../api/classroom.axios";
+import axiosClassroom from "../../api/classroom.axios";
 import axiosGrade from "../../api/grade.axios";
 import axiosStudentIdentifcation from "../../api/student-identification.axios";
 import { downloadFile } from "../../utils/index";
 import CustomColumnMenuComponent from "../../components/ColumnMenu/ColumnMenu";
+
+import { userInfoActions } from "../../stores/userInfoStore";
 
 const constantColumns = [
   { field: "id", headerName: "ID", width: 150 },
@@ -26,6 +28,7 @@ const constantColumns = [
 ];
 
 const ClassroomGrades = () => {
+  const dispatch = useDispatch();
   const accessToken = useSelector((state) => state.auth.token);
   const [gradeRows, setGradeRows] = useState([]);
   const [gradeColumns, setGradeColumns] = useState([]);
@@ -39,6 +42,13 @@ const ClassroomGrades = () => {
     const fetchStudentsGrades = async () => {
       setIsLoading(true);
       try {
+        const result = await axiosClassroom.get(`/${classroomId}`, {
+          headers: { Authorization: "Bearer " + accessToken },
+        });
+        dispatch(
+          userInfoActions.setRole({ role: result.data.participants[0].role })
+        );
+
         const students = await axiosStudentIdentifcation.get(
           `/getByClass/${classroomId}`,
           {
@@ -122,7 +132,7 @@ const ClassroomGrades = () => {
     };
 
     fetchStudentsGrades();
-  }, [classroomId, accessToken]);
+  }, [classroomId, accessToken, dispatch]);
 
   const mapGradeToStudent = (
     studentId,
@@ -194,7 +204,7 @@ const ClassroomGrades = () => {
             return {
               id: student[0],
               fullName: student[1],
-            }
+            };
           });
 
         setGradeRows(

@@ -17,11 +17,14 @@ import UserLogo from "../../assets/images/user-logo.png";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import classes from "./Header.module.css";
 import SchoolIcon from "@mui/icons-material/School";
-import { List, ListItem, ListItemText } from "@mui/material";
+import { List, ListItemText } from "@mui/material";
+import ListItemButton from "@mui/material/ListItemButton";
 import { authActions } from "../../stores/authenticationStore";
 import { userInfoActions } from "../../stores/userInfoStore";
 import { makeStyles } from "@mui/styles";
 import axiosAuth from "../../api/auth.axios";
+
+import { ROLE } from "../../utils/constants";
 
 const useStyles = makeStyles({
   selected: {
@@ -38,6 +41,7 @@ const useStyles = makeStyles({
 
 const Header = ({ loading, classroom = 0, classID = "" }) => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const role = useSelector((state) => state.userInfo.role);
   const styles = useStyles();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -147,30 +151,38 @@ const Header = ({ loading, classroom = 0, classID = "" }) => {
                 sx={{ display: "flex", flexGrow: 0, flexDirection: "row" }}
                 className={classes.ListDesktop}
               >
-                <ListItem
-                  button
+                <ListItemButton
                   selected={classroom === 1}
                   classes={{ selected: styles.selected }}
                   onClick={handleGoToClassroomOption("")}
                 >
                   <ListItemText primary="Stream" />
-                </ListItem>
-                <ListItem
-                  button
+                </ListItemButton>
+                <ListItemButton
                   selected={classroom === 2}
                   classes={{ selected: styles.selected }}
                   onClick={handleGoToClassroomOption("people")}
                 >
                   <ListItemText primary="People" />
-                </ListItem>
-                <ListItem
-                  button
-                  selected={classroom === 3}
-                  classes={{ selected: styles.selected }}
-                  onClick={handleGoToClassroomOption("grades")}
-                >
-                  <ListItemText primary="Grades" />
-                </ListItem>
+                </ListItemButton>
+                {[ROLE.OWNER, ROLE.TEACHER].includes(role) && (
+                  <ListItemButton
+                    selected={classroom === 3}
+                    classes={{ selected: styles.selected }}
+                    onClick={handleGoToClassroomOption("grades")}
+                  >
+                    <ListItemText primary="Grades" />
+                  </ListItemButton>
+                )}
+                {role === ROLE.STUDENT && (
+                  <ListItemButton
+                    selected={classroom === 4}
+                    classes={{ selected: styles.selected }}
+                    onClick={handleGoToClassroomOption("myGrades")}
+                  >
+                    <ListItemText primary="My Grades" />
+                  </ListItemButton>
+                )}
               </List>
             ) : null}
 
@@ -241,30 +253,38 @@ const Header = ({ loading, classroom = 0, classID = "" }) => {
                   flexDirection: "row",
                 }}
               >
-                <ListItem
-                  button
+                <ListItemButton
                   selected={classroom === 1}
                   classes={{ selected: styles.selected }}
                   onClick={handleGoToClassroomOption("")}
                 >
                   <ListItemText primary="Stream" />
-                </ListItem>
-                <ListItem
-                  button
+                </ListItemButton>
+                <ListItemButton
                   selected={classroom === 2}
                   classes={{ selected: styles.selected }}
                   onClick={handleGoToClassroomOption("people")}
                 >
                   <ListItemText primary="People" />
-                </ListItem>
-                <ListItem
-                  button
-                  selected={classroom === 3}
-                  classes={{ selected: styles.selected }}
-                  onClick={handleGoToClassroomOption("grades")}
-                >
-                  <ListItemText primary="Grades" />
-                </ListItem>
+                </ListItemButton>
+                {[ROLE.OWNER, ROLE.TEACHER].includes(role) && (
+                  <ListItemButton
+                    selected={classroom === 3}
+                    classes={{ selected: styles.selected }}
+                    onClick={handleGoToClassroomOption("grades")}
+                  >
+                    <ListItemText primary="Grades" />
+                  </ListItemButton>
+                )}
+                {role === ROLE.STUDENT && (
+                  <ListItemButton
+                    selected={classroom === 4}
+                    classes={{ selected: styles.selected }}
+                    onClick={handleGoToClassroomOption("myGrades")}
+                  >
+                    <ListItemText primary="My Grades" />
+                  </ListItemButton>
+                )}
               </List>
             ) : null}
           </Toolbar>

@@ -1,5 +1,5 @@
 import { React, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { NavLink, useParams } from "react-router-dom";
 import Header from "../../components/Header/Header";
@@ -19,8 +19,13 @@ import classes from "./Classroom.module.css";
 import axiosClassroom from "../../api/classroom.axios";
 import axiosGrade from "../../api/grade.axios";
 
+import { userInfoActions } from "../../stores/userInfoStore";
+
+import { ROLE } from "../../utils/constants";
+
 const Classroom = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const accessToken = useSelector((state) => state.auth.token);
   const { classroomId } = useParams();
   const [classroom, setClassroom] = useState({});
@@ -44,6 +49,10 @@ const Classroom = () => {
 
         setGradesStructure(grades);
         setClassroom(classroom.data);
+
+        dispatch(
+          userInfoActions.setRole({ role: classroom.data.participants[0].role })
+        );
         setRole(classroom.data.participants[0].role);
         setIsLoading(false);
       } catch (error) {
@@ -53,7 +62,7 @@ const Classroom = () => {
     };
 
     fetchClassroom();
-  }, [classroomId, accessToken, navigate]);
+  }, [classroomId, accessToken, navigate, dispatch]);
 
   const handleOpenInviteMenu = (e) => setInviteMenuAnchorEl(e.currentTarget);
   const handleCloseInviteMenu = () => setInviteMenuAnchorEl(null);
@@ -138,7 +147,7 @@ const Classroom = () => {
                 </div>
               </div>
 
-              {role !== "STUDENT" && (
+              {[ROLE.OWNER, ROLE.TEACHER].includes(role) && (
                 <div className={classes.classLeft}>
                   <div className={classes.classLeftTitle}>
                     <div style={{ height: "100%" }}>Grade Structure</div>
