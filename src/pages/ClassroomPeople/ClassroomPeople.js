@@ -1,6 +1,6 @@
 import { React, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 import Header from "../../components/Header/Header";
 import Container from "@mui/material/Container";
@@ -13,7 +13,12 @@ import axiosClassroom from "../../api/classroom.axios";
 import { Typography, List, Divider, ListItem } from "@mui/material";
 import InviteEmailModal from "../../components/Modal/InviteEmailModal";
 
+import { userInfoActions } from "../../stores/userInfoStore";
+
+import { ROLE } from "../../utils/constants";
+
 const ClassroomPeople = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const accessToken = useSelector((state) => state.auth.token);
   const { classroomId } = useParams();
@@ -56,6 +61,9 @@ const ClassroomPeople = () => {
         });
         setClassroom(result.data);
         setRole(result.data.participants[0].role);
+        dispatch(
+          userInfoActions.setRole({ role: result.data.participants[0].role })
+        );
         setIsLoading(false);
       } catch (error) {
         setIsLoading(false);
@@ -65,13 +73,13 @@ const ClassroomPeople = () => {
 
     fetchClassroom();
     fetchParticipants();
-  }, [classroomId, accessToken, navigate]);
+  }, [classroomId, accessToken, navigate, dispatch]);
 
   const handleCloseSnackBar = () => setSnackBarMessage("");
 
   const getNumStudent = () => {
     return participants.filter(
-      (participant) => participant["role"] === "STUDENT"
+      (participant) => participant["role"] === ROLE.STUDENT
     ).length;
   };
 
@@ -127,7 +135,7 @@ const ClassroomPeople = () => {
             <Typography variant="h4" className={classes.bigfont}>
               Teachers
             </Typography>
-            {(role === "OWNER" || role === "TEACHER") && (
+            {[ROLE.OWNER, ROLE.TEACHER].includes(role) && (
               <IconButton onClick={handleOpenTeacherInviteModal}>
                 <PersonAddAltIcon sx={{ color: "#1967d2" }} />
               </IconButton>

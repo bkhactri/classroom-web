@@ -1,0 +1,10 @@
+export const ROLE = {
+  OWNER: "OWNER",
+  TEACHER: "TEACHER",
+  STUDENT: "STUDENT"
+};
+
+export const GRADE_STATUS = {
+  DRAFT: "DRAFT",
+  FINALIZED: "FINALIZED"
+}
