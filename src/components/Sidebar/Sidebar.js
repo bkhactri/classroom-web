@@ -14,6 +14,7 @@ const Sidebar = ({ isOpen, toggleDrawerClose }) => {
       onClose={toggleDrawerClose("left", false)}
       transitionDuration={{ enter: 250, exit: 200 }}
       classes={{ paper: classes.drawer }}
+      style={{zIndex: 1401}}
     >
       <div className={classes.drawerLink}>
         <NavLink
