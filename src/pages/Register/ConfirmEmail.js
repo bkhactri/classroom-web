@@ -25,6 +25,12 @@ const ConfirmEmail = () => {
   const [isLoading, setIsLoading] = useState(false);
   let timer;
 
+  const currentUrl = window.location.pathname;
+
+  useEffect(() => {
+    localStorage.setItem("currentUrl", currentUrl);
+  }, [currentUrl]);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -40,6 +46,7 @@ const ConfirmEmail = () => {
         userId: response.id,
         email: response.email,
         isActive: response.isActive,
+        avatarUrl: response.avatarUrl,
       };
       localStorage.setItem("accessToken", response.accessToken);
       setIsLoading(false);

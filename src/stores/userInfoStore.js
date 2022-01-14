@@ -4,7 +4,8 @@ const initialState = {
   userId: false,
   email: null,
   isActive: false,
-  role: null
+  role: null,
+  avatarUrl: null,
 };
 
 const userInfoStore = createSlice({
@@ -15,6 +16,7 @@ const userInfoStore = createSlice({
       state.userId = action.payload.userId;
       state.email = action.payload.email;
       state.isActive = action.payload.isActive;
+      state.avatarUrl = action.payload.avatarUrl;
     },
     setRole(state, action) {
       state.role = action.payload.role;
@@ -27,6 +29,7 @@ const userInfoStore = createSlice({
       state.email = null;
       state.isActive = false;
       state.role = null;
+      state.avatarUrl = null;
     },
   },
 });

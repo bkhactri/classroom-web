@@ -1,29 +1,31 @@
-import React, {useState} from 'react'
-import {Link} from 'react-router-dom'
-import MenuItem from '@mui/material/MenuItem'
-import IconButton from '@mui/material/IconButton'
-import Menu from '@mui/material/Menu'
-import Tooltip from '@mui/material/Tooltip'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
-import AssignmentIndIcon from '@mui/icons-material/AssignmentInd'
-import UserLogo from '../../assets/images/user-logo.png'
-import classes from './ClassBlock.module.css'
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import MenuItem from "@mui/material/MenuItem";
+import IconButton from "@mui/material/IconButton";
+import Menu from "@mui/material/Menu";
+import Tooltip from "@mui/material/Tooltip";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
+import classes from "./ClassBlock.module.css";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
-const ClassBlock = ({data}) => {
-  const [anchorEl, setAnchorEl] = useState(null)
+const ClassBlock = ({ data }) => {
+  const avatarUrl = useSelector((state) => state.userInfo.avatarUrl);
+  const [anchorEl, setAnchorEl] = useState(null);
 
   const handleMenu = (event) => {
-    setAnchorEl(event.currentTarget)
-  }
+    setAnchorEl(event.currentTarget);
+  };
 
   const handleClose = () => {
-    setAnchorEl(null)
-  }
+    setAnchorEl(null);
+  };
 
   return (
     <div className={classes.item}>
       <div className={classes.userAvatar}>
-        <img src={UserLogo} alt="logo" />
+        <LazyLoadImage alt={"User Logo"} src={avatarUrl} />
       </div>
       <Link to={`/classroom/${data.id}`}>
         <div className={classes.itemContent}>
@@ -52,8 +54,8 @@ const ClassBlock = ({data}) => {
           id="class-function"
           anchorEl={anchorEl}
           transformOrigin={{
-            vertical: 'top',
-            horizontal: 'right',
+            vertical: "top",
+            horizontal: "right",
           }}
           keepMounted
           open={Boolean(anchorEl)}
@@ -65,13 +67,13 @@ const ClassBlock = ({data}) => {
       </div>
       <div className={classes.itemLink}>
         <Tooltip title="Open your work for 18CTT">
-          <IconButton sx={{width: '60px', height: '60px'}}>
+          <IconButton sx={{ width: "60px", height: "60px" }}>
             <AssignmentIndIcon />
           </IconButton>
         </Tooltip>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ClassBlock
+export default ClassBlock;

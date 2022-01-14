@@ -8,6 +8,7 @@ import ClassroomPeople from "../../pages/ClassroomPeople/ClassroomPeople";
 import GradeStructure from "../../pages/GradeStructure/GradeStructure";
 import ClassroomGrades from "../../pages/ClassroomGrades/ClassroomGrades";
 import MyGrades from "../../pages/MyGrades/MyGrades";
+import UserDetail from "../../pages/UserDetail/UserDetail";
 
 const privateRoutes = [
   {
@@ -49,6 +50,11 @@ const privateRoutes = [
     path: "grade-structure/:classroomId",
     component: () => <GradeStructure />,
     exact: false,
+  },
+  {
+    path: "user/:userId",
+    component: () => <UserDetail />,
+    exact: true,
   },
 ];
 

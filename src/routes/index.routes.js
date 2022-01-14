@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Routes, Route } from "react-router-dom";
 
@@ -14,13 +14,20 @@ import PublicRoute from "./type/publicRoute";
 import publicRoutes from "./routes/publicRoutes";
 import privateRoutes from "./routes/privateRoutes";
 
+import Loading from "../components/Loading/Loading";
+
 const AppRouter = () => {
+  const [isLoading, setIsLoading] = useState(false);
+
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const accessToken = localStorage.getItem("accessToken");
 
+  let timer;
+
   const refresh = async () => {
     try {
+      setIsLoading(true);
       const response = await axiosAuth.get("/refresh/getUserInfo", {
         headers: { Authorization: "Bearer " + accessToken },
       });
@@ -29,11 +36,20 @@ const AppRouter = () => {
           userId: response.id,
           email: response.email,
           isActive: response.isActive,
+          avatarUrl: response.avatarUrl,
         };
-        dispatch(authActions.loggedIn({ accessToken: accessToken }));
-        dispatch(userInfoActions.setUser(user));
+
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 1000);
+
+        timer = setTimeout(() => {
+          dispatch(authActions.loggedIn({ accessToken: accessToken }));
+          dispatch(userInfoActions.setUser(user));
+        }, 50);
       }
     } catch (error) {
+      setIsLoading(false);
       throw new Error(error);
     }
   };
@@ -42,8 +58,12 @@ const AppRouter = () => {
     if (accessToken) {
       refresh();
     }
+
+    return () => {
+      clearTimeout(timer);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [timer]);
 
   return (
     <Routes>
@@ -57,7 +77,7 @@ const AppRouter = () => {
             path={`/${path}`}
             key={path}
             exact={exact}
-            element={<Component />}
+            element={isLoading ? <Loading /> : <Component />}
           />
         </Route>
       ))}
@@ -72,7 +92,7 @@ const AppRouter = () => {
             path={`/${path}`}
             key={path}
             exact={exact}
-            element={<Component />}
+            element={isLoading ? <Loading /> : <Component />}
           />
         </Route>
       ))}
