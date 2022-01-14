@@ -1,31 +1,23 @@
 import * as React from 'react';
-import PropTypes from 'prop-types';
-import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
-import CssBaseline from '@mui/material/CssBaseline';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
-import IconButton from '@mui/material/IconButton';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
+import { useNavigate } from "react-router-dom";
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import MailIcon from '@mui/icons-material/Mail';
-import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
-import Typography from '@mui/material/Typography';
-import Header from "../../components/Header/Header";
-import AdminAccounts from "./AdminAccounts"
-import AdminUsers from "./AdminUsers"
-import { Outlet, Route, Routes } from 'react-router';
+import ListAltIcon from '@mui/icons-material/ListAlt';
+import { Outlet } from 'react-router';
 
 
 const drawerWidth = 240;
 
 function ResponsiveDrawer(props) {
+  const navigate = useNavigate();
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
@@ -36,13 +28,24 @@ function ResponsiveDrawer(props) {
   const adminLink = [
     {
       text: "Users",
-      icon: <AdminPanelSettingsIcon/>
+      icon: <AdminPanelSettingsIcon/>,
+      link: "users"
     },
     {
       text: "Admins",
-      icon: <ManageAccountsIcon/>
+      icon: <ManageAccountsIcon/>,
+      link: "adminAccounts"
+    },
+    {
+      text: "Classes",
+      icon: <ListAltIcon/>,
+      link: "adminClasses"
     }
   ];
+
+  const handleNavigate = (link) => {
+    navigate(`/admin/${link}`);
+  }
 
   const drawer = (
     <div>
@@ -50,10 +53,11 @@ function ResponsiveDrawer(props) {
       <Divider />
       <List>
         {adminLink.map((item, index) => {
-          const {text, icon} = item;
+          const {text, icon, link} = item;
 
           return (
-            <ListItem button key={text}>
+            
+            <ListItem button key={text} onClick={() => handleNavigate(link)}>
               <ListItemIcon>
                 {icon}
               </ListItemIcon>

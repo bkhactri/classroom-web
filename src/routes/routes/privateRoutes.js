@@ -8,7 +8,7 @@ import ClassroomPeople from "../../pages/ClassroomPeople/ClassroomPeople";
 import GradeStructure from "../../pages/GradeStructure/GradeStructure";
 import ClassroomGrades from "../../pages/ClassroomGrades/ClassroomGrades";
 import Admin from "../../pages/Admin/Admin";
-
+import UserDetail from "../../pages/Admin/DetailPage/UserDetail";
 
 const privateRoutes = [
   {
@@ -49,6 +49,11 @@ const privateRoutes = [
   {
     path: "admin/*",
     component: () => <Admin />,
+    exact: false,
+  },
+  {
+    path: "userDetail/:userID",
+    component: () => <UserDetail />,
     exact: false,
   },
 ];

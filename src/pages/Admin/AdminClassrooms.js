@@ -15,24 +15,20 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import Checkbox from '@mui/material/Checkbox';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { visuallyHidden } from '@mui/utils';
-import axiosUser from '../../api/user.axios';
 import { useNavigate } from 'react-router';
 import moment from 'moment';
-import BlockIcon from '@mui/icons-material/Block';
-import LockOpenIcon from '@mui/icons-material/LockOpen';
+import axiosClassroom from '../../api/classroom.axios';
 
-function createData(name, email, username, createAt, status) {
+function createData(name, author, subject, createAt, room) {
   return {
     name,
-    email,
-    username,
+    author,
+    subject,
     createAt,
-    status,
+    room,
   };
 }
 
@@ -74,16 +70,16 @@ const headCells = [
     label: 'Name',
   },
   {
-    id: 'email',
+    id: 'author',
     numeric: false,
     disablePadding: false,
-    label: 'Email',
+    label: 'Author',
   },
   {
-    id: 'username',
+    id: 'subject',
     numeric: false,
     disablePadding: false,
-    label: 'Username',
+    label: 'Subject',
   },
   {
     id: 'createdAt',
@@ -92,10 +88,10 @@ const headCells = [
     label: 'Created At',
   },
   {
-    id: 'status',
+    id: 'room',
     numeric: false,
     disablePadding: false,
-    label: 'Status',
+    label: 'Room',
   },
 ];
 
@@ -116,7 +112,7 @@ function EnhancedTableHead(props) {
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
             inputProps={{
-              'aria-label': 'select all users',
+              'aria-label': 'select all classes',
             }}
           />
         </TableCell>
@@ -185,13 +181,13 @@ const EnhancedTableToolbar = (props) => {
           id="tableTitle"
           component="div"
         >
-          Admin Accounts
+          User
         </Typography>
       )}
 
       {numSelected > 0 ? (
         <Box display="inline-flex">
-          <Tooltip title="Unban">
+          {/* <Tooltip title="Unban">
             <IconButton>
               <LockOpenIcon />
             </IconButton>
@@ -201,7 +197,7 @@ const EnhancedTableToolbar = (props) => {
             <IconButton>
               <BlockIcon />
             </IconButton>
-          </Tooltip>
+          </Tooltip> */}
 
         </Box>
         
@@ -216,7 +212,7 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-export default function AdminAccounts() {
+export default function AdminClassrooms() {
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState('calories');
   const accessToken = useSelector((state) => state.auth.token);
@@ -225,22 +221,22 @@ export default function AdminAccounts() {
   const [dense, setDense] = useState(false);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const navigate = useNavigate();
-  const [users, setUsers] = useState([]);
+  const [classrooms, setClassrooms] = useState([]);
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchClassrooms = async () => {
       try {
-        const result = await axiosUser.get(`/getAllAdmins`, {
+        const result = await axiosClassroom.get(`/allClassrooms`, {
           headers: { Authorization: "Bearer " + accessToken },
         });
-        setUsers(result);
-        console.log('users', result);
+        setClassrooms(result.data);
+        console.log('classes', result.data);
       } catch (error) {
         navigate("/");
       }
     };
 
-    fetchUsers();
+    fetchClassrooms();
     
   }, [accessToken, navigate])
 
@@ -259,24 +255,20 @@ export default function AdminAccounts() {
     setSelected([]);
   };
 
-  const calculateUsers = (users) => {
-    let userRows = [];
-    users.forEach(user => {
-      let status = 'Active';
-      if (!user.isActive){
-        status = 'Inactive';
-      }
+  const matchRows = () => {
+    let rows = [];
+    classrooms.forEach(classroom => {
 
-      const createdAt = moment(user.createdAt).format('L');
+      const createdAt = moment(classroom.createdAt).format('L');
 
-      userRows.push(createData(
-        user.displayName, user.email, user.username, createdAt, status
+      rows.push(createData(
+        classroom.name, classroom.author, classroom.subject, createdAt, classroom.room
       ));
     })
-    return userRows;
+    return rows;
   }
 
-  const rows = calculateUsers(users);
+  const rows = matchRows();
 
   const handleClick = (event, name) => {
     const selectedIndex = selected.indexOf(name);
@@ -371,10 +363,10 @@ export default function AdminAccounts() {
                       >
                         {row.name}
                       </TableCell>
-                        <TableCell align="left">{row.email}</TableCell>
-                        <TableCell align="left">{row.username}</TableCell>
+                        <TableCell align="left">{row.author}</TableCell>
+                        <TableCell align="left">{row.subject}</TableCell>
                         <TableCell align="left">{row.createAt}</TableCell>
-                        <TableCell align="left">{row.status}</TableCell>
+                        <TableCell align="left">{row.room}</TableCell>
                     </TableRow>
                   );
                 })}

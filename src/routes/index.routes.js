@@ -16,6 +16,7 @@ import privateRoutes from "./routes/privateRoutes";
 import Admin from "../pages/Admin/Admin";
 import AdminAccounts from "../pages/Admin/AdminAccounts";
 import AdminUsers from "../pages/Admin/AdminUsers";
+import AdminClassrooms from "../pages/Admin/AdminClassrooms";
 
 const AppRouter = () => {
   const dispatch = useDispatch();
@@ -92,6 +93,7 @@ const AppRouter = () => {
           element={<Admin />}>
             <Route path="users" element={<AdminUsers />} />
             <Route path="adminAccounts" element={<AdminAccounts />} />
+            <Route path="adminClasses" element={<AdminClassrooms />} />
         </Route>
       </Route>
 
