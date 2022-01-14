@@ -94,6 +94,7 @@ const ClassroomPeople = () => {
       return participants
         .filter((participant) => roles.includes(participant["role"]))
         .map((participant) => {
+          const isCurrentUser = participant["user"]["id"] === currentUserId;
           return (
             <div key={participant["userId"]}>
               <ListItem>
@@ -102,18 +103,26 @@ const ClassroomPeople = () => {
                   alt={"User Logo"}
                   src={participant["user"]["avatarUrl"]}
                 />
-                <Link
-                  variant="p"
-                  className={classes.studentName}
-                  to={`/user/${participant["user"]["id"]}`}
-                  style={{
-                    fontWeight:
-                      participant["user"]["id"] === currentUserId && "bold",
-                  }}
-                >
-                  {participant["user"]["username"]}
-                  {participant["user"]["id"] === currentUserId && "(You)"}
-                </Link>
+                {!isCurrentUser ? (
+                  <Link
+                    variant="p"
+                    className={classes.studentName}
+                    to={`/${classroomId}/user/${participant["user"]["id"]}`}
+                    style={{
+                      fontWeight: isCurrentUser && "bold",
+                    }}
+                  >
+                    {participant["user"]["username"]}
+                  </Link>
+                ) : (
+                  <Typography
+                    variant="p"
+                    className={classes.studentName}
+                    style={{ fontWeight: "bold" }}
+                  >
+                    {participant["user"]["username"]} (You)
+                  </Typography>
+                )}
               </ListItem>
               <Divider />
             </div>

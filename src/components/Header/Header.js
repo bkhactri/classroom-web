@@ -92,6 +92,7 @@ const Header = ({ loading, classroom = 0, classID = "", classrooms }) => {
     dispatch(userInfoActions.clearUser());
     dispatch(classroomActions.clearCurrentUserClasses());
     localStorage.removeItem("accessToken");
+    localStorage.removeItem("currentUrl");
     navigate("/login");
     await axiosAuth.post("/logout");
   };
