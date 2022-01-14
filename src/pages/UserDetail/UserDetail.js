@@ -1,8 +1,10 @@
 import React, { useState, useEffect, Fragment } from "react";
 
 import Header from "../../components/Header/Header";
+import GradeTable from "../../components/GradeTable/GradeTable";
+
 import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Container } from "@mui/material";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import classes from "./UserDetail.module.css";
@@ -11,37 +13,89 @@ import Typography from "@mui/material/Typography";
 import EmailIcon from "@mui/icons-material/Email";
 import Button from "@mui/material/Button";
 
-import userAxios from "../../api/user.axios";
+import axiosUser from "../../api/user.axios";
+import axiosGrade from "../../api/grade.axios";
+import axiosClassroom from "../../api/classroom.axios";
+
+import { calculateMyGrades } from "../../utils/index";
+
+import { userInfoActions } from "../../stores/userInfoStore";
 
 const UserDetail = () => {
-  const { userId } = useParams();
+  const dispatch = useDispatch();
+  const { classroomId, userId } = useParams();
+  const [isLoading, setIsLoading] = useState(false);
   const accessToken = useSelector((state) => state.auth.token);
   const [userInfo, setUserInfo] = useState(null);
+  const currentUserRole = useSelector((state) => state.userInfo.role);
+  const [myGrades, setMyGrades] = useState([]);
+  const [gradeTotal, setGradeTotal] = useState(null);
   const currentUrl = window.location.pathname;
+
+  const shouldShowGradesBoard = () => {
+    console.log(currentUserRole, "currentUserRole");
+    console.log(userInfo?.role, "userInfo?.role");
+    return (
+      (currentUserRole === "OWNER" || currentUserRole === "TEACHER") &&
+      userInfo?.role === "STUDENT"
+    );
+  };
 
   useEffect(() => {
     localStorage.setItem("currentUrl", currentUrl);
   }, [currentUrl]);
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
+    const fetchUserDetailInfo = async () => {
+      setIsLoading(true);
+
       try {
-        const response = await userAxios.get(`/info/${userId}`, {
+        const result = await axiosClassroom.get(`/${classroomId}`, {
           headers: { Authorization: "Bearer " + accessToken },
         });
-        console.log(response);
+
+        dispatch(
+          userInfoActions.setRole({ role: result.data.participants[0].role })
+        );
+
+        const response = await axiosUser.get(`/${classroomId}/info/${userId}`, {
+          headers: { Authorization: "Bearer " + accessToken },
+        });
+
         setUserInfo(response);
-      } catch (error) {
-        throw new Error(error);
+
+        const gradeStructures = await axiosGrade.get(
+          `/structure/${classroomId}`,
+          {
+            headers: { Authorization: "Bearer " + accessToken },
+          }
+        );
+        let grades;
+
+        grades = await axiosGrade.get(`/myGrade/${classroomId}/${userId}`, {
+          headers: { Authorization: "Bearer " + accessToken },
+        });
+
+        const [tempGrades, total] = calculateMyGrades(gradeStructures, grades);
+
+        setMyGrades(tempGrades);
+        setGradeTotal(total);
+
+        setIsLoading(false);
+      } catch (err) {
+        setIsLoading(false);
+        throw new Error(err);
       }
     };
 
-    fetchUserInfo();
-  }, [userId, accessToken]);
+    fetchUserDetailInfo();
+  }, [userId, accessToken, classroomId, dispatch]);
+
+  const canShowGrade = shouldShowGradesBoard();
 
   return (
     <Fragment>
-      <Header />
+      <Header loading={isLoading} classID={classroomId} />
       <Container maxWidth="md">
         {/* User basic info */}
         <Box
@@ -63,9 +117,36 @@ const UserDetail = () => {
           <Box sx={{ mt: 2, display: "flex", flexDirection: "row" }}>
             <EmailIcon sx={{ mt: "5px", mr: "5px" }} />
             <Typography variant="h5">{userInfo && userInfo.email}</Typography>
-            <Button>Send Mail</Button>
+            <Button
+              sx={{
+                ml: 1,
+                textTransform: "capitalize",
+                bgcolor: "primary.main",
+                color: "white",
+                "&:hover": { bgcolor: "#5e92e6" },
+              }}
+            >
+              Send Mail
+            </Button>
           </Box>
         </Box>
+        {/* User grade */}
+        {canShowGrade && (
+          <Box
+            sx={{
+              m: 8,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <GradeTable
+              myGrades={myGrades}
+              gradeTotal={gradeTotal}
+              clickable={true}
+            />
+          </Box>
+        )}
       </Container>
     </Fragment>
   );

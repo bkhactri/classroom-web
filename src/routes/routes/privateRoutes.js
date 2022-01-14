@@ -52,7 +52,7 @@ const privateRoutes = [
     exact: false,
   },
   {
-    path: "user/:userId",
+    path: ":classroomId/user/:userId",
     component: () => <UserDetail />,
     exact: true,
   },
