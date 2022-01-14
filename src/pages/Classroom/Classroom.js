@@ -13,8 +13,8 @@ import LinkIcon from "@mui/icons-material/Link";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import Snackbar from "@mui/material/Snackbar";
 import Button from "@mui/material/Button";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
-import UserLogo from "../../assets/images/user-logo.png";
 import classes from "./Classroom.module.css";
 import axiosClassroom from "../../api/classroom.axios";
 import axiosGrade from "../../api/grade.axios";
@@ -27,6 +27,7 @@ const Classroom = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const accessToken = useSelector((state) => state.auth.token);
+  const avatarUrl = useSelector((state) => state.userInfo.avatarUrl);
   const { classroomId } = useParams();
   const [classroom, setClassroom] = useState({});
   const [gradesStructure, setGradesStructure] = useState([]);
@@ -34,6 +35,11 @@ const Classroom = () => {
   const [inviteMenuAnchorEl, setInviteMenuAnchorEl] = useState(null);
   const [snackBarMessage, setSnackBarMessage] = useState("");
   const [role, setRole] = useState("");
+
+  const currentUrl = window.location.pathname;
+  useEffect(() => {
+    localStorage.setItem("currentUrl", currentUrl);
+  }, [currentUrl]);
 
   useEffect(() => {
     const fetchClassroom = async () => {
@@ -198,7 +204,11 @@ const Classroom = () => {
             <Grid item xs={12} sm={9} md={9} lg={9}>
               <div className={classes.classWork}>
                 <div className={classes.classAnnounce}>
-                  <img className={classes.avatar} src={UserLogo} alt="logo" />
+                  <LazyLoadImage
+                    className={classes.avatar}
+                    alt={"User Logo"}
+                    src={avatarUrl}
+                  />
                   <p>Announce something to your class</p>
                 </div>
               </div>

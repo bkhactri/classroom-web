@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from "react";
+import React, { useState, Fragment, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 import Avatar from "@mui/material/Avatar";
@@ -22,6 +22,11 @@ const ChangePassword = () => {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const c_email = localStorage.getItem("c_user");
+  const currentUrl = window.location.pathname;
+
+  useEffect(() => {
+    localStorage.setItem("currentUrl", currentUrl);
+  }, [currentUrl]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();

@@ -15,6 +15,12 @@ const Home = () => {
   const [classrooms, setClassrooms] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  const currentUrl = window.location.pathname;
+
+  useEffect(() => {
+    localStorage.setItem("currentUrl", currentUrl);
+  }, [currentUrl]);
+
   useEffect(() => {
     if (!accessToken) {
       navigate("/login");

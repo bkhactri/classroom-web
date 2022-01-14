@@ -13,16 +13,19 @@ import LinearProgress from "@mui/material/LinearProgress";
 import AddIcon from "@mui/icons-material/Add";
 import AddClassModal from "../Modal/AddClassModal";
 import JoinClassModal from "../Modal/JoinClassModal";
-import UserLogo from "../../assets/images/user-logo.png";
+import Badge from "@mui/material/Badge";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import classes from "./Header.module.css";
 import SchoolIcon from "@mui/icons-material/School";
-import { List, ListItemText } from "@mui/material";
 import ListItemButton from "@mui/material/ListItemButton";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import { List, ListItem, ListItemText } from "@mui/material";
 import { authActions } from "../../stores/authenticationStore";
 import { userInfoActions } from "../../stores/userInfoStore";
+import { classroomActions } from "../../stores/classroomsStore";
 import { makeStyles } from "@mui/styles";
 import axiosAuth from "../../api/auth.axios";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 import { ROLE } from "../../utils/constants";
 
@@ -39,13 +42,15 @@ const useStyles = makeStyles({
   },
 });
 
-const Header = ({ loading, classroom = 0, classID = "" }) => {
+const Header = ({ loading, classroom = 0, classID = "", classrooms }) => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const role = useSelector((state) => state.userInfo.role);
+  const avatarUrl = useSelector((state) => state.userInfo.avatarUrl);
   const styles = useStyles();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isOpenUserMenu, setOpenUserMenu] = useState(null);
+  const [isOpenNofitications, setIsOpenNofitications] = useState(null);
   const [isOpenUserTool, setOpenUserTool] = useState(null);
   const [isDrawerOpen, setDrawerOpen] = useState({ left: false });
   const [isOpenAddClassModal, setOpenAddClassModal] = useState(false);
@@ -68,6 +73,9 @@ const Header = ({ loading, classroom = 0, classID = "" }) => {
   const handleUserMenu = (event) => setOpenUserMenu(event.currentTarget);
   const handleUserTool = (event) => setOpenUserTool(event.currentTarget);
   const handleCloseUserTool = () => setOpenUserTool(null);
+  const showNoficationsList = (event) =>
+    setIsOpenNofitications(event.currentTarget);
+  const handleCloseNofiticationsList = () => setIsOpenNofitications(null);
 
   const toggleDrawer = (anchor, open) => (event) => {
     if (
@@ -82,6 +90,7 @@ const Header = ({ loading, classroom = 0, classID = "" }) => {
   const handleSignOut = async () => {
     dispatch(authActions.loggedOut());
     dispatch(userInfoActions.clearUser());
+    dispatch(classroomActions.clearCurrentUserClasses());
     localStorage.removeItem("accessToken");
     navigate("/login");
     await axiosAuth.post("/logout");
@@ -106,7 +115,11 @@ const Header = ({ loading, classroom = 0, classID = "" }) => {
         isOpen={isOpenJoinClassModal}
         handleClose={handleCloseJoinClassModal}
       />
-      <Sidebar isOpen={isDrawerOpen["left"]} toggleDrawerClose={toggleDrawer} />
+      <Sidebar
+        isOpen={isDrawerOpen["left"]}
+        toggleDrawerClose={toggleDrawer}
+        classrooms={classrooms}
+      />
       <Box sx={{ flexGrow: 0 }}>
         <AppBar
           position="sticky"
@@ -220,6 +233,49 @@ const Header = ({ loading, classroom = 0, classID = "" }) => {
                 </div>
               )}
               {isAuthenticated && (
+                <div className={classes.userNofitications}>
+                  <IconButton
+                    size="large"
+                    aria-controls="nofitications-appbar"
+                    aria-haspopup="true"
+                    onClick={showNoficationsList}
+                  >
+                    <Badge badgeContent={0} max={99} color="error">
+                      <NotificationsIcon
+                        sx={{ color: "#6e6e6e", fontSize: "30px" }}
+                      />
+                    </Badge>
+                  </IconButton>
+                  <Menu
+                    id="nofitications-appbar"
+                    anchorEl={isOpenNofitications}
+                    open={Boolean(isOpenNofitications)}
+                    onClose={handleCloseNofiticationsList}
+                  >
+                    <List
+                      sx={{
+                        width: "250px",
+                        maxWidth: "400px",
+                        bgcolor: "background.paper",
+                        overflow: "auto",
+                      }}
+                    >
+                      {[1, 2, 3].map((value) => (
+                        <ListItem
+                          key={value}
+                          sx={{
+                            cursor: "pointer",
+                            "&:hover": { bgcolor: "#ebebeb" },
+                          }}
+                        >
+                          <ListItemText primary={`Line item ${value}`} />
+                        </ListItem>
+                      ))}
+                    </List>
+                  </Menu>
+                </div>
+              )}
+              {isAuthenticated && (
                 <div className={classes.userSettings}>
                   <IconButton
                     size="large"
@@ -227,7 +283,11 @@ const Header = ({ loading, classroom = 0, classID = "" }) => {
                     aria-haspopup="true"
                     onClick={handleUserMenu}
                   >
-                    <img className={classes.avatar} src={UserLogo} alt="logo" />
+                    <LazyLoadImage
+                      className={classes.avatar}
+                      alt={"User Logo"}
+                      src={avatarUrl}
+                    />
                   </IconButton>
                   <Menu
                     id="menu-appbar"

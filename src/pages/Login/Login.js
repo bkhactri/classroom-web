@@ -43,6 +43,7 @@ const LoginPage = () => {
           userId: response.id,
           email: response.email,
           isActive: response.isActive,
+          avatarUrl: response.avatarUrl,
         };
         localStorage.setItem("c_user", response.email);
         localStorage.setItem("accessToken", response.accessToken);
@@ -51,7 +52,7 @@ const LoginPage = () => {
           dispatch(authActions.loggedIn({ accessToken: response.accessToken }));
           dispatch(userInfoActions.setUser(userInfo));
           navigate("/");
-        });
+        }, 50);
       } catch (error) {
         setIsLoading(false);
         setError(error.response.data);

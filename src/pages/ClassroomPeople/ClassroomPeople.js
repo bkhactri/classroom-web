@@ -1,17 +1,17 @@
 import { React, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import Header from "../../components/Header/Header";
 import Container from "@mui/material/Container";
 import Snackbar from "@mui/material/Snackbar";
 import IconButton from "@mui/material/IconButton";
 import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
-import UserLogo from "../../assets/images/user-logo.png";
 import classes from "./ClassroomPeople.module.css";
 import axiosClassroom from "../../api/classroom.axios";
 import { Typography, List, Divider, ListItem } from "@mui/material";
 import InviteEmailModal from "../../components/Modal/InviteEmailModal";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 import { userInfoActions } from "../../stores/userInfoStore";
 
@@ -21,6 +21,7 @@ const ClassroomPeople = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const accessToken = useSelector((state) => state.auth.token);
+  const currentUserId = useSelector((state) => state.userInfo.userId);
   const { classroomId } = useParams();
   const [participants, setParticipants] = useState([]);
   const [classroom, setClassroom] = useState({});
@@ -34,6 +35,11 @@ const ClassroomPeople = () => {
   const handleCloseTeacherInviteModal = () => setOpenInviteTeacherModal(false);
   const handleOpenStudentInviteModal = () => setOpenInviteStudentModal(true);
   const handleCloseStudentInviteModal = () => setOpenInviteStudentModal(false);
+
+  const currentUrl = window.location.pathname;
+  useEffect(() => {
+    localStorage.setItem("currentUrl", currentUrl);
+  }, [currentUrl]);
 
   useEffect(() => {
     const fetchParticipants = async () => {
@@ -91,10 +97,23 @@ const ClassroomPeople = () => {
           return (
             <div key={participant["userId"]}>
               <ListItem>
-                <img className={classes.avatar} src={UserLogo} alt="avatar" />
-                <Typography variant="p" className={classes.studentName}>
+                <LazyLoadImage
+                  className={classes.avatar}
+                  alt={"User Logo"}
+                  src={participant["user"]["avatarUrl"]}
+                />
+                <Link
+                  variant="p"
+                  className={classes.studentName}
+                  to={`/user/${participant["user"]["id"]}`}
+                  style={{
+                    fontWeight:
+                      participant["user"]["id"] === currentUserId && "bold",
+                  }}
+                >
                   {participant["user"]["username"]}
-                </Typography>
+                  {participant["user"]["id"] === currentUserId && "(You)"}
+                </Link>
               </ListItem>
               <Divider />
             </div>

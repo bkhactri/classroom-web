@@ -1,13 +1,19 @@
-import React, { useEffect } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import React from "react";
+import { Outlet, Navigate } from "react-router-dom";
 
 const PrivateRoute = ({ isAuthenticated }) => {
-  const navigate = useNavigate();
-  useEffect(() => {
-    navigate(window.location.pathname);
-  }, [navigate]);
+  const currentUrl = window.location.pathname;
+  localStorage.setItem("currentUrl", currentUrl);
 
-  return isAuthenticated && <Outlet />;
+  return isAuthenticated ? (
+    <Outlet />
+  ) : (
+    <Navigate
+      to={{
+        pathname: "/login",
+      }}
+    />
+  );
 };
 
 export default PrivateRoute;

@@ -33,6 +33,12 @@ const GradeStructure = (props) => {
   const [errorMessages, setErrorMessages] = useState([]);
   const [timer, setTimer] = useState(null);
 
+  const currentUrl = window.location.pathname;
+
+  useEffect(() => {
+    localStorage.setItem("currentUrl", currentUrl);
+  }, [currentUrl]);
+
   useEffect(() => {
     const fetchClassroom = async () => {
       setIsLoading(true);

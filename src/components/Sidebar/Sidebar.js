@@ -1,12 +1,47 @@
-import { React } from "react";
+/* eslint-disable array-callback-return */
+import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import FactCheckOutlinedIcon from "@mui/icons-material/FactCheckOutlined";
 import classes from "./Sidebar.module.css";
 import { NavLink } from "react-router-dom";
+import SchoolIcon from "@mui/icons-material/School";
+import ClassIcon from "@mui/icons-material/Class";
+import axiosClassroom from "../../api/classroom.axios";
 
 const Sidebar = ({ isOpen, toggleDrawerClose }) => {
+  const accessToken = localStorage.getItem("accessToken");
+  const currentUserId = useSelector((state) => state.userInfo.userId);
+
+  const [enrolledClass, setEnrolledClass] = useState([]);
+  const [teachingClass, setTeachingClass] = useState([]);
+
+  useEffect(() => {
+    const fetchClassrooms = async () => {
+      try {
+        const result = await axiosClassroom.get("/get-all", {
+          headers: { Authorization: "Bearer " + accessToken },
+        });
+
+        const enrolled = result.data.filter(
+          (classroom) => classroom.authorId !== currentUserId
+        );
+        const teaching = result.data.filter(
+          (classroom) => classroom.authorId === currentUserId
+        );
+
+        setEnrolledClass(enrolled);
+        setTeachingClass(teaching);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchClassrooms();
+  }, [accessToken, currentUserId]);
+
   return (
     <Drawer
       anchor={"left"}
@@ -40,7 +75,49 @@ const Sidebar = ({ isOpen, toggleDrawerClose }) => {
       </div>
       <Divider />
       <div className={classes.drawerEnrolled}>
+        <div className={classes.drawerEnrolledTitle}>Teaching</div>
+        {teachingClass.length > 0 ? (
+          teachingClass.map((classroom) => (
+            <NavLink
+              key={classroom.id}
+              to={`/classroom/${classroom.id}`}
+              style={{ textDecoration: "none" }}
+              className={classes.drawerItem}
+            >
+              <div className={classes.drawerItemIcon}>
+                <ClassIcon sx={{ fontSize: 25 }} />
+              </div>
+              <div className={classes.drawerItemTitle}>{classroom.name}</div>
+            </NavLink>
+          ))
+        ) : (
+          <h4 style={{ textAlign: "center" }}>
+            You haven't teached any Classroom
+          </h4>
+        )}
+      </div>
+      <Divider />
+      <div className={classes.drawerEnrolled}>
         <div className={classes.drawerEnrolledTitle}>Enrolled</div>
+        {enrolledClass.length > 0 ? (
+          enrolledClass.map((classroom) => (
+            <NavLink
+              key={classroom.id}
+              to={`/classroom/${classroom.id}`}
+              style={{ textDecoration: "none" }}
+              className={classes.drawerItem}
+            >
+              <div className={classes.drawerItemIcon}>
+                <SchoolIcon sx={{ fontSize: 25 }} />
+              </div>
+              <div className={classes.drawerItemTitle}>{classroom.name}</div>
+            </NavLink>
+          ))
+        ) : (
+          <h4 style={{ textAlign: "center" }}>
+            You have't enrolled any Classroom
+          </h4>
+        )}
       </div>
     </Drawer>
   );

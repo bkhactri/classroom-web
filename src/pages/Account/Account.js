@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header/Header";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
@@ -14,9 +15,16 @@ import MapStudentId from "../../components/AccountForm/MapStudentId";
 import axiosUser from "../../api/user.axios";
 
 const AccountPage = () => {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [accountInfo, setAccountInfo] = useState(null);
   const accessToken = useSelector((state) => state.auth.token);
+  const currentUrl = window.location.pathname;
+
+  useEffect(() => {
+    // localStorage.setItem("currentUrl", currentUrl);
+    navigate(currentUrl);
+  }, [currentUrl, navigate]);
 
   useEffect(() => {
     const fetchUserInfo = async () => {

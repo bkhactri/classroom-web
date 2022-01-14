@@ -29,6 +29,12 @@ const MyGrades = () => {
   const [myGrades, setMyGrades] = useState([]);
   const [gradeTotal, setGradeTotal] = useState(null);
 
+  const currentUrl = window.location.pathname;
+
+  useEffect(() => {
+    localStorage.setItem("currentUrl", currentUrl);
+  }, [currentUrl]);
+
   useEffect(() => {
     const fetchMyGrades = async () => {
       setIsLoading(true);

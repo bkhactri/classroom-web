@@ -18,6 +18,11 @@ const JoinClassroom = (props) => {
   const { classroomId, classCode } = useParams();
   const [joinInfo, setJoinInfo] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const currentUrl = window.location.pathname;
+
+  useEffect(() => {
+    localStorage.setItem("currentUrl", currentUrl);
+  }, [currentUrl]);
 
   useEffect(() => {
     const fetchJoinInfo = async () => {

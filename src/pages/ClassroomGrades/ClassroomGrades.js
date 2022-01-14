@@ -38,6 +38,11 @@ const ClassroomGrades = () => {
   const inputFileStudentRef = useRef();
   let downloadGradeTemplateVisible = useRef(false);
 
+  const currentUrl = window.location.pathname;
+  useEffect(() => {
+    localStorage.setItem("currentUrl", currentUrl);
+  }, [currentUrl]);
+
   useEffect(() => {
     const fetchStudentsGrades = async () => {
       setIsLoading(true);
