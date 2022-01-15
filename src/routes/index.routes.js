@@ -13,6 +13,10 @@ import PublicRoute from "./type/publicRoute";
 
 import publicRoutes from "./routes/publicRoutes";
 import privateRoutes from "./routes/privateRoutes";
+import Admin from "../pages/Admin/Admin";
+import AdminAccounts from "../pages/Admin/AdminAccounts";
+import AdminUsers from "../pages/Admin/AdminUsers";
+import AdminClassrooms from "../pages/Admin/AdminClassrooms";
 
 import Loading from "../components/Loading/Loading";
 
@@ -96,6 +100,23 @@ const AppRouter = () => {
           />
         </Route>
       ))}
+
+      <Route
+        path='/admin'
+        key='admin'
+        element={<PrivateRoute isAuthenticated={isAuthenticated} />}
+      >
+        <Route
+          path="/admin"
+          key="admin"
+          exact={false}
+          element={<Admin />}>
+            <Route path="users" element={<AdminUsers />} />
+            <Route path="adminAccounts" element={<AdminAccounts />} />
+            <Route path="adminClasses" element={<AdminClassrooms />} />
+        </Route>
+      </Route>
+
       <Route path="/verify-email/:verifyToken" element={<ConfirmEmail />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>

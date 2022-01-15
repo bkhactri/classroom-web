@@ -9,6 +9,9 @@ import GradeStructure from "../../pages/GradeStructure/GradeStructure";
 import ClassroomGrades from "../../pages/ClassroomGrades/ClassroomGrades";
 import MyGrades from "../../pages/MyGrades/MyGrades";
 import UserDetail from "../../pages/UserDetail/UserDetail";
+import AdminUserDetail from "../../pages/Admin/DetailPage/UserDetail";
+import ClassroomDetail from "../../pages/Admin/DetailPage/ClassroomDetail";
+import AdminDetail from "../../pages/Admin/DetailPage/AdminDetail";
 
 const privateRoutes = [
   {
@@ -55,6 +58,21 @@ const privateRoutes = [
     path: ":classroomId/user/:userId",
     component: () => <UserDetail />,
     exact: true,
+  },
+  {
+    path: "userDetail/:userID",
+    component: () => <AdminUserDetail />,
+    exact: false,
+  },
+  {
+    path: "adminDetail/:userID",
+    component: () => <AdminDetail />,
+    exact: false,
+  },
+  {
+    path: "classroomDetail/:classroomID",
+    component: () => <ClassroomDetail />,
+    exact: false,
   },
 ];
 

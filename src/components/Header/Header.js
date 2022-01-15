@@ -129,6 +129,7 @@ const Header = ({ loading, classroom = 0, classID = "", classrooms }) => {
             color: "#333",
             boxShadow: "none",
             borderBottom: "1px solid #ede8e8",
+            zIndex: 1400
           }}
         >
           <Toolbar style={{ display: "flex", justifyContent: "space-between" }}>
