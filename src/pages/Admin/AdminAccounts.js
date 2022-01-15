@@ -25,14 +25,16 @@ import { useNavigate } from 'react-router';
 import moment from 'moment';
 import BlockIcon from '@mui/icons-material/Block';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
+import { Info } from '@mui/icons-material';
 
-function createData(name, email, username, createAt, status) {
+function createData(name, email, username, createAt, status, id) {
   return {
     name,
     email,
     username,
     createAt,
     status,
+    id
   };
 }
 
@@ -97,6 +99,13 @@ const headCells = [
     disablePadding: false,
     label: 'Status',
   },
+  {
+    id: 'detail',
+    numeric: false,
+    disablePadding: false,
+    label: 'View Detail',
+    align: 'center'
+  },
 ];
 
 function EnhancedTableHead(props) {
@@ -123,7 +132,7 @@ function EnhancedTableHead(props) {
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? 'right' : 'left'}
+            align={headCell.align ? headCell.align : 'left'}
             padding={headCell.disablePadding ? 'none' : 'normal'}
             sortDirection={orderBy === headCell.id ? order : false}
           >
@@ -227,6 +236,10 @@ export default function AdminAccounts() {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
 
+  const navigateToUserPage = (id) => {
+    navigate(`/adminDetail/${id}`);
+  }
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -270,7 +283,7 @@ export default function AdminAccounts() {
       const createdAt = moment(user.createdAt).format('L');
 
       userRows.push(createData(
-        user.displayName, user.email, user.username, createdAt, status
+        user.displayName, user.email, user.username, createdAt, status, user.id
       ));
     })
     return userRows;
@@ -375,6 +388,14 @@ export default function AdminAccounts() {
                         <TableCell align="left">{row.username}</TableCell>
                         <TableCell align="left">{row.createAt}</TableCell>
                         <TableCell align="left">{row.status}</TableCell>
+                        <TableCell align="center">
+                          <IconButton 
+                            color="primary" aria-label="View Detail"
+                            onClick={() => navigateToUserPage(row.id)}
+                            >
+                            <Info />
+                          </IconButton>
+                        </TableCell>
                     </TableRow>
                   );
                 })}

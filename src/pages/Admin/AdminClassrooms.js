@@ -21,14 +21,17 @@ import { visuallyHidden } from '@mui/utils';
 import { useNavigate } from 'react-router';
 import moment from 'moment';
 import axiosClassroom from '../../api/classroom.axios';
+import { IconButton } from '@mui/material';
+import { Info } from '@mui/icons-material';
 
-function createData(name, author, subject, createAt, room) {
+function createData(name, author, subject, createAt, room, id) {
   return {
     name,
     author,
     subject,
     createAt,
     room,
+    id,
   };
 }
 
@@ -93,6 +96,13 @@ const headCells = [
     disablePadding: false,
     label: 'Room',
   },
+  {
+    id: 'detail',
+    numeric: false,
+    disablePadding: false,
+    label: 'View Detail',
+    align: 'center'
+  },
 ];
 
 function EnhancedTableHead(props) {
@@ -119,7 +129,7 @@ function EnhancedTableHead(props) {
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? 'right' : 'left'}
+            align={headCell.align ? headCell.align : 'left'}
             padding={headCell.disablePadding ? 'none' : 'normal'}
             sortDirection={orderBy === headCell.id ? order : false}
           >
@@ -187,17 +197,6 @@ const EnhancedTableToolbar = (props) => {
 
       {numSelected > 0 ? (
         <Box display="inline-flex">
-          {/* <Tooltip title="Unban">
-            <IconButton>
-              <LockOpenIcon />
-            </IconButton>
-          </Tooltip>
-
-          <Tooltip title="Ban">
-            <IconButton>
-              <BlockIcon />
-            </IconButton>
-          </Tooltip> */}
 
         </Box>
         
@@ -217,11 +216,15 @@ export default function AdminClassrooms() {
   const [orderBy, setOrderBy] = useState('calories');
   const accessToken = useSelector((state) => state.auth.token);
   const [selected, setSelected] = useState([]);
+  const navigate = useNavigate();
   const [page, setPage] = useState(0);
   const [dense, setDense] = useState(false);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const navigate = useNavigate();
   const [classrooms, setClassrooms] = useState([]);
+
+  const navigateToClassroomPage = (id) => {
+    navigate(`/classroomDetail/${id}`);
+  }
 
   useEffect(() => {
     const fetchClassrooms = async () => {
@@ -248,7 +251,7 @@ export default function AdminClassrooms() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = rows.map((n) => n.email);
+      const newSelecteds = rows.map((n) => n.id);
       setSelected(newSelecteds);
       return;
     }
@@ -262,7 +265,7 @@ export default function AdminClassrooms() {
       const createdAt = moment(classroom.createdAt).format('L');
 
       rows.push(createData(
-        classroom.name, classroom.author, classroom.subject, createdAt, classroom.room
+        classroom.name, classroom.author, classroom.subject, createdAt, classroom.room, classroom.id
       ));
     })
     return rows;
@@ -333,17 +336,17 @@ export default function AdminClassrooms() {
               {stableSort(rows, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
-                  const isItemSelected = isSelected(row.email);
+                  const isItemSelected = isSelected(row.id);
                   const labelId = `enhanced-table-checkbox-${index}`;
 
                   return (
                     <TableRow
                       hover
-                      onClick={(event) => handleClick(event, row.email)}
+                      onClick={(event) => handleClick(event, row.id)}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={row.email}
+                      key={row.id}
                       selected={isItemSelected}
                     >
                       <TableCell padding="checkbox">
@@ -367,6 +370,14 @@ export default function AdminClassrooms() {
                         <TableCell align="left">{row.subject}</TableCell>
                         <TableCell align="left">{row.createAt}</TableCell>
                         <TableCell align="left">{row.room}</TableCell>
+                        <TableCell align="center">
+                          <IconButton 
+                            color="primary" aria-label="View Detail"
+                            onClick={() => navigateToClassroomPage(row.id)}
+                            >
+                            <Info />
+                          </IconButton>
+                        </TableCell>
                     </TableRow>
                   );
                 })}

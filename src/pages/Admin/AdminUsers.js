@@ -32,6 +32,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import PersonIcon from '@mui/icons-material/Person';
+import { Details, Info } from '@mui/icons-material';
 
 function createData(studentID, email, username, createAt, status, role, id) {
   return {
@@ -116,6 +117,14 @@ const headCells = [
     numeric: false,
     disablePadding: false,
     label: 'Role',
+    align: 'center'
+  },
+  {
+    id: 'detail',
+    numeric: false,
+    disablePadding: false,
+    label: 'View Detail',
+    align: 'center'
   },
 ];
 
@@ -143,7 +152,7 @@ function EnhancedTableHead(props) {
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? 'right' : 'left'}
+            align={headCell.align ? headCell.align : 'left'}
             padding={headCell.disablePadding ? 'none' : 'normal'}
             sortDirection={orderBy === headCell.id ? order : false}
           >
@@ -395,7 +404,7 @@ export default function AdminUsers() {
             style={{fill: "blue"}} 
             onClick={() => handleClickOpenAdminConfirmation("Demote this user to a normal user?", user)}
           />;
-      }
+      }            
 
       const createdAt = moment(user.createdAt).format('L');
 
@@ -536,8 +545,16 @@ export default function AdminUsers() {
                         </TableCell>
                         <TableCell align="left">{row.username}</TableCell>
                         <TableCell align="left">{row.createAt}</TableCell>
-                        <TableCell align="left">{row.status}</TableCell>
-                        <TableCell align="left">{row.role}</TableCell>
+                        <TableCell align="center">{row.status}</TableCell>
+                        <TableCell align="center">{row.role}</TableCell>
+                        <TableCell align="center">
+                          <IconButton 
+                            color="primary" aria-label="View Detail"
+                            onClick={() => navigateToUserPage(row.id)}
+                            >
+                            <Info />
+                          </IconButton>
+                        </TableCell>
                     </TableRow>
                   );
                 })}
