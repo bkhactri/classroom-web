@@ -1,4 +1,11 @@
-import { React, useState, useEffect, Fragment, useRef } from "react";
+import {
+  React,
+  useState,
+  useEffect,
+  Fragment,
+  useRef,
+  useCallback,
+} from "react";
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import Header from "../../components/Header/Header";
@@ -10,13 +17,22 @@ import {
 } from "@mui/x-data-grid-pro";
 import Button from "@mui/material/Button";
 import Snackbar from "@mui/material/Snackbar";
+import Typography from "@mui/material/Typography";
+import Fab from "@mui/material/Fab";
+import SettingsIcon from "@mui/icons-material/Settings";
+
 import axiosClassroom from "../../api/classroom.axios";
 import axiosGrade from "../../api/grade.axios";
 import axiosStudentIdentifcation from "../../api/student-identification.axios";
-import { downloadFile } from "../../utils/index";
+import axiosGradeRequest from "../../api/grade-request.axios";
+
 import CustomColumnMenuComponent from "../../components/ColumnMenu/ColumnMenu";
+import GradeDetailModal from "../../components/Modal/GradeDetailModal";
 
 import { userInfoActions } from "../../stores/userInfoStore";
+
+import { downloadFile } from "../../utils/index";
+import { GRADE_STATUS } from "../../utils/constants";
 
 const constantColumns = [
   { field: "id", headerName: "ID", width: 150 },
@@ -32,8 +48,17 @@ const ClassroomGrades = () => {
   const accessToken = useSelector((state) => state.auth.token);
   const [gradeRows, setGradeRows] = useState([]);
   const [gradeColumns, setGradeColumns] = useState([]);
+  const [students, setStudents] = useState([]);
+  const [structures, setStructures] = useState([]);
+  const [grades, setGrades] = useState([]);
+  const [gradeSum, setGradeSum] = useState(null);
+  const [gradeRequests, setGradeRequests] = useState([]);
   const [snackBarMessage, setSnackBarMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isGradeDetailOpen, setGradeDetailOpen] = useState(false);
+  const [gradeIds, setGradeIds] = useState({});
+  const [additionalInfos, setAdditionalInfos] = useState({});
+  const [gradeInfos, setGradeInfos] = useState({});
   const { classroomId } = useParams();
   const inputFileStudentRef = useRef();
   let downloadGradeTemplateVisible = useRef(false);
@@ -43,48 +68,88 @@ const ClassroomGrades = () => {
     localStorage.setItem("currentUrl", currentUrl);
   }, [currentUrl]);
 
-  useEffect(() => {
-    const fetchStudentsGrades = async () => {
+  const mapGradeToStudent = useCallback(
+    (
+      studentId,
+      studentName,
+      gradeStructures,
+      gradeBoards,
+      tempGradeRequests,
+      columns
+    ) => {
+      const row = { total: 0 };
+
+      gradeStructures.forEach((gs) => {
+        const grade = gradeBoards.find((gb) => {
+          return (
+            gb.gradeStructureId === gs.id &&
+            gb.studentIdentificationId === studentId &&
+            gb.classroomId === classroomId
+          );
+        });
+        const gradePercentage = columns.find(
+          (col) => col.field === gs.id
+        )?.gradePercentage;
+
+        if (gradePercentage) {
+          const request = tempGradeRequests.find((r) => {
+            return (
+              r.gradeStructureId === gs.id &&
+              r.studentIdentificationId === studentId &&
+              r.classroomId === classroomId
+            );
+          });
+
+          row[gs.id] = [
+            grade?.point || null,
+            request ? true : false,
+            {
+              studentId,
+              studentName,
+              gradeCreatedAt: grade?.createdAt,
+              gradeUpdatedAt: grade?.updatedAt,
+            },
+          ];
+
+          if (grade) {
+            row.total +=
+            (Number(grade.point) / Number(gs.point)) * gradePercentage;
+          }
+        }
+      });
+
+      row.total = row.total ? row.total.toFixed(2) : null;
+
+      return row;
+    },
+    [classroomId]
+  );
+
+  const fetchStudentsGrades = useCallback(
+    async (tempStudents, tempGradeSum, tempStructures) => {
       setIsLoading(true);
       try {
-        const result = await axiosClassroom.get(`/${classroomId}`, {
-          headers: { Authorization: "Bearer " + accessToken },
-        });
-        dispatch(
-          userInfoActions.setRole({ role: result.data.participants[0].role })
-        );
-
-        const students = await axiosStudentIdentifcation.get(
-          `/getByClass/${classroomId}`,
-          {
-            headers: { Authorization: "Bearer " + accessToken },
-          }
-        );
-
-        const grades = await axiosGrade.get(`/structure/${classroomId}`, {
-          headers: { Authorization: "Bearer " + accessToken },
-        });
-
-        if (grades.length) {
-          downloadGradeTemplateVisible.current = true;
-        }
-
         const gradeBoard = await axiosGrade.get(
           `/getGradeBoard/${classroomId}`,
           {
             headers: { Authorization: "Bearer " + accessToken },
           }
         );
+        setGrades(gradeBoard);
 
-        const gradeSum = grades.reduce((a, c) => {
-          return a + +c.point;
-        }, 0);
+        const tempGradeRequests = await axiosGradeRequest.get(
+          `/${classroomId}`,
+          {
+            headers: { Authorization: "Bearer " + accessToken },
+          }
+        );
+        setGradeRequests(tempGradeRequests);
 
         // Forming columns
-        const gradesArray = grades.map((grade) => ({
+        const gradesArray = tempStructures.map((grade) => ({
           field: grade.id,
           headerName: grade.name,
-          width: 150,
+          width: 250,
           type: "number",
           editable: true,
           renderHeader: (params) => (
@@ -94,11 +159,43 @@ const ClassroomGrades = () => {
             </div>
           ),
           renderCell: (params) => {
-            return `${
-              params.value === null || params.value === undefined
-                ? ""
-                : params.value
-            } / ${grade.point}`;
+            return (
+              <Fragment>
+                <Typography>
+                  {params.value?.[0] === null || params.value?.[0] === undefined
+                    ? ""
+                    : params.value?.[0]}{" "}
+                  / {grade.point}
+                </Typography>
+                <Fab
+                  size="small"
+                  color={params.value?.[1] ? "primary" : null}
+                  sx={{ ml: 1 }}
+                  onClick={() =>
+                    handleOpenGradeDetail(
+                      {
+                        classroomId,
+                        gradeStructureId: grade.id,
+                        studentIdentificationId: params.value?.[2]?.studentId,
+                      },
+                      {
+                        studentId: params.value?.[2]?.studentId,
+                        studentName: params.value?.[2]?.studentName,
+                        gradeStructureName: grade.name,
+                        createdAt: params.value?.[2]?.gradeCreatedAt,
+                        updatedAt: params.value?.[2]?.gradeUpdatedAt
+                      },
+                      {
+                        point: params.value?.[0],
+                        total: grade.point
+                      }
+                    )
+                  }
+                >
+                  <SettingsIcon />
+                </Fab>
+              </Fragment>
+            );
           },
           preProcessEditCellProps: (params) => {
             const hasError =
@@ -106,7 +203,7 @@ const ClassroomGrades = () => {
               isNaN(params.props.value);
             return { ...params.props, error: hasError };
           },
-          gradePercentage: (grade.point / gradeSum) * 10,
+          gradePercentage: (grade.point / tempGradeSum) * 10,
           gradePoint: grade.point,
         }));
 
@@ -115,19 +212,76 @@ const ClassroomGrades = () => {
           headerName: "Total",
           width: 150,
           type: "number",
+          renderCell: (params) => {
+            return <Typography>{params.value}</Typography>;
+          },
         });
 
         // Forming rows
-        const rows = students.map((student) => {
+        const rows = tempStudents.map((student) => {
           return {
             id: student.id,
             fullName: student.name,
-            ...mapGradeToStudent(student.id, grades, gradeBoard, columns),
+            ...mapGradeToStudent(
+              student.id,
+              student.name,
+              tempStructures,
+              gradeBoard,
+              tempGradeRequests,
+              columns
+            ),
           };
         });
 
         setGradeColumns(columns);
         setGradeRows(rows);
+
+        setIsLoading(false);
+      } catch (err) {
+        setIsLoading(false);
+        console.log(err);
+      }
+    },
+    [accessToken, classroomId, mapGradeToStudent]
+  );
+
+  useEffect(() => {
+    const fetchInfos = async () => {
+      setIsLoading(true);
+      try {
+        const result = await axiosClassroom.get(`/${classroomId}`, {
+          headers: { Authorization: "Bearer " + accessToken },
+        });
+        dispatch(
+          userInfoActions.setRole({ role: result.data.participants[0].role })
+        );
+
+        const tempStudents = await axiosStudentIdentifcation.get(
+          `/getByClass/${classroomId}`,
+          {
+            headers: { Authorization: "Bearer " + accessToken },
+          }
+        );
+        setStudents(tempStudents);
+
+        const gradeStructures = await axiosGrade.get(
+          `/structure/${classroomId}`,
+          {
+            headers: { Authorization: "Bearer " + accessToken },
+          }
+        );
+        setStructures(gradeStructures);
+
+        if (gradeStructures.length) {
+          downloadGradeTemplateVisible.current = true;
+        }
+
+        const tempGradeSum = gradeStructures.reduce((a, c) => {
+          return a + Number(c.point);
+        }, 0);
+        setGradeSum(tempGradeSum);
+
+        fetchStudentsGrades(tempStudents, tempGradeSum, gradeStructures);
 
         setIsLoading(false);
       } catch (error) {
@@ -136,38 +290,8 @@ const ClassroomGrades = () => {
       }
     };
 
-    fetchStudentsGrades();
-  }, [classroomId, accessToken, dispatch]);
-
-  const mapGradeToStudent = (
-    studentId,
-    gradeStructures,
-    gradeBoards,
-    columns
-  ) => {
-    const row = { total: 0 };
-
-    gradeStructures.forEach((gs) => {
-      const grade = gradeBoards.find((gb) => {
-        return (
-          gb.gradeStructureId === gs.id &&
-          gb.studentIdentificationId === studentId
-        );
-      });
-      const gradePercentage = columns.find(
-        (col) => col.field === gs.id
-      )?.gradePercentage;
-
-      if (grade && gradePercentage) {
-        row[grade.gradeStructureId] = grade.point;
-        row.total += (+grade.point / +gs.point) * gradePercentage;
-      }
-    });
-
-    row.total = row.total ? row.total.toFixed(2) : null;
-
-    return row;
-  };
+    fetchInfos();
+  }, [classroomId, accessToken, dispatch, fetchStudentsGrades]);
 
   // Student Identification
   const downloadStudentTemplate = () => {
@@ -255,26 +379,32 @@ const ClassroomGrades = () => {
     const changedRow = gradeRows.find((row) => row.id === id);
     gradeColumns.forEach((col) => {
       if (col.field === field) {
-        total += (+value / +col.gradePoint) * col.gradePercentage;
+        total += (Number(value) / Number(col.gradePoint)) * col.gradePercentage;
         return;
       }
 
       if (col.gradePercentage) {
         total +=
-          (+changedRow[col.field] / +col.gradePoint) * col.gradePercentage;
+          (Number(changedRow[col.field]?.[0]) / Number(col.gradePoint)) *
+          col.gradePercentage;
       }
     });
 
-    return total;
+    return total.toFixed(2);
   };
 
   const uploadGrade = (resData, gradeStructureId) => {
+    const gradeStructure = structures.find((gs) => gs.id === gradeStructureId);
+
     setGradeRows(
       gradeRows.map((gradeRow) => {
         const grade = resData.find((item) => item[0] === gradeRow.id);
 
-        if (grade?.length === 2) {
-          gradeRow[gradeStructureId] = grade[1];
+        if (grade?.length === 2 && grade[1] <= gradeStructure.point) {
+          const requestOpen = gradeRow[gradeStructureId]?.[1];
+          const requestInfo = gradeRow[gradeStructureId]?.[2];
+
+          gradeRow[gradeStructureId] = [grade[1], requestOpen, requestInfo];
 
           const total = calculateTotal(gradeRow.id, gradeStructureId, grade[1]);
           gradeRow.total = total;
@@ -296,7 +426,7 @@ const ClassroomGrades = () => {
           gradeId: field,
           gradePoint: value,
           classroomId: classroomId,
-          status: "DRAFT",
+          status: GRADE_STATUS.DRAFT,
         },
         {
           headers: { Authorization: "Bearer " + accessToken },
@@ -307,12 +437,38 @@ const ClassroomGrades = () => {
         const total = calculateTotal(id, field, value);
 
         setGradeRows(
-          gradeRows.map((row) =>
-            row.id === id ? { ...row, [field]: value, total } : row
-          )
+          gradeRows.map((row) => {
+            const requestOpen = gradeRequests.find(
+              (gr) =>
+                gr.studentIdentificationId === id &&
+                gr.gradeStructureId === field
+            );
+            const student = students.find((st) => st.id === id);
+            const grade = grades.find(
+              (g) =>
+                g.studentIdentificationId === id && g.gradeStructureId === field
+            );
+
+            return row.id === id
+              ? {
+                  ...row,
+                  [field]: [
+                    value,
+                    requestOpen ? true : false,
+                    {
+                      studentId: id,
+                      studentName: student.name,
+                      gradeCreatedAt: grade.createdAt,
+                      gradeUpdatedAt: grade.updatedAt,
+                    },
+                  ],
+                  total,
+                }
+              : row;
+          })
         );
 
-        setSnackBarMessage(`Add grade in for ${id}`);
+        setSnackBarMessage(`Add/Edit grade for ${id}`);
       }
 
       setIsLoading(false);
@@ -323,6 +479,18 @@ const ClassroomGrades = () => {
   };
 
   const handleCloseSnackBar = () => setSnackBarMessage("");
+
+  const handleCloseGradeDetailModal = () => {
+    setGradeDetailOpen(false);
+    fetchStudentsGrades(students, gradeSum, structures);
+  };
+
+  const handleOpenGradeDetail = (tempGradeIds, tempAdditionalInfos, tempGradeInfos) => {
+    setGradeIds(tempGradeIds);
+    setAdditionalInfos(tempAdditionalInfos);
+    setGradeInfos(tempGradeInfos);
+    setGradeDetailOpen(true);
+  };
 
   return (
     <Fragment>
@@ -386,6 +554,14 @@ const ClassroomGrades = () => {
           }}
         />
       </Paper>
+
+      {isGradeDetailOpen && <GradeDetailModal
+        gradeId={gradeIds}
+        additionalInfos={additionalInfos}
+        grade={gradeInfos}
+        isOpen={isGradeDetailOpen}
+        handleClose={handleCloseGradeDetailModal}
+      />}
     </Fragment>
   );
 };

@@ -28,10 +28,7 @@ const JoinClassModal = ({ isOpen, handleClose }) => {
   return (
     <Modal
       open={isOpen}
-      onClose={() => {
-        setValidId(false);
-        handleClose();
-      }}
+      onClose={handleClose}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
@@ -40,10 +37,7 @@ const JoinClassModal = ({ isOpen, handleClose }) => {
           <div className={classes.joinModalCloseButton}>
             <IconButton
               size="large"
-              onClick={() => {
-                setValidId(false);
-                handleClose();
-              }}
+              onClick={handleClose}
             >
               <CloseIcon />
             </IconButton>

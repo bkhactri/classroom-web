@@ -38,11 +38,14 @@ export const calculateMyGrades = (gradeStructures, grades) => {
     );
 
     return {
+      gradeStructureId: structure.id,
       name: structure.name,
       total: structure.point,
       point:
         grade?.status === GRADE_STATUS.FINALIZED ? grade?.point : null,
       status: grade?.status,
+      createdAt: structure.createdAt,
+      updatedAt: grade?.updatedAt
     };
   });
 
