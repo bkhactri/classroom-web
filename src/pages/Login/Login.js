@@ -55,7 +55,7 @@ const LoginPage = () => {
         }, 50);
       } catch (error) {
         setIsLoading(false);
-        setError(error.response.data);
+        setError(error.response?.data);
       }
     } else {
       setError(errorFormCheck);

@@ -68,10 +68,7 @@ const InviteEmailModal = ({ isOpen, handleClose, classroom, type }) => {
           headers: { Authorization: "Bearer " + accessToken },
         }
       )
-      .then(() => {
-        destroyState();
-        handleClose();
-      })
+      .then(() => handleClose())
       .catch((err) => {
         console.error("err=>", err.response.data);
       }).finally(() => {
@@ -79,19 +76,11 @@ const InviteEmailModal = ({ isOpen, handleClose, classroom, type }) => {
       })
   };
 
-  const destroyState = () => {
-    setEmails([]);
-    setInputEmail("");
-    setFieldValid(false);
-    setErrorMessage("");
-  };
-
   return (
     <Modal
       open={isOpen}
-      onClose={(event) => {
+      onClose={() => {
         if (isLoading) return;
-        destroyState();
         handleClose();
       }}
       aria-labelledby="modal-modal-title"

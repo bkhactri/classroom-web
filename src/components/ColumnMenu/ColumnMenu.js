@@ -32,6 +32,8 @@ const CustomColumnMenuComponent = (props) => {
       );
 
       console.log(response);
+
+      // NOTIFICATION NEEDED
     } catch (err) {
       throw new Error(err);
     }

@@ -108,14 +108,14 @@ const Header = ({ loading, classroom = 0, classID = "", classrooms }) => {
 
   return (
     <>
-      <AddClassModal
+      {isOpenAddClassModal && <AddClassModal
         isOpen={isOpenAddClassModal}
         handleClose={handleCloseAddClassModal}
-      />
-      <JoinClassModal
+      />}
+      {isOpenJoinClassModal && <JoinClassModal
         isOpen={isOpenJoinClassModal}
         handleClose={handleCloseJoinClassModal}
-      />
+      />}
       <Sidebar
         isOpen={isDrawerOpen["left"]}
         toggleDrawerClose={toggleDrawer}

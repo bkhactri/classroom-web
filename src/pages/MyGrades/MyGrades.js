@@ -1,9 +1,10 @@
-import { useEffect, useState, Fragment } from "react";
+import { useEffect, useState, Fragment, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
 import Header from "../../components/Header/Header";
 import GradeTable from "../../components/GradeTable/GradeTable";
+import GradeDetailModal from "../../components/Modal/GradeDetailModal";
 
 import Typography from "@mui/material/Typography";
 import Card from "@mui/material/Card";
@@ -15,6 +16,7 @@ import Collapse from "@mui/material/Collapse";
 import axiosUser from "../../api/user.axios";
 import axiosGrade from "../../api/grade.axios";
 import axiosClassroom from "../../api/classroom.axios";
+import axiosStudentIdentification from "../../api/student-identification.axios";
 
 import { userInfoActions } from "../../stores/userInfoStore";
 
@@ -26,8 +28,42 @@ const MyGrades = () => {
   const { classroomId } = useParams();
   const [isLoading, setIsLoading] = useState(false);
   const [studentId, setStudentId] = useState(null);
+  const [studentName, setStudentName] = useState(null);
   const [myGrades, setMyGrades] = useState([]);
   const [gradeTotal, setGradeTotal] = useState(null);
+  const [isGradeDetailOpen, setGradeDetailOpen] = useState(false);
+  const [selectedGrade, setSelectedGrade] = useState({});
+
+  const fetchMyGrades = useCallback(async (tempStudentId) => {
+    setIsLoading(true);
+    try {
+      const gradeStructures = await axiosGrade.get(
+        `/structure/${classroomId}`,
+        {
+          headers: { Authorization: "Bearer " + accessToken },
+        }
+      );
+
+      let grades;
+      if (tempStudentId) {
+        grades = await axiosGrade.get(
+          `/myGrade/${classroomId}/${tempStudentId}`,
+          {
+            headers: { Authorization: "Bearer " + accessToken },
+          }
+        );
+      }
+
+      const [tempGrades, total] = calculateMyGrades(gradeStructures, grades);
+      setMyGrades(tempGrades);
+      setGradeTotal(total);
+
+      setIsLoading(false);
+    } catch (err) {
+      setIsLoading(false);
+      console.log(err);
+    }
+  }, [accessToken, classroomId]);
 
   const currentUrl = window.location.pathname;
 
@@ -36,7 +72,7 @@ const MyGrades = () => {
   }, [currentUrl]);
 
   useEffect(() => {
-    const fetchMyGrades = async () => {
+    const fetchInitialData = async () => {
       setIsLoading(true);
 
       try {
@@ -53,26 +89,15 @@ const MyGrades = () => {
         const tempStudentId = userInfo?.studentId;
         setStudentId(tempStudentId);
 
-        const gradeStructures = await axiosGrade.get(
-          `/structure/${classroomId}`,
+        const studentInfo = await axiosStudentIdentification.get(
+          `/${tempStudentId}`,
           {
             headers: { Authorization: "Bearer " + accessToken },
           }
         );
+        setStudentName(studentInfo.name);
 
-        let grades;
-        if (tempStudentId) {
-          grades = await axiosGrade.get(
-            `/myGrade/${classroomId}/${tempStudentId}`,
-            {
-              headers: { Authorization: "Bearer " + accessToken },
-            }
-          );
-        }
-
-        const [tempGrades, total] = calculateMyGrades(gradeStructures, grades);
-        setMyGrades(tempGrades);
-        setGradeTotal(total);
+        fetchMyGrades(tempStudentId);
 
         setIsLoading(false);
       } catch (err) {
@@ -81,8 +106,24 @@ const MyGrades = () => {
       }
     };
 
-    fetchMyGrades();
-  }, [accessToken, classroomId, dispatch]);
+    fetchInitialData();
+  }, [accessToken, classroomId, dispatch, fetchMyGrades]);
+
+  const handleCloseGradeDetailModal = () => {
+    setGradeDetailOpen(false)
+    fetchMyGrades(studentId);
+  };
+  const handleOpenGradeDetail = ({
+    gradeStructureId,
+    gradeStructureName,
+    point,
+    total,
+    createdAt,
+    updatedAt
+  }) => {
+    setSelectedGrade({ gradeStructureId, gradeStructureName, point, total, createdAt, updatedAt });
+    setGradeDetailOpen(true);
+  };
 
   return (
     <Fragment>
@@ -105,13 +146,44 @@ const MyGrades = () => {
             </Alert>
           </Collapse>
 
+          {studentId && studentName && (
+            <Typography sx={{ mb: 2 }}>
+              Grades of <strong>{studentId}</strong> -{" "}
+              <strong>{studentName}</strong>
+            </Typography>
+          )}
+
           <GradeTable
             myGrades={myGrades}
             gradeTotal={gradeTotal}
             clickable={true}
+            handleOpenGradeDetail={handleOpenGradeDetail}
           />
         </Box>
       </Container>
+
+      {isGradeDetailOpen && (
+        <GradeDetailModal
+          gradeId={{
+            classroomId,
+            gradeStructureId: selectedGrade.gradeStructureId,
+            studentIdentificationId: studentId,
+          }}
+          additionalInfos={{
+            studentId,
+            studentName,
+            gradeStructureName: selectedGrade.gradeStructureName,
+            createdAt: selectedGrade.createdAt,
+            updatedAt: selectedGrade.updatedAt
+          }}
+          grade={{
+            point: selectedGrade.point,
+            total: selectedGrade.total
+          }}
+          isOpen={isGradeDetailOpen}
+          handleClose={handleCloseGradeDetailModal}
+        />
+      )}
     </Fragment>
   );
 };

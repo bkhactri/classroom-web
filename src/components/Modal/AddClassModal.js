@@ -54,10 +54,7 @@ const AddClassModal = ({ isOpen, handleClose }) => {
   return (
     <Modal
       open={isOpen}
-      onClose={() => {
-        setValidForm(false);
-        handleClose();
-      }}
+      onClose={handleClose}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
@@ -98,6 +95,7 @@ const AddClassModal = ({ isOpen, handleClose }) => {
             variant="filled"
             fullWidth
             margin="dense"
+            disabled={!isUserActive}
           />
           <TextField
             inputRef={classSectionEl}
@@ -106,6 +104,7 @@ const AddClassModal = ({ isOpen, handleClose }) => {
             variant="filled"
             fullWidth
             margin="dense"
+            disabled={!isUserActive}
           />
           <TextField
             inputRef={classSubjectEl}
@@ -114,6 +113,7 @@ const AddClassModal = ({ isOpen, handleClose }) => {
             variant="filled"
             fullWidth
             margin="dense"
+            disabled={!isUserActive}
           />
           <TextField
             inputRef={classRoomIdEl}
@@ -122,6 +122,7 @@ const AddClassModal = ({ isOpen, handleClose }) => {
             variant="filled"
             fullWidth
             margin="dense"
+            disabled={!isUserActive}
           />
         </form>
         <div className={classes.addModalTool}>
@@ -130,17 +131,14 @@ const AddClassModal = ({ isOpen, handleClose }) => {
               variant="text"
               className={classes.addModalButton}
               color="inherit"
-              onClick={() => {
-                setValidForm(false);
-                handleClose();
-              }}
+              onClick={handleClose}
             >
               Cancel
             </Button>
             <Button
               variant="text"
               className={classes.addModalButton}
-              disabled={!isValidForm && !isUserActive}
+              disabled={!isValidForm || !isUserActive}
               color="inherit"
               onClick={handleCreateClass}
             >

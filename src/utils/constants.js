@@ -8,3 +8,8 @@ export const GRADE_STATUS = {
   DRAFT: "DRAFT",
   FINALIZED: "FINALIZED"
 }
+
+export const REVIEW_REQUEST_STATUS = {
+  ACCEPTED: "ACCEPTED",
+  DENIED: "DENIED"
+}

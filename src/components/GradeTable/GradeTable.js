@@ -10,7 +10,15 @@ import FunctionsIcon from "@mui/icons-material/Functions";
 
 import { GRADE_STATUS } from "../../utils/constants";
 
-const GradeTable = ({ myGrades, gradeTotal, clickable }) => {
+const GradeTable = ({
+  myGrades,
+  gradeTotal,
+  clickable,
+  handleOpenGradeDetail,
+}) => {
+  const canOpenModal = (gradeStatus) =>
+    clickable && gradeStatus === GRADE_STATUS.FINALIZED;
+
   return (
     <TableContainer>
       <Table>
@@ -23,11 +31,22 @@ const GradeTable = ({ myGrades, gradeTotal, clickable }) => {
           {myGrades.map((myGrade) => {
             return (
               <TableRow
-                hover={clickable}
+                hover={canOpenModal(myGrade.status)}
+                onClick={() =>
+                  canOpenModal(myGrade.status) &&
+                  handleOpenGradeDetail({
+                    gradeStructureId: myGrade.gradeStructureId,
+                    gradeStructureName: myGrade.name,
+                    point: myGrade.point,
+                    total: myGrade.total,
+                    createdAt: myGrade.createdAt,
+                    updatedAt: myGrade.updatedAt
+                  })
+                }
                 key={myGrade.name}
                 sx={{
                   "&:last-child td, &:last-child th": { border: 0 },
-                  cursor: clickable ? "pointer" : "default",
+                  cursor: canOpenModal(myGrade.status) ? "pointer" : "default",
                 }}
               >
                 <TableCell>

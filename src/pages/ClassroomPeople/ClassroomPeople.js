@@ -140,19 +140,20 @@ const ClassroomPeople = () => {
         onClose={handleCloseSnackBar}
         message={snackBarMessage}
       />
-      <InviteEmailModal
+      {isOpenInviteTeacherModal && <InviteEmailModal
         isOpen={isOpenInviteTeacherModal}
         handleClose={handleCloseTeacherInviteModal}
         classroom={classroom}
         type={"TEACHER"}
-      />
+      />}
 
-      <InviteEmailModal
+      {isOpenInviteStudentModal && <InviteEmailModal
         isOpen={isOpenInviteStudentModal}
         handleClose={handleCloseStudentInviteModal}
         classroom={classroom}
         type={"STUDENT"}
-      />
+      />}
+      
       <Header loading={isLoading} classroom={2} classID={classroomId} />
       <Container classes={{ root: classes.classroomPeopleContainer }}>
         <List sx={{ marginBottom: 3 }}>
