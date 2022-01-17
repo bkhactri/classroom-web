@@ -1,5 +1,6 @@
-import { React, useState, useRef, useEffect } from "react";
+import { React, useState, useRef, useEffect, Fragment } from "react";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { format } from "date-fns";
 import { darken } from "@mui/material/styles";
 
@@ -26,6 +27,8 @@ import AddIcon from "@mui/icons-material/Add";
 import Divider from "@mui/material/Divider";
 import Swal from "sweetalert2";
 
+import Loading from "../Loading/Loading";
+
 import axiosGradeRequest from "../../api/grade-request.axios";
 import axiosGrade from "../../api/grade.axios";
 
@@ -42,8 +45,12 @@ const GradeDetailModal = ({
   handleClose,
   grade,
 }) => {
+  const currentLanguageCode = localStorage.getItem("language") || "vi-VN";
+  const { t: translation } = useTranslation();
   const accessToken = useSelector((state) => state.auth.token);
   const role = useSelector((state) => state.userInfo.role);
+  const userId = useSelector((state) => state.userInfo.userId);
+  const [isLoading, setIsLoading] = useState(false);
   const [isGradeValid, setGradeValid] = useState(false);
   const [isReasonValid, setReasonValid] = useState(false);
   const [isMessageValid, setMessageValid] = useState(false);
@@ -57,15 +64,17 @@ const GradeDetailModal = ({
   const messageEl = useRef(null);
 
   useEffect(() => {
-    const fetchRequests = async () => {
-      if (
-        !gradeId?.classroomId ||
-        !gradeId?.gradeStructureId ||
-        !gradeId?.studentIdentificationId
-      ) {
-        return;
-      }
+    if (
+      !gradeId?.classroomId ||
+      !gradeId?.gradeStructureId ||
+      !gradeId?.studentIdentificationId
+    ) {
+      return;
+    }
 
+    setIsLoading(true);
+
+    const fetchRequests = async () => {
       try {
         const tempRequests = await axiosGradeRequest.get(
           `/${gradeId?.classroomId}/${gradeId?.gradeStructureId}/${gradeId?.studentIdentificationId}`,
@@ -83,37 +92,37 @@ const GradeDetailModal = ({
 
     fetchRequests();
 
-    setMessages([
-      {
-        sender: {
-          id: "f44a3e81-2e03-4bf1-b805-d9b81678c7b0",
-          studentId: "18120291",
-          username: "Binh",
-        },
-        receiver: {
-          id: "c00b1514-5146-4f9a-b3ed-77b25eaddf82",
-          username: "Tri",
-        },
-        message:
-          "Fuck you man!! you peopl sajdpoijwqpjepwqjepwqjepasdsaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        createdAt: "2021-12-18 16:32:42.73+07",
-      },
-      {
-        sender: {
-          id: "c00b1514-5146-4f9a-b3ed-77b25eaddf82",
-          username: "Tri",
-        },
-        receiver: {
-          id: "f44a3e81-2e03-4bf1-b805-d9b81678c7b0",
-          studentId: "18120291",
-          username: "Binh",
-        },
-        message: "Fuck you too!!",
-        createdAt: "2021-12-18 16:38:57.789+07",
-      },
-    ]);
-    // eslint-disable-next-line
-  }, []);
+    const fetchMessages = async () => {
+      try {
+        const tempMessages = await axiosGradeRequest.get(
+          `/message/${gradeId?.classroomId}/${gradeId?.gradeStructureId}/${gradeId?.studentIdentificationId}`,
+          { headers: { Authorization: "Bearer " + accessToken } }
+        );
+
+        let currentSenderId = tempMessages?.[0].sender.id;
+        setMessages(tempMessages.map((message, index) => {
+          if (index === 0 || currentSenderId !== message.sender.id) {
+            message.willDisplayName = true;
+          } else {
+            message.willDisplayName = false;
+          }
+
+          return message;
+        }));
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchMessages();
+
+    setIsLoading(false);
+  }, [
+    accessToken,
+    gradeId?.classroomId,
+    gradeId?.gradeStructureId,
+    gradeId?.studentIdentificationId,
+  ]);
 
   const handleGradeChange = (event) => {
     const number = Number(event.target.value || event);
@@ -137,8 +146,6 @@ const GradeDetailModal = ({
 
   const handleExtraInputsClose = (event) => {
     setExtraInputsOpen(false);
-    gradeEl.current.value = null;
-    reasonEl.current.value = "";
   };
 
   const handleMessageChange = (event) => {
@@ -150,11 +157,16 @@ const GradeDetailModal = ({
       return;
     }
 
+    setIsLoading(true);
+
     Swal.fire({
-      title: "Creating grade review request",
+      title: translation("gradeDetail.creatingRequestConfirm1"),
+      showCancelButton: true,
+      confirmButtonText: translation("confirm"),
+      cancelButtonText: translation("cancel"),
       html:
-        `<p>Are you sure you want to create the request?</p>` +
-        `<p>You will not able to update or delete the request after</p>`,
+        `<p>${translation("gradeDetail.creatingRequestConfirm2")}</p>` +
+        `<p>${translation("gradeDetail.creatingRequestConfirm3")}</p>`,
     }).then((result) => {
       if (result.isConfirmed) {
         axiosGradeRequest
@@ -173,12 +185,16 @@ const GradeDetailModal = ({
             gradeEl.current.value = null;
             reasonEl.current.value = "";
 
+            setIsLoading(false);
             // NOTIFICATION NEEDED
           })
           .catch((err) => {
+            setIsLoading(false);
             console.log(err);
           });
       }
+
+      setIsLoading(false);
     });
   };
 
@@ -186,6 +202,8 @@ const GradeDetailModal = ({
     if (!isGradeValid && !point) {
       return;
     }
+
+    setIsLoading(true);
 
     axiosGrade
       .post(
@@ -203,8 +221,11 @@ const GradeDetailModal = ({
         setCurrentPoint(Number(point || gradeEl.current.value));
         setReviewRequest(null);
         setExtraInputsOpen(false);
+
+        setIsLoading(false);
       })
       .catch((err) => {
+        setIsLoading(false);
         console.log(err);
       });
   };
@@ -214,11 +235,16 @@ const GradeDetailModal = ({
       return;
     }
 
+    setIsLoading(true);
+
     Swal.fire({
       title: `${
-        status === REVIEW_REQUEST_STATUS.ACCEPTED ? "Accept" : "Deny"
-      } grade review request`,
-      text: "Are you sure you want to do this?",
+        status === REVIEW_REQUEST_STATUS.ACCEPTED ? translation("gradeDetail.accept") : translation("gradeDetail.deny")
+      } ${translation("gradeDetail.gradeReviewRequest")}`,
+      showCancelButton: true,
+      confirmButtonText: translation("confirm"),
+      cancelButtonText: translation("cancel"),
+      text: translation("gradeDetail.resolveRequestConfirm"),
     }).then((result) => {
       if (result.isConfirmed) {
         axiosGradeRequest
@@ -245,23 +271,60 @@ const GradeDetailModal = ({
                 return r;
               })
             );
+
+            setIsLoading(false);
           })
           .catch((err) => {
+            setIsLoading(false);
             console.log(err);
           });
       }
+
+      setIsLoading(false);
     });
   };
 
   const sendMessage = () => {
-    const message = messageEl.current.value;
-    console.log("message", message);
-    messageEl.current.value = "";
+    if (!Boolean(messageEl.current.value?.length)) {
+      return;
+    }
+    console.log("huh,", { privateMessage: messageEl.current.value });
+
+    setIsLoading(true);
+
+    axiosGradeRequest
+      .post(
+        `/message/${gradeId?.classroomId}/${gradeId?.gradeStructureId}/${gradeId?.studentIdentificationId}`,
+        { privateMessage: messageEl.current.value },
+        { headers: { Authorization: "Bearer " + accessToken } }
+      )
+      .then((resultPrivateMessage) => {
+        if (
+          messages[messages.length - 1]?.sender?.id !==
+          resultPrivateMessage?.sender?.id
+        ) {
+          resultPrivateMessage.willDisplayName = true;
+        } else {
+          resultPrivateMessage.willDisplayName = false;
+        }
+        setMessages(messages.concat(resultPrivateMessage));
+        messageEl.current.value = "";
+
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        console.log(err);
+      });
   };
 
   const determineYourself = (sender) => {
-    return sender?.studentId === additionalInfos?.studentId;
+    return sender?.id === userId;
   };
+
+  const formatDate = (date) => {
+    return format(new Date(date), currentLanguageCode === "vi-VN" ? "dd/MM/yyyy" : "PPP");
+  }
 
   return (
     <Modal
@@ -269,8 +332,11 @@ const GradeDetailModal = ({
       onClose={handleClose}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
+      sx={{ zIndex: 1402 }}
     >
       <Container maxWidth="lg" component={Card} sx={{ my: 5 }}>
+        {isLoading && <Loading isOverlay={true} />}
+
         <Grid container flexDirection="row">
           <Grid item xs={7}>
             <Box
@@ -287,16 +353,14 @@ const GradeDetailModal = ({
                 </Typography>
                 <Typography color="gray">
                   {additionalInfos?.studentId}{" "}
-                  <FiberManualRecordIcon sx={{ fontSize: "0.75em" }} />{" "}
-                  {additionalInfos?.createdAt &&
-                    additionalInfos?.updatedAt &&
-                    `${format(
-                      new Date(additionalInfos?.createdAt),
-                      "PPP"
-                    )} (Edited ${format(
-                      new Date(additionalInfos?.updatedAt),
-                      "PPP"
-                    )})`}
+                  {additionalInfos?.createdAt && additionalInfos?.updatedAt && (
+                    <Fragment>
+                      <FiberManualRecordIcon sx={{ fontSize: "0.75em" }} />{" "}
+                      {formatDate(additionalInfos?.createdAt)}{" "}
+                      ({translation("gradeDetail.edited") + " "}
+                      {formatDate(additionalInfos?.updatedAt)})
+                    </Fragment>
+                  )}
                 </Typography>
                 <Stack direction="row" spacing={2} mt={2}>
                   {isExtraInputsOpen ? (
@@ -345,7 +409,7 @@ const GradeDetailModal = ({
                       inputRef={reasonEl}
                       id="reason"
                       name="reason"
-                      label="Reason"
+                      label={translation("gradeDetail.reasonLabel")}
                       onChange={handleReasonChange}
                       multiline
                       rows={3}
@@ -357,10 +421,10 @@ const GradeDetailModal = ({
                       arrow
                       title={
                         Boolean(reviewRequest)
-                          ? "Cannot edit or create new request until the current one has been resolved"
+                          ? translation("gradeDetail.extraInputsTooltipError")
                           : [ROLE.OWNER, ROLE.TEACHER].includes(role)
-                          ? "Edit grade"
-                          : "Create grade review request"
+                          ? translation("gradeDetail.extraInputsTooltipTeacher")
+                          : translation("gradeDetail.extraInputsTooltipStudent")
                       }
                     >
                       <span style={{ alignSelf: "center" }}>
@@ -377,7 +441,7 @@ const GradeDetailModal = ({
                   )}
 
                   {isExtraInputsOpen && role === ROLE.STUDENT && (
-                    <Tooltip arrow title="Add grade review request">
+                    <Tooltip arrow title={translation("gradeDetail.addReviewRequest")}>
                       <span style={{ alignSelf: "center" }}>
                         <Fab
                           size="small"
@@ -393,7 +457,7 @@ const GradeDetailModal = ({
 
                   {isExtraInputsOpen &&
                     [ROLE.OWNER, ROLE.TEACHER].includes(role) && (
-                      <Tooltip arrow title="Add grade review request">
+                      <Tooltip arrow title={translation("gradeDetail.saveGrade")}>
                         <span style={{ alignSelf: "center" }}>
                           <Fab
                             size="small"
@@ -451,16 +515,21 @@ const GradeDetailModal = ({
                         flexDirection: "column",
                       }}
                     >
-                      <Typography
-                        sx={{
-                          alignSelf: determineYourself(mess.sender)
-                            ? "end"
-                            : "start",
-                          mr: 1,
-                        }}
-                      >
-                        {determineYourself(mess.sender) ? "You" : "They"}
-                      </Typography>
+                      {mess?.willDisplayName && (
+                        <Typography
+                          sx={{
+                            alignSelf: determineYourself(mess.sender)
+                              ? "end"
+                              : "start",
+                            mr: 1,
+                          }}
+                        >
+                          {determineYourself(mess.sender)
+                            ? translation("you")
+                            : mess.sender?.username}
+                        </Typography>
+                      )}
+
                       <Paper
                         sx={{
                           p: 2,
@@ -487,7 +556,7 @@ const GradeDetailModal = ({
                     onChange={handleMessageChange}
                     margin="normal"
                     id="message"
-                    label="Private Message"
+                    label={translation("gradeDetail.privateMessageLavel")}
                     name="message"
                     multiline
                     fullWidth
@@ -502,7 +571,7 @@ const GradeDetailModal = ({
                     disabled={!isMessageValid}
                     onClick={sendMessage}
                   >
-                    SEND
+                    {translation("gradeDetail.SEND")}
                   </Button>
                 </Grid>
               </Grid>
@@ -522,7 +591,7 @@ const GradeDetailModal = ({
                 alignItems: "center",
               }}
             >
-              <Typography variant="h6">Review request history</Typography>
+              <Typography variant="h6">{translation("gradeDetail.reviewRequestHistory")}</Typography>
 
               <Collapse
                 in={Boolean(reviewRequest)}
@@ -530,15 +599,15 @@ const GradeDetailModal = ({
               >
                 <Alert severity="info">
                   <Typography>
-                    <strong>Grade request:</strong> {reviewRequest?.point}
+                    <strong>{translation("gradeDetail.gradeRequested")}:</strong> {reviewRequest?.point}
                   </Typography>
                   <Typography sx={{ wordBreak: "break-all" }}>
-                    <strong>Reason:</strong> {reviewRequest?.reason}
+                    <strong>{translation("gradeDetail.reasonLabel")}:</strong> {reviewRequest?.reason}
                   </Typography>
                   {reviewRequest?.createdAt && (
                     <Typography mt={1}>
-                      <strong>Created on</strong>{" "}
-                      {format(new Date(reviewRequest.createdAt), "PPP")}
+                      <strong>{translation("gradeDetail.createdOn")}</strong>{" "}
+                      {formatDate(reviewRequest.createdAt)}
                     </Typography>
                   )}
                   {[ROLE.OWNER, ROLE.TEACHER].includes(role) && (
@@ -555,7 +624,7 @@ const GradeDetailModal = ({
                           resolveReviewRequest(REVIEW_REQUEST_STATUS.ACCEPTED)
                         }
                       >
-                        ACCEPT
+                        {translation("gradeDetail.ACCEPT")}
                       </Button>
                       <Button
                         variant="contained"
@@ -564,7 +633,7 @@ const GradeDetailModal = ({
                           resolveReviewRequest(REVIEW_REQUEST_STATUS.DENIED)
                         }
                       >
-                        DENY
+                        {translation("gradeDetail.DENY")}
                       </Button>
                     </Stack>
                   )}
@@ -594,24 +663,24 @@ const GradeDetailModal = ({
                       }}
                     >
                       <Typography fontWeight="bold">
-                        Grade request:{" "}
+                        {translation("gradeDetail.gradeRequested")}:{" "}
                         <span style={{ color: "#6B5B95" }}>
                           {request.point}
                         </span>
                       </Typography>
                       <Typography sx={{ wordBreak: "break-all" }}>
-                        <strong>Reason:</strong> {request.reason}
+                        <strong>{translation("gradeDetail.reasonLabel")}:</strong> {request.reason}
                       </Typography>
                       {request.resolveStatus && (
                         <Typography>
-                          <strong>Resolved by:</strong>{" "}
+                          <strong>{translation("gradeDetail.resolvedBy")}:</strong>{" "}
                           {request?.resolver?.username}
                         </Typography>
                       )}
                       {request?.createdAt && (
                         <Typography mt={1}>
-                          <strong>Created on</strong>{" "}
-                          {format(new Date(request.createdAt), "PPP")}
+                          <strong>{translation("gradeDetail.createdOn")}</strong>{" "}
+                          {formatDate(request.createdAt)}
                         </Typography>
                       )}
                     </Paper>

@@ -1,20 +1,29 @@
-import Container from "@mui/material/Container";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
-const Loading = () => {
+import { alpha } from "@mui/material/styles";
+
+const Loading = ({ isOverlay = false }) => {
   return (
-    <Container maxWidth="md">
-      <Box
+    <Box
+      sx={{
+        position: "fixed",
+        width: "100%",
+        height: "100%",
+        top: 0,
+        left: 0,
+        backgroundColor: isOverlay ? alpha("#000", 0.5) : "transparent",
+        zIndex: 1403
+      }}
+    >
+      <CircularProgress
         sx={{
           position: "absolute",
           top: "50%",
           left: "50%",
-          transform: "translate(-50%, -50%)",
         }}
-      >
-        <CircularProgress size="80px" />
-      </Box>
-    </Container>
+        size="80px"
+      />
+    </Box>
   );
 };
 
