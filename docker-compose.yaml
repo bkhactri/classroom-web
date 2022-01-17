@@ -1,0 +1,36 @@
+version: '2.1'
+
+services:
+
+  classroom-frontend: 
+    image: classroom-frontend
+    ports:
+      - '3000:3000'
+    environment:
+    - REACT_APP_API_END_POINT=http://classroom-backend:3000
+    depends_on: 
+      - classroom-backend
+  classroom-backend: 
+    image: classroom-backend
+    ports:
+      - '8000:8000'
+    environment:
+    - DATABASE_HOST=db
+    - CLIENT_HOST=http://classroom-frontend:3000
+    - REACT_CLIENT_END_POINT=http://classroom-frontend:3000
+    restart: on-failure
+    depends_on: 
+      db:
+        condition: service_healthy
+  db:
+    container_name: db
+    image: 'postgres:14'
+    environment:
+      - POSTGRES_USER=cfcadmin
+      - POSTGRES_PASSWORD=asdf1234
+      - POSTGRES_DB=classroom
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d classroom -U cfcadmin"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
