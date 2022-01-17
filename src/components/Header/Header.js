@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import { React, useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
@@ -26,11 +26,12 @@ import { userInfoActions } from "../../stores/userInfoStore";
 import { classroomActions } from "../../stores/classroomsStore";
 import { makeStyles } from "@mui/styles";
 import axiosAuth from "../../api/auth.axios";
+import axiosUser from "../../api/user.axios";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import Globe from "../Globe/Globe";
 import { useTranslation } from "react-i18next";
-
 import { ROLE } from "../../utils/constants";
+import socketIOClient from "socket.io-client";
 
 const useStyles = makeStyles({
   selected: {
@@ -48,11 +49,15 @@ const useStyles = makeStyles({
 const Header = ({ loading, classroom = 0, classID = "", classrooms }) => {
   const { t } = useTranslation();
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const accessToken = useSelector((state) => state.auth.token);
+  const userId = useSelector((state) => state.userInfo.userId);
   const role = useSelector((state) => state.userInfo.role);
   const avatarUrl = useSelector((state) => state.userInfo.avatarUrl);
   const styles = useStyles();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [newNotifications, setNewNotifications] = useState([]);
+  const [notifications, setNotifications] = useState([]);
   const [isOpenUserMenu, setOpenUserMenu] = useState(null);
   const [isOpenNofitications, setIsOpenNofitications] = useState(null);
   const [isOpenUserTool, setOpenUserTool] = useState(null);
@@ -61,6 +66,53 @@ const Header = ({ loading, classroom = 0, classID = "", classrooms }) => {
   const [isOpenJoinClassModal, setOpenJoinClassModal] = useState(false);
   const isHomePage = window.location.pathname === "/";
   const isInsideClassroom = window.location.pathname.includes("classroom/");
+
+  const socketRef = useRef();
+
+  useEffect(() => {
+    socketRef.current = socketIOClient.connect(
+      process.env.REACT_APP_API_END_POINT
+    );
+
+    if (isAuthenticated) {
+      socketRef.current.emit("newUser", { userId });
+
+      socketRef.current.on("gradeFinalized", (data) => {
+        const userNotification = data.result.filter(
+          (notice) => notice.userId === userId
+        );
+        console.log(userNotification);
+        setNotifications(notifications.concat(userNotification));
+        setNewNotifications(newNotifications.concat(userNotification));
+      });
+    }
+
+    return () => {
+      socketRef.current.disconnect();
+    };
+  }, [userId, isAuthenticated, notifications, newNotifications]);
+
+  useEffect(() => {
+    const getNotifications = async () => {
+      try {
+        const notifications = await axiosUser.get(`/notifications/${userId}`, {
+          headers: { Authorization: "Bearer " + accessToken },
+        });
+
+        const newNotifications = notifications.filter(
+          (notification) => notification.viewStatus === false
+        );
+        setNewNotifications(newNotifications);
+        setNotifications(notifications);
+      } catch (error) {
+        throw new Error(error);
+      }
+    };
+
+    if (isAuthenticated) {
+      getNotifications();
+    }
+  }, [accessToken, isAuthenticated, userId]);
 
   const handleOpenAddClassModal = () => {
     setOpenUserTool(null);
@@ -78,8 +130,10 @@ const Header = ({ loading, classroom = 0, classID = "", classrooms }) => {
   const handleUserMenu = (event) => setOpenUserMenu(event.currentTarget);
   const handleUserTool = (event) => setOpenUserTool(event.currentTarget);
   const handleCloseUserTool = () => setOpenUserTool(null);
-  const showNoficationsList = (event) =>
+  const showNoficationsList = async (event) => {
     setIsOpenNofitications(event.currentTarget);
+  };
+
   const handleCloseNofiticationsList = () => setIsOpenNofitications(null);
 
   const toggleDrawer = (anchor, open) => (event) => {
@@ -109,6 +163,30 @@ const Header = ({ loading, classroom = 0, classID = "", classrooms }) => {
     return () => {
       navigate(`/classroom/${classID}/${location}`);
     };
+  };
+
+  const onClickNotification = async (link, noticeId) => {
+    try {
+      if (newNotifications?.length > 0) {
+        await axiosUser.put(
+          `/notifications/`,
+          { userId, noticeId },
+          {
+            headers: { Authorization: "Bearer " + accessToken },
+          }
+        );
+        setNewNotifications([]);
+        const newNotifications = notifications.map((notification) => {
+          return notification.id === noticeId
+            ? { ...notification, viewStatus: true }
+            : { ...notification };
+        });
+        setNotifications(newNotifications);
+        navigate(link);
+      }
+    } catch (error) {
+      throw new Error(error);
+    }
   };
 
   return (
@@ -253,7 +331,11 @@ const Header = ({ loading, classroom = 0, classID = "", classrooms }) => {
                     aria-haspopup="true"
                     onClick={showNoficationsList}
                   >
-                    <Badge badgeContent={0} max={99} color="error">
+                    <Badge
+                      badgeContent={newNotifications?.length}
+                      max={99}
+                      color="error"
+                    >
                       <NotificationsIcon
                         sx={{ color: "#6e6e6e", fontSize: "30px" }}
                       />
@@ -267,23 +349,41 @@ const Header = ({ loading, classroom = 0, classID = "", classrooms }) => {
                   >
                     <List
                       sx={{
-                        width: "250px",
-                        maxWidth: "400px",
+                        width: "300px",
+                        maxWidth: "500px",
                         bgcolor: "background.paper",
                         overflow: "auto",
+                        padding: "6px",
                       }}
                     >
-                      {[1, 2, 3].map((value) => (
-                        <ListItem
-                          key={value}
-                          sx={{
-                            cursor: "pointer",
-                            "&:hover": { bgcolor: "#ebebeb" },
-                          }}
-                        >
-                          <ListItemText primary={`Line item ${value}`} />
-                        </ListItem>
-                      ))}
+                      {notifications?.length > 0 ? (
+                        notifications?.map((notification, index) => (
+                          <ListItem
+                            key={index}
+                            sx={{
+                              bgcolor: !notification.viewStatus
+                                ? "#7aaff0"
+                                : "transparent",
+                              cursor: "pointer",
+                              "&:hover": { bgcolor: "#b5d6ff" },
+                            }}
+                          >
+                            <ListItemText
+                              primary={`${notification.message}`}
+                              onClick={() =>
+                                onClickNotification(
+                                  notification.link,
+                                  notification.id
+                                )
+                              }
+                            />
+                          </ListItem>
+                        ))
+                      ) : (
+                        <Typography sx={{ textAlign: "center" }}>
+                          {t("notice.noNotifications")}
+                        </Typography>
+                      )}
                     </List>
                   </Menu>
                 </div>

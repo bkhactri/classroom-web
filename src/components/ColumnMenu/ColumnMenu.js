@@ -10,6 +10,7 @@ import classes from "./ColumnMenu.module.css";
 import { downloadFile } from "../../utils/index";
 import { useTranslation } from "react-i18next";
 import axiosGrade from "../../api/grade.axios";
+import Swal from "sweetalert2";
 
 const CustomColumnMenuComponent = (props) => {
   const { t } = useTranslation();
@@ -21,7 +22,7 @@ const CustomColumnMenuComponent = (props) => {
     const gradeId = currentColumn.field;
 
     try {
-      const response = await axiosGrade.put(
+      await axiosGrade.put(
         `/finalizedColumn`,
         {
           gradeId: gradeId,
@@ -32,7 +33,11 @@ const CustomColumnMenuComponent = (props) => {
         }
       );
 
-      console.log(response);
+      Swal.fire({
+        title: t("success"),
+        text: t("notice.completedFinalizedGrade"),
+        icon: "success",
+      });
 
       // NOTIFICATION NEEDED
     } catch (err) {

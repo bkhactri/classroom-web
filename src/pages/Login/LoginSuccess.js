@@ -5,10 +5,11 @@ import { userInfoActions } from "../../stores/userInfoStore";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 const LoginSuccess = (props) => {
+  // eslint-disable-next-line no-unused-vars
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
+
   useEffect(() => {
     const getUserAuthData = () => {
       const id = searchParams.get("id");

@@ -123,7 +123,9 @@
     "classCodeCopy": "Đã sao chép mã lớp",
     "completedUpdateInfo": "Đã hoàn thành cập nhật dữ liệu người dùng",
     "updatedUserPassword": "Đã cập nhật mật khẩu người dùng",
-    "completedMapId": "Đã cập nhật mã số sinh viên"
+    "completedMapId": "Đã cập nhật mã số sinh viên",
+    "completedFinalizedGrade": "Đã hoàn thành điểm",
+    "noNotifications": "Bạn không có thông báo nào"
   },
   "user": {
     "name": "Tên",

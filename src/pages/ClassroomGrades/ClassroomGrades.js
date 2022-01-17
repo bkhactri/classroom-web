@@ -461,8 +461,8 @@ const ClassroomGrades = () => {
                     {
                       studentId: id,
                       studentName: student.name,
-                      gradeCreatedAt: grade.createdAt,
-                      gradeUpdatedAt: grade.updatedAt,
+                      gradeCreatedAt: grade?.createdAt,
+                      gradeUpdatedAt: grade?.updatedAt,
                     },
                   ],
                   total,
