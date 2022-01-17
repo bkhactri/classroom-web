@@ -12,8 +12,10 @@ import { validatePassword } from "../../validators/fieldValidator";
 
 import axiosUser from "../../api/user.axios";
 import Swal from "sweetalert2";
+import { useTranslation } from "react-i18next";
 
 const ChangePassword = () => {
+  const { t } = useTranslation();
   const accessToken = useSelector((state) => state.auth.token);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -63,8 +65,8 @@ const ChangePassword = () => {
       setIsValid(false);
       event.target.reset();
       Swal.fire({
-        title: "Success!",
-        text: "Updated password",
+        title: t("success"),
+        text: t("accountPage.updatedPassword"),
         icon: "success",
       });
     } catch (error) {
@@ -91,12 +93,12 @@ const ChangePassword = () => {
         </Alert>
       )}
 
-      <Typography variant="h6">Change Password</Typography>
+      <Typography variant="h6">{t("auth.changePassword")}</Typography>
       <TextField
         fullWidth
         margin="normal"
         id="oldPassword"
-        label="Old Password"
+        label={t("auth.oldPassword")}
         name="oldPassword"
         type="password"
         inputRef={oldPasswordEl}
@@ -107,7 +109,7 @@ const ChangePassword = () => {
         fullWidth
         margin="normal"
         id="newPassword"
-        label="New Password"
+        label={t("auth.newPassword")}
         type="password"
         name="newPassword"
         onChange={handleChange}
@@ -121,7 +123,11 @@ const ChangePassword = () => {
           sx={{ mr: 2 }}
           disabled={isLoading || !isValid}
         >
-          {!isLoading ? "Update" : <CircularProgress sx={{ color: "#fff" }} />}
+          {!isLoading ? (
+            t("accountPage.update")
+          ) : (
+            <CircularProgress sx={{ color: "#fff" }} />
+          )}
         </Button>
       </Box>
     </Box>

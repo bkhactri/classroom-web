@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import Header from "../../../components/Header/Header";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-
+import { useTranslation } from "react-i18next";
 // import classes from "./Account.module.css";
 
 import InformationBlock from "../../../components/AdminDetailBlock/InformationBlock";
@@ -12,6 +12,7 @@ import axiosClassroom from "../../../api/classroom.axios";
 import { useParams } from "react-router";
 
 const ClassroomDetail = () => {
+  const { t } = useTranslation();
   const { classroomID } = useParams();
   const [isLoading, setIsLoading] = useState(false);
   const [info, setInfo] = useState([]);
@@ -21,43 +22,46 @@ const ClassroomDetail = () => {
     const fetchUserInfo = async () => {
       setIsLoading(true);
       try {
-        const results = await axiosClassroom.get(`/getClassroom/${classroomID}`, {
-          headers: { Authorization: "Bearer " + accessToken },
-        });
-        console.log('Info', results);
+        const results = await axiosClassroom.get(
+          `/getClassroom/${classroomID}`,
+          {
+            headers: { Authorization: "Bearer " + accessToken },
+          }
+        );
+        console.log("Info", results);
 
         let classroomInfo = results.data;
 
         const values = [
           {
             name: "ID",
-            value: classroomInfo.id
+            value: classroomInfo.id,
           },
           {
-            name: "Name",
-            value: classroomInfo.name
+            name: t("user.name"),
+            value: classroomInfo.name,
           },
           {
-            name: "Section",
-            value: classroomInfo.section
+            name: t("classroom.section"),
+            value: classroomInfo.section,
           },
           {
-            name: "Subject",
-            value: classroomInfo.subject
+            name: t("classroom.subject"),
+            value: classroomInfo.subject,
           },
           {
-            name: "Room",
-            value: classroomInfo.room
+            name: t("classroom.room"),
+            value: classroomInfo.room,
           },
           {
-            name: "Author",
-            value: classroomInfo.author
+            name: t("classroom.author"),
+            value: classroomInfo.author,
           },
           {
-            name: "Class Code",
-            value: classroomInfo.classCode
-          }          
-        ]
+            name: t("classroom.classCode"),
+            value: classroomInfo.classCode,
+          },
+        ];
 
         setInfo(values);
 
@@ -69,14 +73,14 @@ const ClassroomDetail = () => {
     };
 
     fetchUserInfo();
-  }, [accessToken, classroomID]);
+  }, [accessToken, classroomID, t]);
 
   return (
     <>
       <Header loading={isLoading} />
       <Container maxWidth="lg" sx={{ mt: 1, mb: 3 }}>
         <Typography variant="h5" sx={{ mt: 3, fontWeight: "600" }}>
-          Classroom Detail Infomation
+          {t("admin.classroomDetailInfo")}
         </Typography>
         <InformationBlock accountInfo={info} />
       </Container>

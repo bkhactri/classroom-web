@@ -9,8 +9,10 @@ import Alert from "@mui/material/Alert";
 
 import axiosUser from "../../api/user.axios";
 import Swal from "sweetalert2";
+import { useTranslation } from "react-i18next";
 
 const MapStudentId = ({ accountInfo }) => {
+  const { t } = useTranslation();
   const accessToken = useSelector((state) => state.auth.token);
   const [currentStuId, setCurrentStuId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -56,8 +58,8 @@ const MapStudentId = ({ accountInfo }) => {
       setCurrentStuId(studentId);
       setIsValid(false);
       Swal.fire({
-        title: "Success!",
-        text: "Map student ID",
+        title: t("success"),
+        text: t("accountPage.mappedStudentId"),
         icon: "success",
       });
     } catch (error) {
@@ -83,7 +85,7 @@ const MapStudentId = ({ accountInfo }) => {
           {error}
         </Alert>
       )}
-      <Typography variant="h6">Student ID</Typography>
+      <Typography variant="h6">{t("accountPage.studentId")}</Typography>
       <TextField
         fullWidth
         margin="normal"
@@ -101,7 +103,7 @@ const MapStudentId = ({ accountInfo }) => {
           sx={{ mr: 2 }}
           disabled={isLoading || !isValid}
         >
-          Map my ID
+          {t("accountPage.mapMyId")}
         </Button>
       </Box>
     </Box>

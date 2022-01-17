@@ -12,8 +12,10 @@ import ClassIcon from "@mui/icons-material/Class";
 import axiosClassroom from "../../api/classroom.axios";
 import AdminPanelSettings from "@mui/icons-material/AdminPanelSettings";
 import axiosUser from "../../api/user.axios";
+import { useTranslation } from "react-i18next";
 
 const Sidebar = ({ isOpen, toggleDrawerClose }) => {
+  const { t } = useTranslation();
   const accessToken = localStorage.getItem("accessToken");
   const currentUserId = useSelector((state) => state.userInfo.userId);
   const [userRole, setUserRole] = useState("NORMAL");
@@ -65,7 +67,7 @@ const Sidebar = ({ isOpen, toggleDrawerClose }) => {
       onClose={toggleDrawerClose("left", false)}
       transitionDuration={{ enter: 250, exit: 200 }}
       classes={{ paper: classes.drawer }}
-      style={{zIndex: 1401}}
+      style={{ zIndex: 1401 }}
     >
       <div className={classes.drawerLink}>
         <NavLink
@@ -77,7 +79,9 @@ const Sidebar = ({ isOpen, toggleDrawerClose }) => {
           <div className={classes.drawerItemIcon}>
             <HomeOutlinedIcon sx={{ fontSize: 25 }} />
           </div>
-          <div className={classes.drawerItemTitle}>Classes</div>
+          <div className={classes.drawerItemTitle}>
+            {t("classroom.classes")}
+          </div>
         </NavLink>
 
         <NavLink
@@ -88,7 +92,7 @@ const Sidebar = ({ isOpen, toggleDrawerClose }) => {
           <div className={classes.drawerItemIcon}>
             <FactCheckOutlinedIcon sx={{ fontSize: 25 }} />
           </div>
-          <div className={classes.drawerItemTitle}>To-do</div>
+          <div className={classes.drawerItemTitle}>{t("classroom.todo")}</div>
         </NavLink>
 
         {userRole === "ADMIN" ? (
@@ -100,15 +104,17 @@ const Sidebar = ({ isOpen, toggleDrawerClose }) => {
             <div className={classes.drawerItemIcon}>
               <AdminPanelSettings sx={{ fontSize: 25 }} />
             </div>
-            <div className={classes.drawerItemTitle}>Admin Panel</div>
+            <div className={classes.drawerItemTitle}>
+              {t("admin.adminPanel")}
+            </div>
           </NavLink>
-
         ) : null}
-
       </div>
       <Divider />
       <div className={classes.drawerEnrolled}>
-        <div className={classes.drawerEnrolledTitle}>Teaching</div>
+        <div className={classes.drawerEnrolledTitle}>
+          {t("classroom.teaching")}
+        </div>
         {teachingClass.length > 0 ? (
           teachingClass.map((classroom) => (
             <NavLink
@@ -124,14 +130,14 @@ const Sidebar = ({ isOpen, toggleDrawerClose }) => {
             </NavLink>
           ))
         ) : (
-          <h4 style={{ textAlign: "center" }}>
-            You haven't teached any Classroom
-          </h4>
+          <h4 style={{ textAlign: "center" }}>{t("classroom.noClassTeach")}</h4>
         )}
       </div>
       <Divider />
       <div className={classes.drawerEnrolled}>
-        <div className={classes.drawerEnrolledTitle}>Enrolled</div>
+        <div className={classes.drawerEnrolledTitle}>
+          {t("classroom.enrolled")}
+        </div>
         {enrolledClass.length > 0 ? (
           enrolledClass.map((classroom) => (
             <NavLink
@@ -148,7 +154,7 @@ const Sidebar = ({ isOpen, toggleDrawerClose }) => {
           ))
         ) : (
           <h4 style={{ textAlign: "center" }}>
-            You have't enrolled any Classroom
+            {t("classroom.noClassEnroll")}
           </h4>
         )}
       </div>

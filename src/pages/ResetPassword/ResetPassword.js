@@ -22,8 +22,10 @@ import IcloudLogo from "../../assets/icloud.png";
 import OutLookLogo from "../../assets/outlook.png";
 import ZohoLogo from "../../assets/zoho.png";
 import Header from "../../components/Header/Header";
+import { useTranslation } from "react-i18next";
 
 const ResetPassword = () => {
+  const { t } = useTranslation();
   const emailRef = useRef(null);
   const [hasSendMail, setHasSendMail] = useState(false);
   const [error, setError] = useState(null);
@@ -80,7 +82,7 @@ const ResetPassword = () => {
           variant="h5"
           sx={{ mb: 2, textAlign: "center" }}
         >
-          Forgot Password
+          {t("auth.forgotPassword")}
         </Typography>
         {hasSendMail ? (
           <Fragment>
@@ -89,8 +91,7 @@ const ResetPassword = () => {
               variant="h5"
               sx={{ mb: 4, textAlign: "center" }}
             >
-              We have send a reset password mail to your email please check and
-              see you around
+              {t("auth.hasSendEmail")}
             </Typography>
 
             <List
@@ -169,8 +170,8 @@ const ResetPassword = () => {
               variant="h6"
               sx={{ mb: 2, textAlign: "center" }}
             >
-              Please enter your username or email address. <br />
-              You will receive a link to create a new password via email.
+              {t("auth.resetPasswordHint1")} <br />
+              {t("auth.resetPasswordHint2")}
             </Typography>
             {error && <Alert severity="error">{error}</Alert>}
             <Box
@@ -185,7 +186,7 @@ const ResetPassword = () => {
                 required
                 fullWidth
                 id="email"
-                label="Email Address"
+                label={t("auth.emailAddress")}
                 name="email"
                 autoComplete="email"
                 autoFocus
@@ -198,13 +199,13 @@ const ResetPassword = () => {
                 disabled={isLoading}
               >
                 {!isLoading ? (
-                  "Reset Password"
+                  t("auth.resetPassword")
                 ) : (
                   <CircularProgress sx={{ color: "#fff" }} />
                 )}
               </Button>
               <Link to="/login" variant="body2">
-                Remember your password?
+                {t("auth.rememberPassword")}
               </Link>
             </Box>
           </Fragment>

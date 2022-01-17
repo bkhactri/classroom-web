@@ -16,12 +16,14 @@ import TableContainer from "@mui/material/TableContainer";
 import TableRow from "@mui/material/TableRow";
 import Collapse from "@mui/material/Collapse";
 import Alert from "@mui/material/Alert";
-import CircularProgress from '@mui/material/CircularProgress';
+import CircularProgress from "@mui/material/CircularProgress";
+import { useTranslation } from "react-i18next";
 
 import axiosMail from "../../api/mail.axios";
 import { validateEmail } from "../../validators/fieldValidator";
 
 const InviteEmailModal = ({ isOpen, handleClose, classroom, type }) => {
+  const { t } = useTranslation();
   const accessToken = useSelector((state) => state.auth.token);
   const [emails, setEmails] = useState([]);
   const [inputEmail, setInputEmail] = useState("");
@@ -71,9 +73,10 @@ const InviteEmailModal = ({ isOpen, handleClose, classroom, type }) => {
       .then(() => handleClose())
       .catch((err) => {
         console.error("err=>", err.response.data);
-      }).finally(() => {
-        setLoading(false);
       })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (
@@ -102,11 +105,12 @@ const InviteEmailModal = ({ isOpen, handleClose, classroom, type }) => {
         }}
       >
         <Typography variant="h5" mt={5}>
-          Invite {type === "TEACHER" ? "Teacher" : "Student"}
+          {t("invite")}{" "}
+          {type === "TEACHER" ? t("classroom.teacher") : t("classroom.student")}
         </Typography>
 
         <Collapse in={!!errorMessage}>
-          <Alert severity="error" variant="filled" sx={{my: 1}}>
+          <Alert severity="error" variant="filled" sx={{ my: 1 }}>
             {errorMessage}
           </Alert>
         </Collapse>
@@ -115,7 +119,7 @@ const InviteEmailModal = ({ isOpen, handleClose, classroom, type }) => {
           <Grid item xs>
             <TextField
               fullWidth
-              label="Email"
+              label={t("auth.emailAddress")}
               variant="standard"
               value={inputEmail}
               onChange={handleInputChange}
@@ -123,7 +127,7 @@ const InviteEmailModal = ({ isOpen, handleClose, classroom, type }) => {
           </Grid>
           <Grid item sx={{ alignSelf: "center" }}>
             <Button onClick={addEmail} disabled={!isFieldValid}>
-              Add
+              {t("add")}
             </Button>
           </Grid>
         </Grid>
@@ -139,7 +143,7 @@ const InviteEmailModal = ({ isOpen, handleClose, classroom, type }) => {
                     </TableCell>
                     <TableCell>
                       <Button color="error" onClick={() => removeEmail(email)}>
-                        Delete
+                        {t("delete")}
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -158,8 +162,7 @@ const InviteEmailModal = ({ isOpen, handleClose, classroom, type }) => {
           onClick={sendMail}
         >
           {isLoading && <CircularProgress color="success" size={25} />}
-          &nbsp;
-          Send mail
+          &nbsp; {t("sendInviteMail")}
         </Button>
       </Container>
     </Modal>

@@ -33,17 +33,20 @@ import { userInfoActions } from "../../stores/userInfoStore";
 
 import { downloadFile } from "../../utils/index";
 import { GRADE_STATUS } from "../../utils/constants";
+import { useTranslation } from "react-i18next";
+import { t } from "i18next";
 
 const constantColumns = [
-  { field: "id", headerName: "ID", width: 150 },
+  { field: "id", headerName: t("id"), width: 150 },
   {
     field: "fullName",
-    headerName: "Name",
+    headerName: t("name"),
     width: 200,
   },
 ];
 
 const ClassroomGrades = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const accessToken = useSelector((state) => state.auth.token);
   const [gradeRows, setGradeRows] = useState([]);
@@ -113,7 +116,7 @@ const ClassroomGrades = () => {
 
           if (grade) {
             row.total +=
-            (Number(grade.point) / Number(gs.point)) * gradePercentage;
+              (Number(grade.point) / Number(gs.point)) * gradePercentage;
           }
         }
       });
@@ -183,11 +186,11 @@ const ClassroomGrades = () => {
                         studentName: params.value?.[2]?.studentName,
                         gradeStructureName: grade.name,
                         createdAt: params.value?.[2]?.gradeCreatedAt,
-                        updatedAt: params.value?.[2]?.gradeUpdatedAt
+                        updatedAt: params.value?.[2]?.gradeUpdatedAt,
                       },
                       {
                         point: params.value?.[0],
-                        total: grade.point
+                        total: grade.point,
                       }
                     )
                   }
@@ -209,7 +212,7 @@ const ClassroomGrades = () => {
 
         const columns = constantColumns.concat(gradesArray).concat({
           field: "total",
-          headerName: "Total",
+          headerName: t("total"),
           width: 150,
           type: "number",
           renderCell: (params) => {
@@ -242,7 +245,7 @@ const ClassroomGrades = () => {
         console.log(err);
       }
     },
-    [accessToken, classroomId, mapGradeToStudent]
+    [accessToken, classroomId, mapGradeToStudent, t]
   );
 
   useEffect(() => {
@@ -468,7 +471,7 @@ const ClassroomGrades = () => {
           })
         );
 
-        setSnackBarMessage(`Add/Edit grade for ${id}`);
+        setSnackBarMessage(`${t("classroom.addEditGradeFor")} ${id}`);
       }
 
       setIsLoading(false);
@@ -485,7 +488,11 @@ const ClassroomGrades = () => {
     fetchStudentsGrades(students, gradeSum, structures);
   };
 
-  const handleOpenGradeDetail = (tempGradeIds, tempAdditionalInfos, tempGradeInfos) => {
+  const handleOpenGradeDetail = (
+    tempGradeIds,
+    tempAdditionalInfos,
+    tempGradeInfos
+  ) => {
     setGradeIds(tempGradeIds);
     setAdditionalInfos(tempAdditionalInfos);
     setGradeInfos(tempGradeInfos);
@@ -536,12 +543,14 @@ const ClassroomGrades = () => {
                 <GridToolbarContainer>
                   <GridToolbarExport />
                   <Button onClick={downloadStudentTemplate}>
-                    Download Student Template
+                    {t("classroom.downloadStudentTemplate")}
                   </Button>
-                  <Button onClick={chooseStudentFile}>Upload Student</Button>
+                  <Button onClick={chooseStudentFile}>
+                    {t("classroom.uploadStudent")}
+                  </Button>
                   {downloadGradeTemplateVisible.current && (
                     <Button onClick={downloadGradeTemplate}>
-                      Download Grade Template
+                      {t("classroom.downloadGradeTemplate")}
                     </Button>
                   )}
                 </GridToolbarContainer>
@@ -555,13 +564,15 @@ const ClassroomGrades = () => {
         />
       </Paper>
 
-      {isGradeDetailOpen && <GradeDetailModal
-        gradeId={gradeIds}
-        additionalInfos={additionalInfos}
-        grade={gradeInfos}
-        isOpen={isGradeDetailOpen}
-        handleClose={handleCloseGradeDetailModal}
-      />}
+      {isGradeDetailOpen && (
+        <GradeDetailModal
+          gradeId={gradeIds}
+          additionalInfos={additionalInfos}
+          grade={gradeInfos}
+          isOpen={isGradeDetailOpen}
+          handleClose={handleCloseGradeDetailModal}
+        />
+      )}
     </Fragment>
   );
 };

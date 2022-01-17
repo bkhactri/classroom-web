@@ -10,8 +10,10 @@ import Alert from "@mui/material/Alert";
 
 import axiosUser from "../../api/user.axios";
 import axiosAuth from "../../api/auth.axios";
+import { useTranslation } from "react-i18next";
 
 const BasicInformation = ({ accountInfo }) => {
+  const { t } = useTranslation();
   const accessToken = useSelector((state) => state.auth.token);
   const isUserActive = useSelector((state) => state.userInfo.isActive);
   const [isLoading, setIsLoading] = useState(false);
@@ -123,7 +125,7 @@ const BasicInformation = ({ accountInfo }) => {
           {error}
         </Alert>
       )}
-      <Typography variant="h6">Display Name</Typography>
+      <Typography variant="h6">{t("accountPage.displayName")}</Typography>
       <TextField
         fullWidth
         margin="none"
@@ -134,7 +136,7 @@ const BasicInformation = ({ accountInfo }) => {
         autoComplete="display-name"
       />
       <Typography variant="h6" sx={{ mt: 2 }}>
-        Username
+        {t("auth.username")}
       </Typography>
       <TextField
         fullWidth
@@ -146,7 +148,7 @@ const BasicInformation = ({ accountInfo }) => {
         autoComplete="username"
       />
       <Typography variant="h6" sx={{ mt: 2 }}>
-        Email
+        {t("auth.emailAddress")}
       </Typography>
       <TextField
         fullWidth
@@ -168,7 +170,7 @@ const BasicInformation = ({ accountInfo }) => {
           {!hasSendMail ? (
             <>
               <Typography sx={{ fontSize: "15px", color: "red", mr: 1 }}>
-                Your email is not verified
+                {t("accountPage.emailNotVerified")}
               </Typography>
               <Typography
                 sx={{
@@ -183,12 +185,12 @@ const BasicInformation = ({ accountInfo }) => {
                 }}
                 onClick={handleClickSendVeryEmail}
               >
-                Send me verify email
+                {t("accountPage.sendMeVerifyEmail")}
               </Typography>
             </>
           ) : (
             <Typography sx={{ fontSize: "15px", color: "red", mr: 1 }}>
-              We have send a verify mail to your email, please check
+              {t("auth.hasSendEmail")}
             </Typography>
           )}
         </Box>
@@ -200,7 +202,11 @@ const BasicInformation = ({ accountInfo }) => {
           sx={{ mr: 2 }}
           disabled={isLoading || !isFieldChange}
         >
-          {!isLoading ? "Update" : <CircularProgress sx={{ color: "#fff" }} />}
+          {!isLoading ? (
+            t("accountPage.update")
+          ) : (
+            <CircularProgress sx={{ color: "#fff" }} />
+          )}
         </Button>
         <Button
           type="submit"
@@ -208,7 +214,7 @@ const BasicInformation = ({ accountInfo }) => {
           onClick={handleRestoreDefault}
           disabled={isLoading || !isFieldChange}
         >
-          Restore default
+          {t("accountPage.restoreDefault")}
         </Button>
       </Box>
     </Box>
