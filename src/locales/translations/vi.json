@@ -89,15 +89,41 @@
     "classroomDetailInfo": "Thông tin chi tiết về lớp học"
   },
   "error": {
+    "newPasswordMathOld": "Tại sao bạn nhập mật khẩu mới trùng mật khẩu cũ?",
+    "duplicateEmail": "Trùng mail",
+    "userNotFound": "Không tìm thấy người dùng",
+    "incorrectPassword": "Sai mật khẩu",
+    "takenUsername": "Tên này đã được sử dụng",
+    "takenEmail": "Email đã được sử dụng",
     "requiredField": "Trường này là bắt buộc",
     "requiredNumberField": "Trường này yêu cầu một số",
     "noGradeFound": "Không tìm thấy bảng điểm",
-
-    "noClassFound": "Không tìm thấy lớp học"
+    "noClassFound": "Không tìm thấy lớp học",
+    "allFieldRequired": "Xin hãy điền vào tất cả chỗ trống",
+    "usernameBlank": "Tên người dùng không được bao gồm khoảng trống",
+    "invalidEmail": "Email không đúng",
+    "invalidConfirmPassword": "Nhập lại mật khẩu không chính xác",
+    "minPassword": "Mật khẩu cần tối thiểu 6 ký tự",
+    "maxPassWord": "Mật khẩu chỉ tối đa 16 ký tự",
+    "lowercaseMiss": "Mật khẩu cần có tối thiểu 1 ký tự thường",
+    "uppercaseMiss": "Mật khẩu cần có tối thiểu 1 ký tự hoa",
+    "numberMiss": "Mật khẩu cần có tối thiểu 1 số",
+    "specialKeyMiss": "Mật khẩu cần có tối thiểu 1 ký tự đặc biệt",
+    "canNotUpdatePassword": "Xảy ra lỗi !! Không thể cập nhật mật khẩu",
+    "gradeNameExist": "Điểm có tên đó đã tồn tại",
+    "nameRequired": "Tên là bắt buộc",
+    "pointRequired": "Điểm là bắt buộc",
+    "pointInvalid": "Điểm phải là một số",
+    "noClassFoundWithId": "Không tìm thấy lớp nào với mã và mã được cung cấp",
+    "alreadyInClassroom": "Bạn đã ở trong lớp học này",
+    "oldPasswordIncorrect": "Mật khẩu cũ không đúng"
   },
   "notice": {
     "inviteLinkCopy": "Đã sao chép liên kết mời",
-    "classCodeCopy": "Đã sao chép mã lớp"
+    "classCodeCopy": "Đã sao chép mã lớp",
+    "completedUpdateInfo": "Đã hoàn thành cập nhật dữ liệu người dùng",
+    "updatedUserPassword": "Đã cập nhật mật khẩu người dùng",
+    "completedMapId": "Đã cập nhật mã số sinh viên"
   },
   "user": {
     "name": "Tên",

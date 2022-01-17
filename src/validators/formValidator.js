@@ -9,11 +9,11 @@ export const signInFormValidator = (data) => {
   const password = data.get("password");
 
   if (!email || !password) {
-    return { error: "Please fill in all the required fields" };
+    return { error: "error.allFieldRequired" };
   }
 
   if (!validateEmail(email)) {
-    return { error: "Email is not valid" };
+    return { error: "error.invalidEmail" };
   }
 
   return true;
@@ -26,7 +26,7 @@ export const signUpFormValidator = (data) => {
   const confirmPassword = data.get("confirmPassword");
 
   if (!username || !email || !password || !confirmPassword) {
-    return { error: "Please fill in all the required fields" };
+    return { error: "error.allFieldRequired" };
   }
 
   const usernameError = validateUsername(username);
@@ -35,7 +35,7 @@ export const signUpFormValidator = (data) => {
   }
 
   if (!validateEmail(email)) {
-    return { error: "Email is not valid" };
+    return { error: "error.invalidEmail" };
   }
 
   const passwordError = validatePassword(password);
@@ -44,7 +44,7 @@ export const signUpFormValidator = (data) => {
   }
 
   if (password !== confirmPassword) {
-    return { error: "Confirm password is not correct" };
+    return { error: "error.invalidConfirmPassword" };
   }
 
   return true;

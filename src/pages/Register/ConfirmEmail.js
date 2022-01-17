@@ -93,7 +93,7 @@ const ConfirmEmail = () => {
         >
           {t("auth.verifyEmail")}
         </Typography>
-        {error && <Alert severity="error">{error}</Alert>}
+        {error && <Alert severity="error">{t(error)}</Alert>}
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <Typography
             component="h1"

@@ -29,7 +29,7 @@ const ChangePassword = () => {
 
     if (oldPassword && newPassword) {
       if (oldPassword === newPassword) {
-        setError("Why did you enter new password with old password?");
+        setError("error.newPasswordMathOld");
       } else {
         setError(null);
         const errorPwCheck = validatePassword(newPassword);
@@ -89,7 +89,7 @@ const ChangePassword = () => {
     >
       {error && (
         <Alert severity="error" sx={{ mt: 1, mb: 2 }}>
-          {error}
+          {t(error)}
         </Alert>
       )}
 
