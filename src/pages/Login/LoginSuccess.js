@@ -2,37 +2,38 @@ import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { authActions } from "../../stores/authenticationStore";
 import { userInfoActions } from "../../stores/userInfoStore";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const LoginSuccess = (props) => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  
   useEffect(() => {
     const getUserAuthData = () => {
-      const query = new URLSearchParams(props.location.search);
-      const id = query.get("id");
-      const accessToken = query.get("accessToken");
-      const email = query.get("email");
-      const isActive = query.get("isActive");
+      const id = searchParams.get("id");
+      const accessToken = searchParams.get("accessToken");
+      const email = searchParams.get("email");
+      const isActive = searchParams.get("isActive");
+      const avatarUrl = searchParams.get("avatarURL");
 
       if (!id) {
         return;
       }
 
-      const user = {
+      const userInfo = {
         userId: id,
-        email,
-        isActive,
+        email: email,
+        isActive: isActive,
+        avatarUrl: avatarUrl,
       };
-
+      localStorage.setItem("c_user", email);
       localStorage.setItem("accessToken", accessToken);
-      dispatch(authActions.loggedIn({ accessToken: accessToken }));
-      dispatch(userInfoActions.setUser(user));
       setTimeout(() => {
-        dispatch(authActions.setUser(user));
-        dispatch(userInfoActions.setUser(user));
+        dispatch(authActions.loggedIn({ accessToken: accessToken }));
+        dispatch(userInfoActions.setUser(userInfo));
         navigate("/");
-      });
+      }, 50);
     };
     getUserAuthData();
   });
