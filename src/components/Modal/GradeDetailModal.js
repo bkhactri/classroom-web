@@ -301,7 +301,7 @@ const GradeDetailModal = ({
       .then((resultPrivateMessage) => {
         if (
           messages[messages.length - 1]?.sender?.id !==
-          resultPrivateMessage?.sender?.id
+          resultPrivateMessage?.sender?.id || messages.length === 0
         ) {
           resultPrivateMessage.willDisplayName = true;
         } else {
@@ -318,8 +318,8 @@ const GradeDetailModal = ({
       });
   };
 
-  const determineYourself = (sender) => {
-    return sender?.id === userId;
+  const determineYourself = (senderId) => {
+    return senderId === userId;
   };
 
   const formatDate = (date) => {
@@ -507,7 +507,7 @@ const GradeDetailModal = ({
                         mx: 2,
                         mt: index === 0 ? 4 : 1,
                         mb: index === arr.length - 1 ? 4 : 1,
-                        alignSelf: determineYourself(mess.sender)
+                        alignSelf: determineYourself(mess.senderId)
                           ? "end"
                           : "start",
                         maxWidth: "40%",
@@ -518,13 +518,13 @@ const GradeDetailModal = ({
                       {mess?.willDisplayName && (
                         <Typography
                           sx={{
-                            alignSelf: determineYourself(mess.sender)
+                            alignSelf: determineYourself(mess.senderId)
                               ? "end"
                               : "start",
                             mr: 1,
                           }}
                         >
-                          {determineYourself(mess.sender)
+                          {determineYourself(mess.senderId)
                             ? translation("you")
                             : mess.sender?.username}
                         </Typography>
@@ -535,7 +535,7 @@ const GradeDetailModal = ({
                           p: 2,
                           borderRadius: "10px",
                           maxWidth: "100%",
-                          backgroundColor: determineYourself(mess.sender)
+                          backgroundColor: determineYourself(mess.senderId)
                             ? "#2196f3"
                             : "#ab003c",
                           color: "white",
