@@ -89,14 +89,41 @@
     "classroomDetailInfo": "Classroom Detail Infomation"
   },
   "error": {
+    "newPasswordMathOld": "Why did you enter new password match the old password?",
+    "duplicateEmail": "Duplicate email",
+    "userNotFound": "User Not Found",
+    "incorrectPassword": "Incorrect Password",
+    "takenUsername": "Username is taken",
+    "takenEmail": "Email is taken",
     "requiredField": "This field is required",
     "requiredNumberField": "This field require a number",
     "noGradeFound": "No Grade Found",
-    "noClassFound": "No Class Found"
+    "noClassFound": "No Class Found",
+    "allFieldRequired": "Please fill in all the required fields",
+    "usernameBlank": "Username should not include blank space",
+    "invalidEmail": "Email is not valid",
+    "invalidConfirmPassword": "Confirm password is not correct",
+    "minPassword": "Minimum length of password is 6",
+    "maxPassWord": "Maximum length of password is 16",
+    "lowercaseMiss": "Password should include at least 1 lowercase letter",
+    "uppercaseMiss": "Password should include at least 1 uppercase letter",
+    "numberMiss": "Password should include at least 1 number",
+    "specialKeyMiss": "Password should include at least 1 special character",
+    "canNotUpdatePassword": "Error occur!! Can not update password",
+    "gradeNameExist": "A grade with that name already exist",
+    "nameRequired": "Name is required",
+    "pointRequired": "Point is required",
+    "pointInvalid": "Point must be a number",
+    "noClassFoundWithId": "No class found with the provided id and code",
+    "alreadyInClassroom": "You are already in the classroom",
+    "oldPasswordIncorrect": "Old password is not correct"
   },
   "notice": {
     "inviteLinkCopy": "Invite link copied",
-    "classCodeCopy": "Class code copied"
+    "classCodeCopy": "Class code copied",
+    "completedUpdateInfo": "Completed update user data",
+    "updatedUserPassword": "Updated user password",
+    "completedMapId": "Completed map student id"
   },
   "user": {
     "name": "Name",

@@ -1,7 +1,7 @@
 export const validateUsername = (username) => {
   let error;
   if (/\s/.test(username)) {
-    error = "Username should not include blank space";
+    error = "error.usernameBlank";
   }
 
   return error;
@@ -16,22 +16,22 @@ export const validateEmail = (email) => {
 export const validatePassword = (password) => {
   let error;
   if (password.length < 6) {
-    return (error = "Minimum length of password is 6");
+    return (error = "error.minPassword");
   }
   if (password.length > 16) {
-    return (error = "Maximum length of password is 16");
+    return (error = "error.maxPassWord");
   }
   if (!password.match(/[a-z]+/)) {
-    return (error = "Password should include at least 1 lowercase letter");
+    return (error = "error.lowercaseMiss");
   }
   if (!password.match(/[A-Z]+/)) {
-    return (error = "Password should include at least 1 uppercase letter");
+    return (error = "error.uppercaseMiss");
   }
   if (!password.match(/[0-9]+/)) {
-    return (error = "Password should include at least 1 number");
+    return (error = "error.numberMiss");
   }
   if (!password.match(/[$@#&!]+/)) {
-    return (error = "Password should include at least 1 special character");
+    return (error = "error.specialKeyMiss");
   }
   return error;
 };

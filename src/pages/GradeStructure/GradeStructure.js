@@ -78,21 +78,19 @@ const GradeStructure = (props) => {
     setErrorMessages([]);
 
     if (grades.find((grade) => inputName === grade.name)) {
-      setErrorMessages(
-        errorMessages.concat("A grade with that name already exist")
-      );
+      setErrorMessages(errorMessages.concat("error.gradeNameExist"));
       invalid = true;
     }
     if (!inputName) {
-      setErrorMessages(errorMessages.concat("Name is required"));
+      setErrorMessages(errorMessages.concat("error.nameRequired"));
       invalid = true;
     }
     if (!inputPoint) {
-      setErrorMessages(errorMessages.concat("Point is required"));
+      setErrorMessages(errorMessages.concat("error.pointRequired"));
       invalid = true;
     }
     if (isNaN(inputPoint)) {
-      setErrorMessages(errorMessages.concat("Point must be a number"));
+      setErrorMessages(errorMessages.concat("error.pointInvalid"));
       invalid = true;
     }
 
@@ -275,7 +273,7 @@ const GradeStructure = (props) => {
                 variant="filled"
                 sx={{ my: 1 }}
               >
-                {error}
+                {t(error)}
               </Alert>
             ))}
           </Collapse>

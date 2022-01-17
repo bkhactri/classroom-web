@@ -89,7 +89,7 @@ const LoginPage = () => {
           <Typography component="h1" variant="h5" sx={{ mb: 2 }}>
             {t("auth.signIn")}
           </Typography>
-          {error && <Alert severity="error">{error}</Alert>}
+          {error && <Alert severity="error">{t(error)}</Alert>}
           <Box
             component="form"
             onSubmit={handleSubmit}

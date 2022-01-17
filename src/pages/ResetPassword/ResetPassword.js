@@ -41,7 +41,7 @@ const ResetPassword = () => {
     event.preventDefault();
     const email = emailRef.current.value;
     if (!validateEmail(email) || email === "") {
-      setError("Email is not valid");
+      setError("error.invalidEmail");
     } else {
       setError("");
 
@@ -173,7 +173,7 @@ const ResetPassword = () => {
               {t("auth.resetPasswordHint1")} <br />
               {t("auth.resetPasswordHint2")}
             </Typography>
-            {error && <Alert severity="error">{error}</Alert>}
+            {error && <Alert severity="error">{t(error)}</Alert>}
             <Box
               component="form"
               onSubmit={handleSubmit}

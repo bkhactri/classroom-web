@@ -161,7 +161,7 @@ const RegisterPage = () => {
             </Fragment>
           ) : (
             <Fragment>
-              {error && <Alert severity="error">{error}</Alert>}
+              {error && <Alert severity="error">{t(error)}</Alert>}
               <Box
                 component="form"
                 noValidate

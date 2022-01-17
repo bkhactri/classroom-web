@@ -38,10 +38,10 @@ const InviteEmailModal = ({ isOpen, handleClose, classroom, type }) => {
 
   const addEmail = () => {
     if (emails.some((email) => inputEmail === email)) {
-      setErrorMessage("Duplicate email");
+      setErrorMessage("error.duplicateEmail");
       setFieldValid(false);
     } else if (!validateEmail(inputEmail)) {
-      setErrorMessage("Not an email");
+      setErrorMessage("error.invalidEmail");
       setFieldValid(false);
     } else {
       setErrorMessage("");
@@ -111,7 +111,7 @@ const InviteEmailModal = ({ isOpen, handleClose, classroom, type }) => {
 
         <Collapse in={!!errorMessage}>
           <Alert severity="error" variant="filled" sx={{ my: 1 }}>
-            {errorMessage}
+            {t(errorMessage)}
           </Alert>
         </Collapse>
 

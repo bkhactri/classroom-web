@@ -57,7 +57,7 @@ const ChangePassword = () => {
           setError(error.response.data);
         }
       } else {
-        setError("Confirm Password not match");
+        setError("error.invalidConfirmPassword");
       }
     } else {
       setError(errorPwdCheck);
@@ -87,7 +87,7 @@ const ChangePassword = () => {
         >
           {t("auth.resetYourPassword")}
         </Typography>
-        {error && <Alert severity="error">{error}</Alert>}
+        {error && <Alert severity="error">{t(error)}</Alert>}
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
             type="password"

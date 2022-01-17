@@ -82,7 +82,7 @@ const MapStudentId = ({ accountInfo }) => {
     >
       {error && (
         <Alert severity="error" sx={{ mt: 1, mb: 2 }}>
-          {error}
+          {t(error)}
         </Alert>
       )}
       <Typography variant="h6">{t("accountPage.studentId")}</Typography>
