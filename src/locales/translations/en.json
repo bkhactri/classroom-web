@@ -123,7 +123,9 @@
     "classCodeCopy": "Class code copied",
     "completedUpdateInfo": "Completed update user data",
     "updatedUserPassword": "Updated user password",
-    "completedMapId": "Completed map student id"
+    "completedMapId": "Completed map student id",
+    "completedFinalizedGrade": "Completed finalized grade",
+    "noNotifications": "You have no notifications"
   },
   "user": {
     "name": "Name",
