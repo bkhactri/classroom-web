@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
+// import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -26,6 +27,8 @@ import { classroomActions } from "../../stores/classroomsStore";
 import { makeStyles } from "@mui/styles";
 import axiosAuth from "../../api/auth.axios";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import Globe from "../Globe/Globe";
+import { useTranslation } from "react-i18next";
 
 import { ROLE } from "../../utils/constants";
 
@@ -43,6 +46,7 @@ const useStyles = makeStyles({
 });
 
 const Header = ({ loading, classroom = 0, classID = "", classrooms }) => {
+  const { t } = useTranslation();
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const role = useSelector((state) => state.userInfo.role);
   const avatarUrl = useSelector((state) => state.userInfo.avatarUrl);
@@ -56,6 +60,7 @@ const Header = ({ loading, classroom = 0, classID = "", classrooms }) => {
   const [isOpenAddClassModal, setOpenAddClassModal] = useState(false);
   const [isOpenJoinClassModal, setOpenJoinClassModal] = useState(false);
   const isHomePage = window.location.pathname === "/";
+  const isInsideClassroom = window.location.pathname.includes("classroom/");
 
   const handleOpenAddClassModal = () => {
     setOpenUserTool(null);
@@ -108,14 +113,18 @@ const Header = ({ loading, classroom = 0, classID = "", classrooms }) => {
 
   return (
     <>
-      {isOpenAddClassModal && <AddClassModal
-        isOpen={isOpenAddClassModal}
-        handleClose={handleCloseAddClassModal}
-      />}
-      {isOpenJoinClassModal && <JoinClassModal
-        isOpen={isOpenJoinClassModal}
-        handleClose={handleCloseJoinClassModal}
-      />}
+      {isOpenAddClassModal && (
+        <AddClassModal
+          isOpen={isOpenAddClassModal}
+          handleClose={handleCloseAddClassModal}
+        />
+      )}
+      {isOpenJoinClassModal && (
+        <JoinClassModal
+          isOpen={isOpenJoinClassModal}
+          handleClose={handleCloseJoinClassModal}
+        />
+      )}
       <Sidebar
         isOpen={isDrawerOpen["left"]}
         toggleDrawerClose={toggleDrawer}
@@ -129,7 +138,6 @@ const Header = ({ loading, classroom = 0, classID = "", classrooms }) => {
             color: "#333",
             boxShadow: "none",
             borderBottom: "1px solid #ede8e8",
-            zIndex: 1400
           }}
         >
           <Toolbar style={{ display: "flex", justifyContent: "space-between" }}>
@@ -171,14 +179,14 @@ const Header = ({ loading, classroom = 0, classID = "", classrooms }) => {
                   classes={{ selected: styles.selected }}
                   onClick={handleGoToClassroomOption("")}
                 >
-                  <ListItemText primary="Stream" />
+                  <ListItemText primary={t("classroom.stream")} />
                 </ListItemButton>
                 <ListItemButton
                   selected={classroom === 2}
                   classes={{ selected: styles.selected }}
                   onClick={handleGoToClassroomOption("people")}
                 >
-                  <ListItemText primary="People" />
+                  <ListItemText primary={t("classroom.people")} />
                 </ListItemButton>
                 {[ROLE.OWNER, ROLE.TEACHER].includes(role) && (
                   <ListItemButton
@@ -186,7 +194,7 @@ const Header = ({ loading, classroom = 0, classID = "", classrooms }) => {
                     classes={{ selected: styles.selected }}
                     onClick={handleGoToClassroomOption("grades")}
                   >
-                    <ListItemText primary="Grades" />
+                    <ListItemText primary={t("classroom.grades")} />
                   </ListItemButton>
                 )}
                 {role === ROLE.STUDENT && (
@@ -195,7 +203,7 @@ const Header = ({ loading, classroom = 0, classID = "", classrooms }) => {
                     classes={{ selected: styles.selected }}
                     onClick={handleGoToClassroomOption("myGrades")}
                   >
-                    <ListItemText primary="My Grades" />
+                    <ListItemText primary={t("classroom.myGrades")} />
                   </ListItemButton>
                 )}
               </List>
@@ -223,13 +231,16 @@ const Header = ({ loading, classroom = 0, classID = "", classrooms }) => {
                     anchorEl={isOpenUserTool}
                     open={Boolean(isOpenUserTool)}
                     onClose={handleCloseUserTool}
-                    transformOrigin={{ vertical: "top", horizontal: "center" }}
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "center",
+                    }}
                   >
                     <MenuItem onClick={handleOpenJoinClassModal}>
-                      Join class
+                      {t("classroom.joinClass")}
                     </MenuItem>
                     <MenuItem onClick={handleOpenAddClassModal}>
-                      Create class
+                      {t("classroom.createClass")}
                     </MenuItem>
                   </Menu>
                 </div>
@@ -298,58 +309,63 @@ const Header = ({ loading, classroom = 0, classID = "", classrooms }) => {
                     onClose={handleCloseUserMenu}
                   >
                     <MenuItem onClick={handleNavigateAccountPage}>
-                      My account
+                      {t("accountPage.myAccount")}
                     </MenuItem>
-                    <MenuItem onClick={handleSignOut}>Sign out</MenuItem>
+                    <MenuItem onClick={handleSignOut}>
+                      {t("auth.signOut")}
+                    </MenuItem>
                   </Menu>
                 </div>
               )}
+              <Globe />
             </div>
           </Toolbar>
 
-          <Toolbar sx={{ margin: "0 auto" }} className={classes.ListMobile}>
-            {classroom !== 0 ? (
-              <List
-                sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                }}
-              >
-                <ListItemButton
-                  selected={classroom === 1}
-                  classes={{ selected: styles.selected }}
-                  onClick={handleGoToClassroomOption("")}
+          {isInsideClassroom && (
+            <Toolbar sx={{ margin: "0 auto" }} className={classes.ListMobile}>
+              {classroom !== 0 ? (
+                <List
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                  }}
                 >
-                  <ListItemText primary="Stream" />
-                </ListItemButton>
-                <ListItemButton
-                  selected={classroom === 2}
-                  classes={{ selected: styles.selected }}
-                  onClick={handleGoToClassroomOption("people")}
-                >
-                  <ListItemText primary="People" />
-                </ListItemButton>
-                {[ROLE.OWNER, ROLE.TEACHER].includes(role) && (
                   <ListItemButton
-                    selected={classroom === 3}
+                    selected={classroom === 1}
                     classes={{ selected: styles.selected }}
-                    onClick={handleGoToClassroomOption("grades")}
+                    onClick={handleGoToClassroomOption("")}
                   >
-                    <ListItemText primary="Grades" />
+                    <ListItemText primary="Stream" />
                   </ListItemButton>
-                )}
-                {role === ROLE.STUDENT && (
                   <ListItemButton
-                    selected={classroom === 4}
+                    selected={classroom === 2}
                     classes={{ selected: styles.selected }}
-                    onClick={handleGoToClassroomOption("myGrades")}
+                    onClick={handleGoToClassroomOption("people")}
                   >
-                    <ListItemText primary="My Grades" />
+                    <ListItemText primary="People" />
                   </ListItemButton>
-                )}
-              </List>
-            ) : null}
-          </Toolbar>
+                  {[ROLE.OWNER, ROLE.TEACHER].includes(role) && (
+                    <ListItemButton
+                      selected={classroom === 3}
+                      classes={{ selected: styles.selected }}
+                      onClick={handleGoToClassroomOption("grades")}
+                    >
+                      <ListItemText primary="Grades" />
+                    </ListItemButton>
+                  )}
+                  {role === ROLE.STUDENT && (
+                    <ListItemButton
+                      selected={classroom === 4}
+                      classes={{ selected: styles.selected }}
+                      onClick={handleGoToClassroomOption("myGrades")}
+                    >
+                      <ListItemText primary="My Grades" />
+                    </ListItemButton>
+                  )}
+                </List>
+              ) : null}
+            </Toolbar>
+          )}
         </AppBar>
       </Box>
       {loading ? <LinearProgress /> : null}

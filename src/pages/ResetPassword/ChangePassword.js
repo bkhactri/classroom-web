@@ -14,8 +14,10 @@ import Header from "../../components/Header/Header";
 
 import axiosAuth from "../../api/auth.axios";
 import { validatePassword } from "../../validators/fieldValidator";
+import { useTranslation } from "react-i18next";
 
 const ChangePassword = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { resetToken } = useParams();
   const [updatePwdStatus, setUpdatePwdStatus] = useState(true);
@@ -83,7 +85,7 @@ const ChangePassword = () => {
           variant="h5"
           sx={{ mb: 2, textAlign: "center" }}
         >
-          Reset your password
+          {t("auth.resetYourPassword")}
         </Typography>
         {error && <Alert severity="error">{error}</Alert>}
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
@@ -93,7 +95,7 @@ const ChangePassword = () => {
             required
             fullWidth
             id="password"
-            label="New Password"
+            label={t("auth.newPassword")}
             name="password"
             autoComplete="password"
             autoFocus
@@ -104,7 +106,7 @@ const ChangePassword = () => {
             required
             fullWidth
             id="confirmPassword"
-            label="Confirm new password"
+            label={t("auth.newPasswordConfirm")}
             name="confirmPassword"
             autoComplete="confirmPassword"
           />
@@ -116,14 +118,14 @@ const ChangePassword = () => {
             disabled={isLoading}
           >
             {!isLoading ? (
-              "Change password"
+              t("auth.changePassword")
             ) : (
               <CircularProgress sx={{ color: "#fff" }} />
             )}
           </Button>
           {!updatePwdStatus && (
             <Link to="/reset-password" variant="body2">
-              Can not update password? Send another mail
+              {t("auth.canNotUpdatePassword")}
             </Link>
           )}
         </Box>

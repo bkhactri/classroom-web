@@ -9,8 +9,10 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
 import classes from "./ClassBlock.module.css";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { useTranslation } from "react-i18next";
 
 const ClassBlock = ({ data }) => {
+  const { t } = useTranslation();
   const avatarUrl = useSelector((state) => state.userInfo.avatarUrl);
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -61,8 +63,10 @@ const ClassBlock = ({ data }) => {
           open={Boolean(anchorEl)}
           onClose={handleClose}
         >
-          <MenuItem onClick={handleClose}>Invite person</MenuItem>
-          <MenuItem onClick={handleClose}>Unenroll</MenuItem>
+          <MenuItem onClick={handleClose}>
+            {t("classroom.invitePerson")}
+          </MenuItem>
+          <MenuItem onClick={handleClose}>{t("classroom.unenroll")}</MenuItem>
         </Menu>
       </div>
       <div className={classes.itemLink}>

@@ -9,10 +9,11 @@ import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import Swal from "sweetalert2";
-
+import { useTranslation } from "react-i18next";
 import axiosClassroom from "../../api/classroom.axios";
 
 const JoinClassroom = (props) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const accessToken = useSelector((state) => state.auth.token);
   const { classroomId, classCode } = useParams();
@@ -38,7 +39,7 @@ const JoinClassroom = (props) => {
         setIsLoading(false);
         navigate("/");
         Swal.fire({
-          title: "Error!",
+          title: t("errorTitle"),
           text: error.response.data,
           icon: "error",
         });
@@ -46,7 +47,7 @@ const JoinClassroom = (props) => {
     };
 
     fetchJoinInfo();
-  }, [navigate, classroomId, classCode, accessToken]);
+  }, [navigate, classroomId, classCode, accessToken, t]);
 
   const joinClass = async () => {
     setIsLoading(true);
@@ -61,7 +62,7 @@ const JoinClassroom = (props) => {
     } catch (error) {
       setIsLoading(false);
       Swal.fire({
-        title: "Error!",
+        title: t("errorTitle"),
         text: error.response.data,
         icon: "error",
       });
@@ -82,10 +83,10 @@ const JoinClassroom = (props) => {
             }}
           >
             <Typography variant="h5" sx={{ mb: 2 }}>
-              You will be joining <strong>{joinInfo.classroomName}</strong>
+              {t("youWillBeJoin")} <strong>{joinInfo.classroomName}</strong>
             </Typography>
             <Typography variant="h5" sx={{ mb: 2 }}>
-              as a <strong>{joinInfo.role}</strong>
+              {t("asA")} <strong>{joinInfo.role}</strong>
             </Typography>
             <Grid sx={{ mt: 5 }} container justifyContent="space-around">
               <Grid item xs={5}>
@@ -96,7 +97,7 @@ const JoinClassroom = (props) => {
                   variant="outlined"
                   disabled={isLoading}
                 >
-                  Go Home
+                  {t("goHome")}
                 </Button>
               </Grid>
               <Grid item xs={5}>
@@ -106,7 +107,7 @@ const JoinClassroom = (props) => {
                   onClick={joinClass}
                   disabled={isLoading}
                 >
-                  Join
+                  {t("join")}
                 </Button>
               </Grid>
             </Grid>

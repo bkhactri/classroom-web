@@ -10,8 +10,10 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import Collapse from "@mui/material/Collapse";
 import { Draggable } from "react-beautiful-dnd";
 import Swal from "sweetalert2";
+import { useTranslation } from "react-i18next";
 
 const Grade = ({ grade, index, saveGrade, deleteGrade, isLoading }) => {
+  const { t } = useTranslation();
   const [inputName, setInputName] = useState(grade.name);
   const [inputPoint, setInputPoint] = useState(grade.point);
   const [editEnabled, setEditEnabled] = useState(false);
@@ -41,17 +43,17 @@ const Grade = ({ grade, index, saveGrade, deleteGrade, isLoading }) => {
     setPointHelperText("");
 
     if (!inputName) {
-      setNameHelperText("This field is required");
+      setNameHelperText(t("error.requiredField"));
       invalid = true;
     }
 
     if (!inputPoint) {
-      setPointHelperText("This field is required");
+      setPointHelperText(t("error.requiredField"));
       invalid = true;
     }
 
     if (isNaN(inputPoint)) {
-      setPointHelperText("This field require a number");
+      setPointHelperText(t("error.requiredNumberField"));
       invalid = true;
     }
 
@@ -70,10 +72,10 @@ const Grade = ({ grade, index, saveGrade, deleteGrade, isLoading }) => {
 
   const confirmDeleteGrade = () => {
     Swal.fire({
-      title: `Do you really want to delete ${grade.name}?`,
+      title: `${t("reallyWantToDelete")} ${grade.name}?`,
       showDenyButton: true,
-      confirmButtonText: "Yes",
-      denyButtonText: `No`,
+      confirmButtonText: t("yes"),
+      denyButtonText: t("no"),
     }).then((result) => {
       if (result.isConfirmed) {
         deleteGrade(grade.id);
@@ -98,10 +100,16 @@ const Grade = ({ grade, index, saveGrade, deleteGrade, isLoading }) => {
               justifyContent: "center",
             }}
           >
-            <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "center",
+              }}
+            >
               <TextField
                 variant="filled"
-                label="Name"
+                label={t("name")}
                 value={inputName}
                 onChange={handleNameChange}
                 disabled={!editEnabled}
@@ -109,7 +117,7 @@ const Grade = ({ grade, index, saveGrade, deleteGrade, isLoading }) => {
               ></TextField>
               <TextField
                 variant="filled"
-                label="Point"
+                label={t("classroom.point")}
                 value={inputPoint}
                 onChange={handlePointChange}
                 disabled={!editEnabled}
@@ -123,10 +131,10 @@ const Grade = ({ grade, index, saveGrade, deleteGrade, isLoading }) => {
                 onClick={saveEdit}
                 disabled={!inputName || !inputPoint}
               >
-                Save
+                {t("save")}
               </Button>
               <Button sx={{ width: "50%" }} onClick={cancelEdit}>
-                Cancel
+                {t("cancel")}
               </Button>
             </Collapse>
           </Box>
@@ -148,7 +156,10 @@ const Grade = ({ grade, index, saveGrade, deleteGrade, isLoading }) => {
               <DeleteIcon />
             </IconButton>
           </Box>
-          <DragHandleIcon fontSize="large" sx={{ alignSelf: "center", ml: 1 }} />
+          <DragHandleIcon
+            fontSize="large"
+            sx={{ alignSelf: "center", ml: 1 }}
+          />
         </Box>
       )}
     </Draggable>

@@ -6,12 +6,14 @@ import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
 import CloseIcon from "@mui/icons-material/Close";
 import IconButton from "@mui/material/IconButton";
+import { useTranslation } from "react-i18next";
 
 // import axiosClassroom from "../../api/classroom.axios";
 import classes from "./Modal.module.css";
 import Container from "@mui/material/Container";
 
 const JoinClassModal = ({ isOpen, handleClose }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [isValidId, setValidId] = useState(false);
   const classCodeEl = useRef(null);
@@ -35,14 +37,13 @@ const JoinClassModal = ({ isOpen, handleClose }) => {
       <div className={classes.joinModal}>
         <div className={classes.joinModalHeader}>
           <div className={classes.joinModalCloseButton}>
-            <IconButton
-              size="large"
-              onClick={handleClose}
-            >
+            <IconButton size="large" onClick={handleClose}>
               <CloseIcon />
             </IconButton>
           </div>
-          <div className={classes.joinModalTitle}>Join Class</div>
+          <div className={classes.joinModalTitle}>
+            {t("classroom.joinClass")}
+          </div>
           <div className={classes.joinModalButtonJoin}>
             <Button
               sx={{
@@ -51,7 +52,7 @@ const JoinClassModal = ({ isOpen, handleClose }) => {
                 textTransform: "none",
                 fontSize: 15,
                 fontWeight: "bold",
-                width: "80px",
+                width: "90px",
                 height: "35px",
                 ":hover": {
                   bgcolor: "primary.main",
@@ -62,16 +63,18 @@ const JoinClassModal = ({ isOpen, handleClose }) => {
               disabled={!isValidId}
               onClick={handleJoinClass}
             >
-              Join
+              {t("join")}
             </Button>
           </div>
         </div>
         <Divider />
         <Container maxWidth="sm">
           <form className={classes.joinFormInput}>
-            <div className={classes.joinFormInputTitle}>Class code</div>
+            <div className={classes.joinFormInputTitle}>
+              {t("classroom.classCode")}
+            </div>
             <div className={classes.joinFormInputSubTitle}>
-              Ask your teacher for the class code, then enter it here
+              {t("classroom.classCodeHint")}
             </div>
             <TextField
               inputRef={classCodeEl}

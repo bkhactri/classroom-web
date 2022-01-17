@@ -11,10 +11,11 @@ import Grid from "@mui/material/Grid";
 import BasicInformation from "../../components/AccountForm/BasicInformation";
 import ChangePassword from "../../components/AccountForm/ChangePassword";
 import MapStudentId from "../../components/AccountForm/MapStudentId";
-
+import { useTranslation } from "react-i18next";
 import axiosUser from "../../api/user.axios";
 
 const AccountPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [accountInfo, setAccountInfo] = useState(null);
@@ -49,7 +50,7 @@ const AccountPage = () => {
       <Header loading={isLoading} />
       <Container maxWidth="lg" sx={{ mt: 1, mb: 3 }}>
         <Typography variant="h5" sx={{ mt: 3, fontWeight: "600" }}>
-          Account Settings
+          {t("accountPage.accountSetting")}
         </Typography>
         <Grid container spacing={2} rowSpacing={2}>
           <Grid item sm={12} md={8}>

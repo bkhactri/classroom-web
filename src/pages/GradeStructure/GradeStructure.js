@@ -16,12 +16,14 @@ import Fab from "@mui/material/Fab";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import debounce from "lodash/debounce";
+import { useTranslation } from "react-i18next";
 
 import Grade from "../../components/Grade/Grade";
 
 import axiosGrade from "../../api/grade.axios";
 
 const GradeStructure = (props) => {
+  const { t } = useTranslation();
   const accessToken = useSelector((state) => state.auth.token);
   const navigate = useNavigate();
   const { classroomId } = useParams();
@@ -228,18 +230,18 @@ const GradeStructure = (props) => {
             <ArrowBackIcon />
           </Fab>
           <Typography variant="h5" mb={4}>
-            Grade Structure
+            {t("classroom.gradeStructure")}
           </Typography>
 
           <Grid container>
             <Grid item xs={8}>
               <Typography variant="h5" color="primary">
-                Grade Name
+                {t("classroom.gradeName")}
               </Typography>
             </Grid>
             <Grid item>
               <Typography variant="h5" color="crimson">
-                Point
+                {t("classroom.point")}
               </Typography>
             </Grid>
             {grades.map((grade) => (
@@ -280,7 +282,7 @@ const GradeStructure = (props) => {
 
           <TextField
             fullWidth
-            label="Grade Name"
+            label={t("classroom.gradeName")}
             variant="standard"
             value={inputName}
             onChange={handleNameChange}
@@ -288,7 +290,7 @@ const GradeStructure = (props) => {
 
           <TextField
             fullWidth
-            label="Point"
+            label={t("classroom.point")}
             variant="standard"
             value={inputPoint}
             onChange={handlePointChange}
@@ -303,7 +305,7 @@ const GradeStructure = (props) => {
               fontWeight: "bold",
             }}
           >
-            Add New Grade
+            {t("classroom.addNewGrade")}
           </Button>
         </Box>
       </Container>

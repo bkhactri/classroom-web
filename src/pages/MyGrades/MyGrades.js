@@ -17,12 +17,13 @@ import axiosUser from "../../api/user.axios";
 import axiosGrade from "../../api/grade.axios";
 import axiosClassroom from "../../api/classroom.axios";
 import axiosStudentIdentification from "../../api/student-identification.axios";
-
+import { useTranslation } from "react-i18next";
 import { userInfoActions } from "../../stores/userInfoStore";
 
 import { calculateMyGrades } from "../../utils/index";
 
 const MyGrades = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const accessToken = useSelector((state) => state.auth.token);
   const { classroomId } = useParams();
@@ -34,36 +35,39 @@ const MyGrades = () => {
   const [isGradeDetailOpen, setGradeDetailOpen] = useState(false);
   const [selectedGrade, setSelectedGrade] = useState({});
 
-  const fetchMyGrades = useCallback(async (tempStudentId) => {
-    setIsLoading(true);
-    try {
-      const gradeStructures = await axiosGrade.get(
-        `/structure/${classroomId}`,
-        {
-          headers: { Authorization: "Bearer " + accessToken },
-        }
-      );
-
-      let grades;
-      if (tempStudentId) {
-        grades = await axiosGrade.get(
-          `/myGrade/${classroomId}/${tempStudentId}`,
+  const fetchMyGrades = useCallback(
+    async (tempStudentId) => {
+      setIsLoading(true);
+      try {
+        const gradeStructures = await axiosGrade.get(
+          `/structure/${classroomId}`,
           {
             headers: { Authorization: "Bearer " + accessToken },
           }
         );
+
+        let grades;
+        if (tempStudentId) {
+          grades = await axiosGrade.get(
+            `/myGrade/${classroomId}/${tempStudentId}`,
+            {
+              headers: { Authorization: "Bearer " + accessToken },
+            }
+          );
+        }
+
+        const [tempGrades, total] = calculateMyGrades(gradeStructures, grades);
+        setMyGrades(tempGrades);
+        setGradeTotal(total);
+
+        setIsLoading(false);
+      } catch (err) {
+        setIsLoading(false);
+        console.log(err);
       }
-
-      const [tempGrades, total] = calculateMyGrades(gradeStructures, grades);
-      setMyGrades(tempGrades);
-      setGradeTotal(total);
-
-      setIsLoading(false);
-    } catch (err) {
-      setIsLoading(false);
-      console.log(err);
-    }
-  }, [accessToken, classroomId]);
+    },
+    [accessToken, classroomId]
+  );
 
   const currentUrl = window.location.pathname;
 
@@ -110,7 +114,7 @@ const MyGrades = () => {
   }, [accessToken, classroomId, dispatch, fetchMyGrades]);
 
   const handleCloseGradeDetailModal = () => {
-    setGradeDetailOpen(false)
+    setGradeDetailOpen(false);
     fetchMyGrades(studentId);
   };
   const handleOpenGradeDetail = ({
@@ -119,9 +123,16 @@ const MyGrades = () => {
     point,
     total,
     createdAt,
-    updatedAt
+    updatedAt,
   }) => {
-    setSelectedGrade({ gradeStructureId, gradeStructureName, point, total, createdAt, updatedAt });
+    setSelectedGrade({
+      gradeStructureId,
+      gradeStructureName,
+      point,
+      total,
+      createdAt,
+      updatedAt,
+    });
     setGradeDetailOpen(true);
   };
 
@@ -141,14 +152,15 @@ const MyGrades = () => {
           <Collapse in={!Boolean(studentId)}>
             <Alert severity="error" sx={{ width: "100%", mb: 2 }}>
               <Typography>
-                Please set your <strong>Student ID</strong> to see your grades
+                {t("pleaseSetYour")}&nbsp;
+                <strong>{t("accountPage.studentId")}</strong> {t("toViewGrade")}
               </Typography>
             </Alert>
           </Collapse>
 
           {studentId && studentName && (
             <Typography sx={{ mb: 2 }}>
-              Grades of <strong>{studentId}</strong> -{" "}
+              {t("gradesOf")} <strong>{studentId}</strong> -{" "}
               <strong>{studentName}</strong>
             </Typography>
           )}
@@ -174,11 +186,11 @@ const MyGrades = () => {
             studentName,
             gradeStructureName: selectedGrade.gradeStructureName,
             createdAt: selectedGrade.createdAt,
-            updatedAt: selectedGrade.updatedAt
+            updatedAt: selectedGrade.updatedAt,
           }}
           grade={{
             point: selectedGrade.point,
-            total: selectedGrade.total
+            total: selectedGrade.total,
           }}
           isOpen={isGradeDetailOpen}
           handleClose={handleCloseGradeDetailModal}

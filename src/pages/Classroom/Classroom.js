@@ -14,7 +14,7 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import Snackbar from "@mui/material/Snackbar";
 import Button from "@mui/material/Button";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-
+import { useTranslation } from "react-i18next";
 import classes from "./Classroom.module.css";
 import axiosClassroom from "../../api/classroom.axios";
 import axiosGrade from "../../api/grade.axios";
@@ -24,6 +24,7 @@ import { userInfoActions } from "../../stores/userInfoStore";
 import { ROLE } from "../../utils/constants";
 
 const Classroom = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const accessToken = useSelector((state) => state.auth.token);
@@ -77,13 +78,13 @@ const Classroom = () => {
     await navigator.clipboard.writeText(
       `${window.location.origin}/join/${classroom.id}/${classroom.classCode}`
     );
-    setSnackBarMessage("Invite link copied");
+    setSnackBarMessage(t("notice.inviteLinkCopy"));
     setInviteMenuAnchorEl(null);
   };
 
   const copyClassCode = async () => {
     await navigator.clipboard.writeText(classroom.classCode);
-    setSnackBarMessage("Class code copied");
+    setSnackBarMessage(t("notice.classCodeCopy"));
     setInviteMenuAnchorEl(null);
   };
 
@@ -116,7 +117,9 @@ const Classroom = () => {
             <Grid item xs={12} sm={3} md={3} lg={3}>
               <div className={classes.classLeft}>
                 <div className={classes.classLeftTitle}>
-                  <div style={{ height: "100%" }}>Class Code</div>
+                  <div style={{ height: "100%" }}>
+                    {t("classroom.classCode")}
+                  </div>
                   <IconButton
                     onClick={handleOpenInviteMenu}
                     sx={{ position: "absolute", top: "10px", right: "5px" }}
@@ -137,14 +140,14 @@ const Classroom = () => {
                       onClick={copyInviteLink}
                     >
                       <LinkIcon />
-                      &nbsp; Copy class invite link
+                      &nbsp; {t("classroom.copyClassInviteLink")}
                     </MenuItem>
                     <MenuItem
                       className={classes.classInviteMenuItem}
                       onClick={copyClassCode}
                     >
                       <ContentCopyIcon />
-                      &nbsp; Copy class code
+                      &nbsp; {t("classroom.copyClassCode")}
                     </MenuItem>
                   </Menu>
                 </div>
@@ -156,7 +159,9 @@ const Classroom = () => {
               {[ROLE.OWNER, ROLE.TEACHER].includes(role) && (
                 <div className={classes.classLeft}>
                   <div className={classes.classLeftTitle}>
-                    <div style={{ height: "100%" }}>Grade Structure</div>
+                    <div style={{ height: "100%" }}>
+                      {t("classroom.gradeStructure")}
+                    </div>
                   </div>
                   <div className={classes.classLeftDetail}>
                     {gradesStructure && gradesStructure.length > 0
@@ -165,7 +170,7 @@ const Classroom = () => {
                             <b>{grade.name}:</b> {grade.point}
                           </div>
                         ))
-                      : "No Grade Found"}
+                      : t("error.noGradeFound")}
                   </div>
                   <div style={{ width: "100%" }}>
                     <Button
@@ -181,25 +186,12 @@ const Classroom = () => {
                       }}
                     >
                       {gradesStructure && gradesStructure.length > 0
-                        ? "Edit"
-                        : "Add Grade"}
+                        ? t("edit")
+                        : t("classroom.addGrade")}
                     </Button>
                   </div>
                 </div>
               )}
-
-              <div className={classes.classUpcoming}>
-                <div className={classes.classUpcomingTitle}>Upcoming</div>
-                <div className={classes.classUpcomingDetail}>
-                  No work due soon
-                </div>
-                <NavLink
-                  to="/classroom/1/view-all"
-                  className={classes.classViewAllWork}
-                >
-                  View All
-                </NavLink>
-              </div>
             </Grid>
             <Grid item xs={12} sm={9} md={9} lg={9}>
               <div className={classes.classWork}>
@@ -209,7 +201,7 @@ const Classroom = () => {
                     alt={"User Logo"}
                     src={avatarUrl}
                   />
-                  <p>Announce something to your class</p>
+                  <p>{t("classroom.announceToClass")}</p>
                 </div>
               </div>
             </Grid>
