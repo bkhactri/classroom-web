@@ -6,10 +6,12 @@ import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import classes from "./Home.module.css";
 import ClassBlock from "../../components/ClassBlock/ClassBlock";
+import { useTranslation } from "react-i18next";
 
 import axiosClassroom from "../../api/classroom.axios";
 
 const Home = () => {
+  const { t } = useTranslation();
   const accessToken = useSelector((state) => state.auth.token);
   const navigate = useNavigate();
   const [classrooms, setClassrooms] = useState([]);
@@ -75,7 +77,9 @@ const Home = () => {
             </Container>
           ) : (
             <div className={classes.noClasses}>
-              <div className={classes.noClassesWarning}>No class found</div>
+              <div className={classes.noClassesWarning}>
+                {t("error.noClassFound")}
+              </div>
             </div>
           )}
         </div>

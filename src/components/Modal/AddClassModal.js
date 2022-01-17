@@ -7,11 +7,13 @@ import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import axiosClassroom from "../../api/classroom.axios";
 import classes from "./Modal.module.css";
 
 const AddClassModal = ({ isOpen, handleClose }) => {
+  const { t } = useTranslation();
   const accessToken = useSelector((state) => state.auth.token);
   const isUserActive = useSelector((state) => state.userInfo.isActive);
   const [isValidForm, setValidForm] = useState(false);
@@ -59,7 +61,9 @@ const AddClassModal = ({ isOpen, handleClose }) => {
       aria-describedby="modal-modal-description"
     >
       <div className={classes.addModal}>
-        <div className={classes.addModalTitle}>Create class</div>
+        <div className={classes.addModalTitle}>
+          {t("classroom.createClass")}
+        </div>
         {!isUserActive && (
           <Box
             sx={{
@@ -81,7 +85,7 @@ const AddClassModal = ({ isOpen, handleClose }) => {
                 top: "45%",
               }}
             >
-              Your email is not verified, please verify to create new class
+              {t("classroom.emailNotVerify")}
             </Typography>
           </Box>
         )}
@@ -91,7 +95,7 @@ const AddClassModal = ({ isOpen, handleClose }) => {
             inputRef={classNameEl}
             onChange={handleNameChange}
             id="standard-basic"
-            label="Class name (required)"
+            label={t("classroom.className")}
             variant="filled"
             fullWidth
             margin="dense"
@@ -100,7 +104,7 @@ const AddClassModal = ({ isOpen, handleClose }) => {
           <TextField
             inputRef={classSectionEl}
             id="standard-basic"
-            label="Section"
+            label={t("classroom.section")}
             variant="filled"
             fullWidth
             margin="dense"
@@ -109,7 +113,7 @@ const AddClassModal = ({ isOpen, handleClose }) => {
           <TextField
             inputRef={classSubjectEl}
             id="standard-basic"
-            label="Subject"
+            label={t("classroom.subject")}
             variant="filled"
             fullWidth
             margin="dense"
@@ -118,7 +122,7 @@ const AddClassModal = ({ isOpen, handleClose }) => {
           <TextField
             inputRef={classRoomIdEl}
             id="standard-basic"
-            label="Room"
+            label={t("classroom.room")}
             variant="filled"
             fullWidth
             margin="dense"
@@ -133,7 +137,7 @@ const AddClassModal = ({ isOpen, handleClose }) => {
               color="inherit"
               onClick={handleClose}
             >
-              Cancel
+              {t("cancel")}
             </Button>
             <Button
               variant="text"
@@ -142,7 +146,7 @@ const AddClassModal = ({ isOpen, handleClose }) => {
               color="inherit"
               onClick={handleCreateClass}
             >
-              Create
+              {t("create")}
             </Button>
           </Stack>
         </div>

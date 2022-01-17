@@ -1,28 +1,29 @@
-import PropTypes from 'prop-types';
-import { alpha } from '@mui/material/styles';
+import PropTypes from "prop-types";
+import { alpha } from "@mui/material/styles";
 import { React, useEffect, useState } from "react";
-import Box from '@mui/material/Box';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
+import Box from "@mui/material/Box";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
 import { useSelector } from "react-redux";
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import TableSortLabel from '@mui/material/TableSortLabel';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
-import { visuallyHidden } from '@mui/utils';
-import { useNavigate } from 'react-router';
-import moment from 'moment';
-import axiosClassroom from '../../api/classroom.axios';
-import { IconButton } from '@mui/material';
-import { Info } from '@mui/icons-material';
+import TablePagination from "@mui/material/TablePagination";
+import TableRow from "@mui/material/TableRow";
+import TableSortLabel from "@mui/material/TableSortLabel";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import Checkbox from "@mui/material/Checkbox";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Switch from "@mui/material/Switch";
+import { visuallyHidden } from "@mui/utils";
+import { useNavigate } from "react-router";
+import moment from "moment";
+import axiosClassroom from "../../api/classroom.axios";
+import { IconButton } from "@mui/material";
+import { Info } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 
 function createData(name, author, subject, createAt, room, id) {
   return {
@@ -46,7 +47,7 @@ function descendingComparator(a, b, orderBy) {
 }
 
 function getComparator(order, orderBy) {
-  return order === 'desc'
+  return order === "desc"
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
@@ -67,47 +68,54 @@ function stableSort(array, comparator) {
 
 const headCells = [
   {
-    id: 'name',
+    id: "name",
     numeric: false,
     disablePadding: true,
-    label: 'Name',
+    label: "user.name",
   },
   {
-    id: 'author',
+    id: "author",
     numeric: false,
     disablePadding: false,
-    label: 'Author',
+    label: "classroom.author",
   },
   {
-    id: 'subject',
+    id: "subject",
     numeric: false,
     disablePadding: false,
-    label: 'Subject',
+    label: "classroom.subject",
   },
   {
-    id: 'createdAt',
+    id: "createdAt",
     numeric: false,
     disablePadding: false,
-    label: 'Created At',
+    label: "user.createAt",
   },
   {
-    id: 'room',
+    id: "room",
     numeric: false,
     disablePadding: false,
-    label: 'Room',
+    label: "classroom.room",
   },
   {
-    id: 'detail',
+    id: "detail",
     numeric: false,
     disablePadding: false,
-    label: 'View Detail',
-    align: 'center'
+    label: "user.viewDetail",
+    align: "center",
   },
 ];
 
 function EnhancedTableHead(props) {
-  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } =
-    props;
+  const { t } = useTranslation();
+  const {
+    onSelectAllClick,
+    order,
+    orderBy,
+    numSelected,
+    rowCount,
+    onRequestSort,
+  } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -122,26 +130,26 @@ function EnhancedTableHead(props) {
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
             inputProps={{
-              'aria-label': 'select all classes',
+              "aria-label": "select all classes",
             }}
           />
         </TableCell>
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.align ? headCell.align : 'left'}
-            padding={headCell.disablePadding ? 'none' : 'normal'}
+            align={headCell.align ? headCell.align : "left"}
+            padding={headCell.disablePadding ? "none" : "normal"}
             sortDirection={orderBy === headCell.id ? order : false}
           >
             <TableSortLabel
               active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : 'asc'}
+              direction={orderBy === headCell.id ? order : "asc"}
               onClick={createSortHandler(headCell.id)}
             >
-              {headCell.label}
+              {t(headCell.label)}
               {orderBy === headCell.id ? (
                 <Box component="span" sx={visuallyHidden}>
-                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                  {order === "desc" ? "sorted descending" : "sorted ascending"}
                 </Box>
               ) : null}
             </TableSortLabel>
@@ -156,12 +164,13 @@ EnhancedTableHead.propTypes = {
   numSelected: PropTypes.number.isRequired,
   onRequestSort: PropTypes.func.isRequired,
   onSelectAllClick: PropTypes.func.isRequired,
-  order: PropTypes.oneOf(['asc', 'desc']).isRequired,
+  order: PropTypes.oneOf(["asc", "desc"]).isRequired,
   orderBy: PropTypes.string.isRequired,
   rowCount: PropTypes.number.isRequired,
 };
 
 const EnhancedTableToolbar = (props) => {
+  const { t } = useTranslation();
   const { numSelected } = props;
 
   return (
@@ -171,38 +180,34 @@ const EnhancedTableToolbar = (props) => {
         pr: { xs: 1, sm: 1 },
         ...(numSelected > 0 && {
           bgcolor: (theme) =>
-            alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
+            alpha(
+              theme.palette.primary.main,
+              theme.palette.action.activatedOpacity
+            ),
         }),
       }}
     >
       {numSelected > 0 ? (
         <Typography
-          sx={{ flex: '1 1 100%' }}
+          sx={{ flex: "1 1 100%" }}
           color="inherit"
           variant="subtitle1"
           component="div"
         >
-          {numSelected} selected
+          {numSelected} {t("selected")}
         </Typography>
       ) : (
         <Typography
-          sx={{ flex: '1 1 100%' }}
+          sx={{ flex: "1 1 100%" }}
           variant="h6"
           id="tableTitle"
           component="div"
         >
-          User
+          {t("admin.users")}
         </Typography>
       )}
 
-      {numSelected > 0 ? (
-        <Box display="inline-flex">
-
-        </Box>
-        
-      ) : (
-        null
-      )}
+      {numSelected > 0 ? <Box display="inline-flex"></Box> : null}
     </Toolbar>
   );
 };
@@ -212,8 +217,9 @@ EnhancedTableToolbar.propTypes = {
 };
 
 export default function AdminClassrooms() {
-  const [order, setOrder] = useState('asc');
-  const [orderBy, setOrderBy] = useState('calories');
+  const { t } = useTranslation();
+  const [order, setOrder] = useState("asc");
+  const [orderBy, setOrderBy] = useState("calories");
   const accessToken = useSelector((state) => state.auth.token);
   const [selected, setSelected] = useState([]);
   const navigate = useNavigate();
@@ -222,9 +228,15 @@ export default function AdminClassrooms() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [classrooms, setClassrooms] = useState([]);
 
+  const defaultLabelDisplayedRows = ({ from, to, count }) => {
+    return `${from}–${to} ${t("of")} ${
+      count !== -1 ? count : `${t("moreThan")} ${to}`
+    }`;
+  };
+
   const navigateToClassroomPage = (id) => {
     navigate(`/classroomDetail/${id}`);
-  }
+  };
 
   useEffect(() => {
     const fetchClassrooms = async () => {
@@ -233,19 +245,18 @@ export default function AdminClassrooms() {
           headers: { Authorization: "Bearer " + accessToken },
         });
         setClassrooms(result.data);
-        console.log('classes', result.data);
+        console.log("classes", result.data);
       } catch (error) {
         navigate("/");
       }
     };
 
     fetchClassrooms();
-    
-  }, [accessToken, navigate])
+  }, [accessToken, navigate]);
 
   const handleRequestSort = (event, property) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
   };
 
@@ -260,16 +271,22 @@ export default function AdminClassrooms() {
 
   const matchRows = () => {
     let rows = [];
-    classrooms.forEach(classroom => {
+    classrooms.forEach((classroom) => {
+      const createdAt = moment(classroom.createdAt).format("L");
 
-      const createdAt = moment(classroom.createdAt).format('L');
-
-      rows.push(createData(
-        classroom.name, classroom.author, classroom.subject, createdAt, classroom.room, classroom.id
-      ));
-    })
+      rows.push(
+        createData(
+          classroom.name,
+          classroom.author,
+          classroom.subject,
+          createdAt,
+          classroom.room,
+          classroom.id
+        )
+      );
+    });
     return rows;
-  }
+  };
 
   const rows = matchRows();
 
@@ -286,7 +303,7 @@ export default function AdminClassrooms() {
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
         selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),
+        selected.slice(selectedIndex + 1)
       );
     }
 
@@ -313,14 +330,14 @@ export default function AdminClassrooms() {
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
   return (
-    <Box sx={{ width: '100%' }}>
-      <Paper sx={{ width: '100%', mb: 2 }}>
+    <Box sx={{ width: "100%" }}>
+      <Paper sx={{ width: "100%", mb: 2 }}>
         <EnhancedTableToolbar numSelected={selected.length} />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
             aria-labelledby="tableTitle"
-            size={dense ? 'small' : 'medium'}
+            size={dense ? "small" : "medium"}
           >
             <EnhancedTableHead
               numSelected={selected.length}
@@ -354,7 +371,7 @@ export default function AdminClassrooms() {
                           color="primary"
                           checked={isItemSelected}
                           inputProps={{
-                            'aria-labelledby': labelId,
+                            "aria-labelledby": labelId,
                           }}
                         />
                       </TableCell>
@@ -366,18 +383,19 @@ export default function AdminClassrooms() {
                       >
                         {row.name}
                       </TableCell>
-                        <TableCell align="left">{row.author}</TableCell>
-                        <TableCell align="left">{row.subject}</TableCell>
-                        <TableCell align="left">{row.createAt}</TableCell>
-                        <TableCell align="left">{row.room}</TableCell>
-                        <TableCell align="center">
-                          <IconButton 
-                            color="primary" aria-label="View Detail"
-                            onClick={() => navigateToClassroomPage(row.id)}
-                            >
-                            <Info />
-                          </IconButton>
-                        </TableCell>
+                      <TableCell align="left">{row.author}</TableCell>
+                      <TableCell align="left">{row.subject}</TableCell>
+                      <TableCell align="left">{row.createAt}</TableCell>
+                      <TableCell align="left">{row.room}</TableCell>
+                      <TableCell align="center">
+                        <IconButton
+                          color="primary"
+                          aria-label="View Detail"
+                          onClick={() => navigateToClassroomPage(row.id)}
+                        >
+                          <Info />
+                        </IconButton>
+                      </TableCell>
                     </TableRow>
                   );
                 })}
@@ -401,11 +419,13 @@ export default function AdminClassrooms() {
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
+          labelRowsPerPage={t("rowsPerPage")}
+          labelDisplayedRows={defaultLabelDisplayedRows}
         />
       </Paper>
       <FormControlLabel
         control={<Switch checked={dense} onChange={handleChangeDense} />}
-        label="Dense padding"
+        label={t("densePadding")}
       />
     </Box>
   );

@@ -12,12 +12,13 @@ import axiosClassroom from "../../api/classroom.axios";
 import { Typography, List, Divider, ListItem } from "@mui/material";
 import InviteEmailModal from "../../components/Modal/InviteEmailModal";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-
+import { useTranslation } from "react-i18next";
 import { userInfoActions } from "../../stores/userInfoStore";
 
 import { ROLE } from "../../utils/constants";
 
 const ClassroomPeople = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const accessToken = useSelector((state) => state.auth.token);
@@ -120,7 +121,7 @@ const ClassroomPeople = () => {
                     className={classes.studentName}
                     style={{ fontWeight: "bold" }}
                   >
-                    {participant["user"]["username"]} (You)
+                    {participant["user"]["username"]} ({t("you")})
                   </Typography>
                 )}
               </ListItem>
@@ -140,20 +141,24 @@ const ClassroomPeople = () => {
         onClose={handleCloseSnackBar}
         message={snackBarMessage}
       />
-      {isOpenInviteTeacherModal && <InviteEmailModal
-        isOpen={isOpenInviteTeacherModal}
-        handleClose={handleCloseTeacherInviteModal}
-        classroom={classroom}
-        type={"TEACHER"}
-      />}
+      {isOpenInviteTeacherModal && (
+        <InviteEmailModal
+          isOpen={isOpenInviteTeacherModal}
+          handleClose={handleCloseTeacherInviteModal}
+          classroom={classroom}
+          type={"TEACHER"}
+        />
+      )}
 
-      {isOpenInviteStudentModal && <InviteEmailModal
-        isOpen={isOpenInviteStudentModal}
-        handleClose={handleCloseStudentInviteModal}
-        classroom={classroom}
-        type={"STUDENT"}
-      />}
-      
+      {isOpenInviteStudentModal && (
+        <InviteEmailModal
+          isOpen={isOpenInviteStudentModal}
+          handleClose={handleCloseStudentInviteModal}
+          classroom={classroom}
+          type={"STUDENT"}
+        />
+      )}
+
       <Header loading={isLoading} classroom={2} classID={classroomId} />
       <Container classes={{ root: classes.classroomPeopleContainer }}>
         <List sx={{ marginBottom: 3 }}>
@@ -162,7 +167,7 @@ const ClassroomPeople = () => {
             divider
           >
             <Typography variant="h4" className={classes.bigfont}>
-              Teachers
+              {t("classroom.teacher")}
             </Typography>
             {[ROLE.OWNER, ROLE.TEACHER].includes(role) && (
               <IconButton onClick={handleOpenTeacherInviteModal}>
@@ -185,11 +190,11 @@ const ClassroomPeople = () => {
             divider
           >
             <Typography variant="h4" className={classes.bigfont}>
-              Students
+              {t("classroom.student")}
             </Typography>
             <div>
               <Typography variant="p" className={classes.fontNumClass}>
-                {getNumStudent()} students
+                {getNumStudent()} {t("classroom.student")}
               </Typography>
               <IconButton onClick={handleOpenStudentInviteModal}>
                 <PersonAddAltIcon sx={{ color: "#1967d2" }} />

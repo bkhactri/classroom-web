@@ -22,8 +22,10 @@ import OutLookLogo from "../../assets/outlook.png";
 import ZohoLogo from "../../assets/zoho.png";
 import axiosAuth from "../../api/auth.axios.js";
 import { signUpFormValidator } from "../../validators/formValidator";
+import { useTranslation } from "react-i18next";
 
 const RegisterPage = () => {
+  const { t } = useTranslation();
   const [hasSendMail, setHasSendMail] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -72,7 +74,7 @@ const RegisterPage = () => {
             <SchoolIcon />
           </Avatar>
           <Typography component="h1" variant="h5" sx={{ mb: 2 }}>
-            Sign up
+            {t("auth.signUp")}
           </Typography>
           {hasSendMail ? (
             <Fragment>
@@ -81,8 +83,7 @@ const RegisterPage = () => {
                 variant="h5"
                 sx={{ mb: 4, textAlign: "center" }}
               >
-                We have send a verify mail to your email please check and
-                confirm your email
+                {t("auth.hasSendEmail")}
               </Typography>
 
               <List
@@ -173,7 +174,7 @@ const RegisterPage = () => {
                       required
                       fullWidth
                       id="Username"
-                      label="Username"
+                      label={t("auth.username")}
                       name="username"
                       autoComplete="username"
                     />
@@ -183,7 +184,7 @@ const RegisterPage = () => {
                       required
                       fullWidth
                       id="email"
-                      label="Email Address"
+                      label={t("auth.emailAddress")}
                       name="email"
                       autoComplete="email"
                     />
@@ -193,7 +194,7 @@ const RegisterPage = () => {
                       required
                       fullWidth
                       name="password"
-                      label="Password"
+                      label={t("auth.password")}
                       type="password"
                       id="password"
                       autoComplete="new-password"
@@ -204,7 +205,7 @@ const RegisterPage = () => {
                       required
                       fullWidth
                       name="confirmPassword"
-                      label="Confirm Password"
+                      label={t("auth.confirmPassword")}
                       type="password"
                       id="confirm-password"
                       autoComplete="confirm-password"
@@ -214,7 +215,7 @@ const RegisterPage = () => {
                 <Grid container sx={{ mt: 2 }}>
                   <Grid item>
                     <Link to="/login" variant="body2">
-                      Already have an account? Sign in
+                      {t("auth.alreadyHaveAccount")}
                     </Link>
                   </Grid>
                 </Grid>
@@ -231,7 +232,7 @@ const RegisterPage = () => {
                   disabled={isLoading}
                 >
                   {!isLoading ? (
-                    "Sign Up"
+                    t("auth.signUp")
                   ) : (
                     <CircularProgress sx={{ color: "#fff" }} />
                   )}

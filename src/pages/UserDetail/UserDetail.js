@@ -18,10 +18,11 @@ import axiosGrade from "../../api/grade.axios";
 import axiosClassroom from "../../api/classroom.axios";
 
 import { calculateMyGrades } from "../../utils/index";
-
+import { useTranslation } from "react-i18next";
 import { userInfoActions } from "../../stores/userInfoStore";
 
 const UserDetail = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { classroomId, userId } = useParams();
   const [isLoading, setIsLoading] = useState(false);
@@ -126,7 +127,7 @@ const UserDetail = () => {
                 "&:hover": { bgcolor: "#5e92e6" },
               }}
             >
-              Send Mail
+              {t("sendMail")}
             </Button>
           </Box>
         </Box>

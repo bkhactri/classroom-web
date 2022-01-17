@@ -14,8 +14,10 @@ import Header from "../../components/Header/Header";
 import axiosAuth from "../../api/auth.axios";
 import { authActions } from "../../stores/authenticationStore";
 import { userInfoActions } from "../../stores/userInfoStore";
+import { useTranslation } from "react-i18next";
 
 const ConfirmEmail = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { verifyToken } = useParams();
@@ -89,7 +91,7 @@ const ConfirmEmail = () => {
           variant="h5"
           sx={{ mb: 2, textAlign: "center" }}
         >
-          Verify Your Email
+          {t("auth.verifyEmail")}
         </Typography>
         {error && <Alert severity="error">{error}</Alert>}
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
@@ -98,9 +100,8 @@ const ConfirmEmail = () => {
             variant="h6"
             sx={{ mb: 2, textAlign: "center" }}
           >
-            Welcome back {c_email}, <br />
-            Please click below button to verify your email and start grading
-            with eClassroom
+            {t("welcomeBack")} {c_email}, <br />
+            {t("auth.verifyEmailHint")}
           </Typography>
           <Button
             type="submit"
@@ -110,7 +111,7 @@ const ConfirmEmail = () => {
             disabled={isLoading}
           >
             {!isLoading ? (
-              "Verify Email"
+              t("auth.verifyEmail")
             ) : (
               <CircularProgress sx={{ color: "#fff" }} />
             )}

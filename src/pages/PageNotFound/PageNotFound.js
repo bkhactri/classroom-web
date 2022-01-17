@@ -1,10 +1,11 @@
 import React, { Fragment } from "react";
-
+import { useTranslation } from "react-i18next";
 import Header from "../../components/Header/Header";
 import { Link } from "react-router-dom";
 import { Container } from "@mui/material";
 import NotFound from "../../assets/404.png";
 const PageNotFound = () => {
+  const { t } = useTranslation();
   return (
     <Fragment>
       <Header />
@@ -27,7 +28,7 @@ const PageNotFound = () => {
           to="/"
           style={{ textDecoration: "none", fontSize: 20, fontWeight: "bold" }}
         >
-          Go back Home
+          {t("goHome")}
         </Link>
       </Container>
     </Fragment>

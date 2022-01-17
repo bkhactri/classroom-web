@@ -8,10 +8,11 @@ import {
 import Button from "@mui/material/Button";
 import classes from "./ColumnMenu.module.css";
 import { downloadFile } from "../../utils/index";
-
+import { useTranslation } from "react-i18next";
 import axiosGrade from "../../api/grade.axios";
 
 const CustomColumnMenuComponent = (props) => {
+  const { t } = useTranslation();
   const { classroomId } = useParams();
   const accessToken = useSelector((state) => state.auth.token);
   const { hideMenu, currentColumn, color, uploadGrade, ...other } = props;
@@ -103,12 +104,12 @@ const CustomColumnMenuComponent = (props) => {
         <div>
           <li>
             <Button className={classes.Button} onClick={chooseGradeFile}>
-              Import Grade
+              {t("classroom.importGrade")}
             </Button>
           </li>
           <li>
             <Button className={classes.Button} onClick={exportColumn}>
-              Export Column
+              {t("classroom.exportGrade")}
             </Button>
           </li>
           <li>
@@ -116,7 +117,7 @@ const CustomColumnMenuComponent = (props) => {
               className={classes.Button}
               onClick={() => handleColumnFinalized()}
             >
-              Finalized
+              {t("classroom.finalized")}
             </Button>
           </li>
         </div>

@@ -20,8 +20,10 @@ import axiosAuth from "../../api/auth.axios";
 import { authActions } from "../../stores/authenticationStore";
 import { userInfoActions } from "../../stores/userInfoStore";
 import { signInFormValidator } from "../../validators/formValidator";
+import { useTranslation } from "react-i18next";
 
 const LoginPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [error, setError] = useState(null);
@@ -85,7 +87,7 @@ const LoginPage = () => {
             <SchoolIcon />
           </Avatar>
           <Typography component="h1" variant="h5" sx={{ mb: 2 }}>
-            Sign in
+            {t("auth.signIn")}
           </Typography>
           {error && <Alert severity="error">{error}</Alert>}
           <Box
@@ -99,7 +101,7 @@ const LoginPage = () => {
               required
               fullWidth
               id="email"
-              label="Email Address"
+              label={t("auth.emailAddress")}
               name="email"
               autoComplete="email"
               autoFocus
@@ -109,7 +111,7 @@ const LoginPage = () => {
               required
               fullWidth
               name="password"
-              label="Password"
+              label={t("auth.password")}
               type="password"
               id="password"
               autoComplete="current-password"
@@ -117,12 +119,12 @@ const LoginPage = () => {
             <Grid container sx={{ mt: 1 }}>
               <Grid item xs>
                 <Link to="/reset-password" variant="body2">
-                  Forgot password?
+                  {t("auth.forgotPassword")}?
                 </Link>
               </Grid>
               <Grid item>
                 <Link to="/signup" variant="body2">
-                  {"Don't have an account? Sign Up"}
+                  {t("auth.doNotHaveAccount")}
                 </Link>
               </Grid>
             </Grid>
@@ -134,12 +136,12 @@ const LoginPage = () => {
               disabled={isLoading}
             >
               {!isLoading ? (
-                "Sign In"
+                t("auth.signIn")
               ) : (
                 <CircularProgress sx={{ color: "#fff" }} />
               )}
             </Button>
-            <Divider sx={{ opacity: 0.7, fontSize: 14 }}> or </Divider>
+            <Divider sx={{ opacity: 0.7, fontSize: 14 }}> {t("or")} </Divider>
             <Button
               fullWidth
               variant="contained"
@@ -166,7 +168,7 @@ const LoginPage = () => {
                 alt="Google Logo"
                 style={{ marginRight: 10 }}
               />
-              Login with Google
+              {t("auth.loginWithGoogle")}
             </Button>
           </Box>
         </Box>

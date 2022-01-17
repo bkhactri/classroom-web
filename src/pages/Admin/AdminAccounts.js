@@ -1,31 +1,32 @@
-import PropTypes from 'prop-types';
-import { alpha } from '@mui/material/styles';
+import PropTypes from "prop-types";
+import { alpha } from "@mui/material/styles";
 import { React, useEffect, useState } from "react";
-import Box from '@mui/material/Box';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
+import Box from "@mui/material/Box";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
 import { useSelector } from "react-redux";
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import TableSortLabel from '@mui/material/TableSortLabel';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import Checkbox from '@mui/material/Checkbox';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
-import { visuallyHidden } from '@mui/utils';
-import axiosUser from '../../api/user.axios';
-import { useNavigate } from 'react-router';
-import moment from 'moment';
-import BlockIcon from '@mui/icons-material/Block';
-import LockOpenIcon from '@mui/icons-material/LockOpen';
-import { Info } from '@mui/icons-material';
+import TablePagination from "@mui/material/TablePagination";
+import TableRow from "@mui/material/TableRow";
+import TableSortLabel from "@mui/material/TableSortLabel";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import Checkbox from "@mui/material/Checkbox";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Switch from "@mui/material/Switch";
+import { visuallyHidden } from "@mui/utils";
+import axiosUser from "../../api/user.axios";
+import { useNavigate } from "react-router";
+import moment from "moment";
+import BlockIcon from "@mui/icons-material/Block";
+import LockOpenIcon from "@mui/icons-material/LockOpen";
+import { Info } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 
 function createData(name, email, username, createAt, status, id) {
   return {
@@ -34,7 +35,7 @@ function createData(name, email, username, createAt, status, id) {
     username,
     createAt,
     status,
-    id
+    id,
   };
 }
 
@@ -49,7 +50,7 @@ function descendingComparator(a, b, orderBy) {
 }
 
 function getComparator(order, orderBy) {
-  return order === 'desc'
+  return order === "desc"
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
@@ -70,47 +71,54 @@ function stableSort(array, comparator) {
 
 const headCells = [
   {
-    id: 'name',
+    id: "name",
     numeric: false,
     disablePadding: true,
-    label: 'Name',
+    label: "user.name",
   },
   {
-    id: 'email',
+    id: "email",
     numeric: false,
     disablePadding: false,
-    label: 'Email',
+    label: "user.emailAddress",
   },
   {
-    id: 'username',
+    id: "username",
     numeric: false,
     disablePadding: false,
-    label: 'Username',
+    label: "user.username",
   },
   {
-    id: 'createdAt',
+    id: "createdAt",
     numeric: false,
     disablePadding: false,
-    label: 'Created At',
+    label: "user.createAt",
   },
   {
-    id: 'status',
+    id: "status",
     numeric: false,
     disablePadding: false,
-    label: 'Status',
+    label: "user.status",
   },
   {
-    id: 'detail',
+    id: "detail",
     numeric: false,
     disablePadding: false,
-    label: 'View Detail',
-    align: 'center'
+    label: "user.viewDetail",
+    align: "center",
   },
 ];
 
 function EnhancedTableHead(props) {
-  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } =
-    props;
+  const { t } = useTranslation();
+  const {
+    onSelectAllClick,
+    order,
+    orderBy,
+    numSelected,
+    rowCount,
+    onRequestSort,
+  } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -125,26 +133,26 @@ function EnhancedTableHead(props) {
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
             inputProps={{
-              'aria-label': 'select all users',
+              "aria-label": "select all users",
             }}
           />
         </TableCell>
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.align ? headCell.align : 'left'}
-            padding={headCell.disablePadding ? 'none' : 'normal'}
+            align={headCell.align ? headCell.align : "left"}
+            padding={headCell.disablePadding ? "none" : "normal"}
             sortDirection={orderBy === headCell.id ? order : false}
           >
             <TableSortLabel
               active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : 'asc'}
+              direction={orderBy === headCell.id ? order : "asc"}
               onClick={createSortHandler(headCell.id)}
             >
-              {headCell.label}
+              {t(headCell.label)}
               {orderBy === headCell.id ? (
                 <Box component="span" sx={visuallyHidden}>
-                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                  {order === "desc" ? "sorted descending" : "sorted ascending"}
                 </Box>
               ) : null}
             </TableSortLabel>
@@ -159,12 +167,13 @@ EnhancedTableHead.propTypes = {
   numSelected: PropTypes.number.isRequired,
   onRequestSort: PropTypes.func.isRequired,
   onSelectAllClick: PropTypes.func.isRequired,
-  order: PropTypes.oneOf(['asc', 'desc']).isRequired,
+  order: PropTypes.oneOf(["asc", "desc"]).isRequired,
   orderBy: PropTypes.string.isRequired,
   rowCount: PropTypes.number.isRequired,
 };
 
 const EnhancedTableToolbar = (props) => {
+  const { t } = useTranslation();
   const { numSelected } = props;
 
   return (
@@ -174,27 +183,30 @@ const EnhancedTableToolbar = (props) => {
         pr: { xs: 1, sm: 1 },
         ...(numSelected > 0 && {
           bgcolor: (theme) =>
-            alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
+            alpha(
+              theme.palette.primary.main,
+              theme.palette.action.activatedOpacity
+            ),
         }),
       }}
     >
       {numSelected > 0 ? (
         <Typography
-          sx={{ flex: '1 1 100%' }}
+          sx={{ flex: "1 1 100%" }}
           color="inherit"
           variant="subtitle1"
           component="div"
         >
-          {numSelected} selected
+          {numSelected} {t("selected")}
         </Typography>
       ) : (
         <Typography
-          sx={{ flex: '1 1 100%' }}
+          sx={{ flex: "1 1 100%" }}
           variant="h6"
           id="tableTitle"
           component="div"
         >
-          Admin Accounts
+          {t("admin.admins")}
         </Typography>
       )}
 
@@ -211,12 +223,8 @@ const EnhancedTableToolbar = (props) => {
               <BlockIcon />
             </IconButton>
           </Tooltip>
-
         </Box>
-        
-      ) : (
-        null
-      )}
+      ) : null}
     </Toolbar>
   );
 };
@@ -226,8 +234,9 @@ EnhancedTableToolbar.propTypes = {
 };
 
 export default function AdminAccounts() {
-  const [order, setOrder] = useState('asc');
-  const [orderBy, setOrderBy] = useState('calories');
+  const { t } = useTranslation();
+  const [order, setOrder] = useState("asc");
+  const [orderBy, setOrderBy] = useState("calories");
   const accessToken = useSelector((state) => state.auth.token);
   const [selected, setSelected] = useState([]);
   const [page, setPage] = useState(0);
@@ -236,9 +245,15 @@ export default function AdminAccounts() {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
 
+  const defaultLabelDisplayedRows = ({ from, to, count }) => {
+    return `${from}–${to} ${t("of")} ${
+      count !== -1 ? count : `${t("moreThan")} ${to}`
+    }`;
+  };
+
   const navigateToUserPage = (id) => {
     navigate(`/adminDetail/${id}`);
-  }
+  };
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -247,19 +262,18 @@ export default function AdminAccounts() {
           headers: { Authorization: "Bearer " + accessToken },
         });
         setUsers(result);
-        console.log('users', result);
+        console.log("users", result);
       } catch (error) {
         navigate("/");
       }
     };
 
     fetchUsers();
-    
-  }, [accessToken, navigate])
+  }, [accessToken, navigate]);
 
   const handleRequestSort = (event, property) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
   };
 
@@ -274,20 +288,27 @@ export default function AdminAccounts() {
 
   const calculateUsers = (users) => {
     let userRows = [];
-    users.forEach(user => {
-      let status = 'Active';
-      if (!user.isActive){
-        status = 'Inactive';
+    users.forEach((user) => {
+      let status = "Active";
+      if (!user.isActive) {
+        status = "Inactive";
       }
 
-      const createdAt = moment(user.createdAt).format('L');
+      const createdAt = moment(user.createdAt).format("L");
 
-      userRows.push(createData(
-        user.displayName, user.email, user.username, createdAt, status, user.id
-      ));
-    })
+      userRows.push(
+        createData(
+          user.displayName,
+          user.email,
+          user.username,
+          createdAt,
+          status,
+          user.id
+        )
+      );
+    });
     return userRows;
-  }
+  };
 
   const rows = calculateUsers(users);
 
@@ -304,7 +325,7 @@ export default function AdminAccounts() {
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
         selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),
+        selected.slice(selectedIndex + 1)
       );
     }
 
@@ -331,14 +352,14 @@ export default function AdminAccounts() {
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
   return (
-    <Box sx={{ width: '100%' }}>
-      <Paper sx={{ width: '100%', mb: 2 }}>
+    <Box sx={{ width: "100%" }}>
+      <Paper sx={{ width: "100%", mb: 2 }}>
         <EnhancedTableToolbar numSelected={selected.length} />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
             aria-labelledby="tableTitle"
-            size={dense ? 'small' : 'medium'}
+            size={dense ? "small" : "medium"}
           >
             <EnhancedTableHead
               numSelected={selected.length}
@@ -372,7 +393,7 @@ export default function AdminAccounts() {
                           color="primary"
                           checked={isItemSelected}
                           inputProps={{
-                            'aria-labelledby': labelId,
+                            "aria-labelledby": labelId,
                           }}
                         />
                       </TableCell>
@@ -384,18 +405,19 @@ export default function AdminAccounts() {
                       >
                         {row.name}
                       </TableCell>
-                        <TableCell align="left">{row.email}</TableCell>
-                        <TableCell align="left">{row.username}</TableCell>
-                        <TableCell align="left">{row.createAt}</TableCell>
-                        <TableCell align="left">{row.status}</TableCell>
-                        <TableCell align="center">
-                          <IconButton 
-                            color="primary" aria-label="View Detail"
-                            onClick={() => navigateToUserPage(row.id)}
-                            >
-                            <Info />
-                          </IconButton>
-                        </TableCell>
+                      <TableCell align="left">{row.email}</TableCell>
+                      <TableCell align="left">{row.username}</TableCell>
+                      <TableCell align="left">{row.createAt}</TableCell>
+                      <TableCell align="left">{row.status}</TableCell>
+                      <TableCell align="center">
+                        <IconButton
+                          color="primary"
+                          aria-label="View Detail"
+                          onClick={() => navigateToUserPage(row.id)}
+                        >
+                          <Info />
+                        </IconButton>
+                      </TableCell>
                     </TableRow>
                   );
                 })}
@@ -419,11 +441,13 @@ export default function AdminAccounts() {
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
+          labelRowsPerPage={t("rowsPerPage")}
+          labelDisplayedRows={defaultLabelDisplayedRows}
         />
       </Paper>
       <FormControlLabel
         control={<Switch checked={dense} onChange={handleChangeDense} />}
-        label="Dense padding"
+        label={t("densePadding")}
       />
     </Box>
   );

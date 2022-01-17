@@ -7,7 +7,7 @@ import TableRow from "@mui/material/TableRow";
 import Fab from "@mui/material/Fab";
 import GradingIcon from "@mui/icons-material/Grading";
 import FunctionsIcon from "@mui/icons-material/Functions";
-
+import { useTranslation } from "react-i18next";
 import { GRADE_STATUS } from "../../utils/constants";
 
 const GradeTable = ({
@@ -16,6 +16,7 @@ const GradeTable = ({
   clickable,
   handleOpenGradeDetail,
 }) => {
+  const { t } = useTranslation();
   const canOpenModal = (gradeStatus) =>
     clickable && gradeStatus === GRADE_STATUS.FINALIZED;
 
@@ -40,7 +41,7 @@ const GradeTable = ({
                     point: myGrade.point,
                     total: myGrade.total,
                     createdAt: myGrade.createdAt,
-                    updatedAt: myGrade.updatedAt
+                    updatedAt: myGrade.updatedAt,
                   })
                 }
                 key={myGrade.name}
@@ -91,7 +92,7 @@ const GradeTable = ({
             </TableCell>
             <TableCell>
               <Typography sx={{ fontWeight: "bold", color: "crimson" }}>
-                TOTAL
+                {t("total")}
               </Typography>
             </TableCell>
             <TableCell align="right">

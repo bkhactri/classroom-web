@@ -4,7 +4,7 @@ import Header from "../../../components/Header/Header";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
-
+import { useTranslation } from "react-i18next";
 // import classes from "./Account.module.css";
 
 import InformationBlock from "../../../components/AdminDetailBlock/InformationBlock";
@@ -15,6 +15,7 @@ import { useParams } from "react-router";
 import moment from "moment";
 
 const AdminUserDetail = () => {
+  const { t } = useTranslation();
   const { userID } = useParams();
   const [isLoading, setIsLoading] = useState(false);
   const [accountInfo, setAccountInfo] = useState(null);
@@ -25,52 +26,51 @@ const AdminUserDetail = () => {
     const fetchUserInfo = async () => {
       setIsLoading(true);
       try {
-        
         const userInfo = await axiosUser.get(`/userInfo/${userID}`, {
           headers: { Authorization: "Bearer " + accessToken },
         });
         setAccountInfo(userInfo);
 
-        console.log('userInfo', userInfo);
+        console.log("userInfo", userInfo);
 
         const values = [
           {
             name: "ID",
-            value: userInfo.id
+            value: userInfo.id,
           },
           {
-            name: "Display Name",
-            value: userInfo.displayName
+            name: t("accountPage.displayName"),
+            value: userInfo.displayName,
           },
           {
-            name: "Student ID",
-            value: userInfo.studentId
+            name: t("accountPage.studentId"),
+            value: userInfo.studentId,
           },
           {
-            name: "Username",
-            value: userInfo.username
+            name: t("auth.username"),
+            value: userInfo.username,
           },
           {
-            name: "Email",
-            value: userInfo.email
+            name: t("auth.emailAddress"),
+            value: userInfo.email,
           },
           {
-            name: "Is Activate",
-            value: userInfo.isActive ? "TRUE" : "FALSE"
+            name: t("user.isActive"),
+            value: userInfo.isActive ? "TRUE" : "FALSE",
           },
           {
-            name: "Is Ban",
-            value: userInfo.isBan ? "TRUE" : "FALSE"
+            name: t("user.isBan"),
+            value: userInfo.isBan ? "TRUE" : "FALSE",
           },
           {
-            name: "Created At",
-            value: moment(userInfo.createdAt).format('L')
+            name: t("user.createAt"),
+            value: moment(userInfo.createdAt).format("L"),
           },
           {
-            name: "Role",
-            value: userInfo.role
-          } 
-        ]
+            name: t("user.role"),
+            value: userInfo.role,
+          },
+        ];
 
         setInfo(values);
 
@@ -82,14 +82,14 @@ const AdminUserDetail = () => {
     };
 
     fetchUserInfo();
-  }, [accessToken, userID]);
+  }, [accessToken, userID, t]);
 
   return (
     <>
       <Header loading={isLoading} />
       <Container maxWidth="lg" sx={{ mt: 1, mb: 3 }}>
         <Typography variant="h5" sx={{ mt: 3, fontWeight: "600" }}>
-          Account Infomation
+          {t("admin.accountInfo")}
         </Typography>
         <Grid container spacing={2} rowSpacing={2}>
           <Grid item sm={12} md={8}>

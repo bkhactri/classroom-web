@@ -1,38 +1,39 @@
-import PropTypes from 'prop-types';
-import { alpha } from '@mui/material/styles';
+import PropTypes from "prop-types";
+import { alpha } from "@mui/material/styles";
 import { React, useEffect, useState, forwardRef } from "react";
-import Box from '@mui/material/Box';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
+import Box from "@mui/material/Box";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
 import { useSelector } from "react-redux";
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import TableSortLabel from '@mui/material/TableSortLabel';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import Checkbox from '@mui/material/Checkbox';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
-import { visuallyHidden } from '@mui/utils';
-import axiosUser from '../../api/user.axios';
-import { useNavigate } from 'react-router';
-import moment from 'moment';
-import BlockIcon from '@mui/icons-material/Block';
-import LockOpenIcon from '@mui/icons-material/LockOpen';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogTitle from '@mui/material/DialogTitle';
-import Slide from '@mui/material/Slide';
-import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
-import PersonIcon from '@mui/icons-material/Person';
-import { Info } from '@mui/icons-material';
+import TablePagination from "@mui/material/TablePagination";
+import TableRow from "@mui/material/TableRow";
+import TableSortLabel from "@mui/material/TableSortLabel";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import Checkbox from "@mui/material/Checkbox";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Switch from "@mui/material/Switch";
+import { visuallyHidden } from "@mui/utils";
+import axiosUser from "../../api/user.axios";
+import { useNavigate } from "react-router";
+import moment from "moment";
+import BlockIcon from "@mui/icons-material/Block";
+import LockOpenIcon from "@mui/icons-material/LockOpen";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogTitle from "@mui/material/DialogTitle";
+import Slide from "@mui/material/Slide";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import PersonIcon from "@mui/icons-material/Person";
+import { Info } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 
 function createData(studentID, email, username, createAt, status, role, id) {
   return {
@@ -42,7 +43,7 @@ function createData(studentID, email, username, createAt, status, role, id) {
     createAt,
     status,
     role,
-    id
+    id,
   };
 }
 
@@ -61,7 +62,7 @@ function descendingComparator(a, b, orderBy) {
 }
 
 function getComparator(order, orderBy) {
-  return order === 'desc'
+  return order === "desc"
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
@@ -80,57 +81,63 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-
 const headCells = [
   {
-    id: 'studentID',
+    id: "studentID",
     numeric: false,
     disablePadding: true,
-    label: 'Student ID',
+    label: "user.studentId",
   },
   {
-    id: 'email',
+    id: "email",
     numeric: false,
     disablePadding: false,
-    label: 'Email',
+    label: "user.emailAddress",
   },
   {
-    id: 'username',
+    id: "username",
     numeric: false,
     disablePadding: false,
-    label: 'Username',
+    label: "user.username",
   },
   {
-    id: 'createdAt',
+    id: "createdAt",
     numeric: false,
     disablePadding: false,
-    label: 'Created At',
+    label: "user.createAt",
   },
   {
-    id: 'status',
+    id: "status",
     numeric: false,
     disablePadding: false,
-    label: 'Status',
+    label: "user.status",
   },
   {
-    id: 'role',
+    id: "role",
     numeric: false,
     disablePadding: false,
-    label: 'Role',
-    align: 'center'
+    label: "user.role",
+    align: "center",
   },
   {
-    id: 'detail',
+    id: "detail",
     numeric: false,
     disablePadding: false,
-    label: 'View Detail',
-    align: 'center'
+    label: "user.viewDetail",
+    align: "center",
   },
 ];
 
 function EnhancedTableHead(props) {
-  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } =
-    props;
+  const { t } = useTranslation();
+  const {
+    onSelectAllClick,
+    order,
+    orderBy,
+    numSelected,
+    rowCount,
+    onRequestSort,
+  } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -145,26 +152,26 @@ function EnhancedTableHead(props) {
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
             inputProps={{
-              'aria-label': 'select all users',
+              "aria-label": "select all users",
             }}
           />
         </TableCell>
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.align ? headCell.align : 'left'}
-            padding={headCell.disablePadding ? 'none' : 'normal'}
+            align={headCell.align ? headCell.align : "left"}
+            padding={headCell.disablePadding ? "none" : "normal"}
             sortDirection={orderBy === headCell.id ? order : false}
           >
             <TableSortLabel
               active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : 'asc'}
+              direction={orderBy === headCell.id ? order : "asc"}
               onClick={createSortHandler(headCell.id)}
             >
-              {headCell.label}
+              {t(headCell.label)}
               {orderBy === headCell.id ? (
                 <Box component="span" sx={visuallyHidden}>
-                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                  {order === "desc" ? "sorted descending" : "sorted ascending"}
                 </Box>
               ) : null}
             </TableSortLabel>
@@ -179,12 +186,13 @@ EnhancedTableHead.propTypes = {
   numSelected: PropTypes.number.isRequired,
   onRequestSort: PropTypes.func.isRequired,
   onSelectAllClick: PropTypes.func.isRequired,
-  order: PropTypes.oneOf(['asc', 'desc']).isRequired,
+  order: PropTypes.oneOf(["asc", "desc"]).isRequired,
   orderBy: PropTypes.string.isRequired,
   rowCount: PropTypes.number.isRequired,
 };
 
 const EnhancedTableToolbar = (props) => {
+  const { t } = useTranslation();
   const { numSelected } = props;
 
   return (
@@ -194,27 +202,30 @@ const EnhancedTableToolbar = (props) => {
         pr: { xs: 1, sm: 1 },
         ...(numSelected > 0 && {
           bgcolor: (theme) =>
-            alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
+            alpha(
+              theme.palette.primary.main,
+              theme.palette.action.activatedOpacity
+            ),
         }),
       }}
     >
       {numSelected > 0 ? (
         <Typography
-          sx={{ flex: '1 1 100%' }}
+          sx={{ flex: "1 1 100%" }}
           color="inherit"
           variant="subtitle1"
           component="div"
         >
-          {numSelected} selected
+          {numSelected} {t("selected")}
         </Typography>
       ) : (
         <Typography
-          sx={{ flex: '1 1 100%' }}
+          sx={{ flex: "1 1 100%" }}
           variant="h6"
           id="tableTitle"
           component="div"
         >
-          User
+          {t("admin.users")}
         </Typography>
       )}
 
@@ -231,12 +242,8 @@ const EnhancedTableToolbar = (props) => {
               <BlockIcon />
             </IconButton>
           </Tooltip>
-
         </Box>
-        
-      ) : (
-        null
-      )}
+      ) : null}
     </Toolbar>
   );
 };
@@ -246,8 +253,9 @@ EnhancedTableToolbar.propTypes = {
 };
 
 export default function AdminUsers() {
-  const [order, setOrder] = useState('asc');
-  const [orderBy, setOrderBy] = useState('calories');
+  const { t } = useTranslation();
+  const [order, setOrder] = useState("asc");
+  const [orderBy, setOrderBy] = useState("calories");
   const accessToken = useSelector((state) => state.auth.token);
   const [selected, setSelected] = useState([]);
   const [page, setPage] = useState(0);
@@ -260,24 +268,29 @@ export default function AdminUsers() {
   const [openConfirmation, setOpenConfirmation] = useState(false);
   const [isBanClicked, setIsBanClicked] = useState(false);
 
+  const defaultLabelDisplayedRows = ({ from, to, count }) => {
+    return `${from}–${to} ${t("of")} ${
+      count !== -1 ? count : `${t("moreThan")} ${to}`
+    }`;
+  };
 
   const navigateToUserPage = (userID) => {
     navigate(`/userDetail/${userID}`);
-  }
+  };
 
   const handleCloseConfirmation = () => {
     setOpenConfirmation(false);
   };
 
   const handleConfirm = async () => {
-    if (isBanClicked === false){
+    if (isBanClicked === false) {
       handleConfirmAdmin();
     } else {
       handleConfirmBan();
     }
-  }
+  };
 
-  const handleConfirmBan = async () => {   
+  const handleConfirmBan = async () => {
     console.log("banUserSelected", banUserSelected);
     const userID = banUserSelected.id;
     const newBanStatus = !banUserSelected.isBan;
@@ -292,18 +305,19 @@ export default function AdminUsers() {
       }
     );
 
-    const newUser = {...banUserSelected, isBan: newBanStatus};
+    const newUser = { ...banUserSelected, isBan: newBanStatus };
     updateUser(newUser);
 
     setOpenConfirmation(false);
   };
 
   const handleConfirmAdmin = async () => {
-    console.log('userselected', banUserSelected);
+    console.log("userselected", banUserSelected);
     const userID = banUserSelected.id;
 
-    const newAdminStatus = banUserSelected.role === "ADMIN" ? "NORMAL" : "ADMIN";
-    
+    const newAdminStatus =
+      banUserSelected.role === "ADMIN" ? "NORMAL" : "ADMIN";
+
     await axiosUser.put(
       "/updateAdminStatus",
       {
@@ -315,7 +329,7 @@ export default function AdminUsers() {
       }
     );
 
-    const newUser = {...banUserSelected, role: newAdminStatus};
+    const newUser = { ...banUserSelected, role: newAdminStatus };
     updateUser(newUser);
 
     setOpenConfirmation(false);
@@ -342,18 +356,18 @@ export default function AdminUsers() {
           headers: { Authorization: "Bearer " + accessToken },
         });
 
-        function compare( a, b ) {
-          if ( a.email < b.email ){
+        function compare(a, b) {
+          if (a.email < b.email) {
             return -1;
           }
-          if ( a.email > b.email ){
+          if (a.email > b.email) {
             return 1;
           }
           return 0;
         }
-        
-        result.sort( compare );
-        
+
+        result.sort(compare);
+
         setUsers(result);
       } catch (error) {
         navigate("/");
@@ -365,12 +379,11 @@ export default function AdminUsers() {
     };
 
     fetchUsers();
-    
-  }, [accessToken, navigate])
+  }, [accessToken, navigate]);
 
   const handleRequestSort = (event, property) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
   };
 
@@ -385,35 +398,61 @@ export default function AdminUsers() {
 
   const calculateUsers = (users) => {
     let userRows = [];
-    users.forEach(user => {
-      let status = <LockOpenIcon 
-          style={{fill: "green"}} 
-          onClick={() => handleClickOpenBanConfirmation("Ban user?", user)}/>;
-      if (user.isBan){
-        status = <BlockIcon 
-            style={{fill: "red"}} 
-            onClick={() => handleClickOpenBanConfirmation("Unban user?", user)}/>;
+    users.forEach((user) => {
+      let status = (
+        <LockOpenIcon
+          style={{ fill: "green" }}
+          onClick={() =>
+            handleClickOpenBanConfirmation(t("user.banUser"), user)
+          }
+        />
+      );
+      if (user.isBan) {
+        status = (
+          <BlockIcon
+            style={{ fill: "red" }}
+            onClick={() =>
+              handleClickOpenBanConfirmation(t("user.unbanUser"), user)
+            }
+          />
+        );
       }
 
-      let role = <PersonIcon 
-                  style={{fill: "green"}} 
-                  onClick={() => handleClickOpenAdminConfirmation("Promote this user to Admin?", user)}
-                />;
-      if (user.role === "ADMIN"){
-        role = <AdminPanelSettingsIcon 
-            style={{fill: "blue"}} 
-            onClick={() => handleClickOpenAdminConfirmation("Demote this user to a normal user?", user)}
-          />;
-      }            
+      let role = (
+        <PersonIcon
+          style={{ fill: "green" }}
+          onClick={() =>
+            handleClickOpenAdminConfirmation(t("user.promoteToAdmin"), user)
+          }
+        />
+      );
+      if (user.role === "ADMIN") {
+        role = (
+          <AdminPanelSettingsIcon
+            style={{ fill: "blue" }}
+            onClick={() =>
+              handleClickOpenAdminConfirmation(t("user.demoteToNormal"), user)
+            }
+          />
+        );
+      }
 
-      const createdAt = moment(user.createdAt).format('L');
+      const createdAt = moment(user.createdAt).format("L");
 
-      userRows.push(createData(
-        user.studentId, user.email, user.username, createdAt, status, role, user.id
-      ));
-    })
+      userRows.push(
+        createData(
+          user.studentId,
+          user.email,
+          user.username,
+          createdAt,
+          status,
+          role,
+          user.id
+        )
+      );
+    });
     return userRows;
-  }
+  };
 
   const rows = calculateUsers(users);
 
@@ -430,7 +469,7 @@ export default function AdminUsers() {
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
         selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),
+        selected.slice(selectedIndex + 1)
       );
     }
 
@@ -438,17 +477,15 @@ export default function AdminUsers() {
   };
 
   const updateUser = (newUser) => {
-
-    let updatedUsers = users.map(user => 
-      {
-        if (user.id === newUser.id){
-          return newUser;
-        }
-        return user;
-      });
+    let updatedUsers = users.map((user) => {
+      if (user.id === newUser.id) {
+        return newUser;
+      }
+      return user;
+    });
 
     setUsers(updatedUsers);
-  }
+  };
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -470,8 +507,7 @@ export default function AdminUsers() {
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
   return (
-    <Box sx={{ width: '100%' }}>
-
+    <Box sx={{ width: "100%" }}>
       <Dialog
         open={openConfirmation}
         TransitionComponent={Transition}
@@ -481,18 +517,18 @@ export default function AdminUsers() {
       >
         <DialogTitle>{confirmationDialog}</DialogTitle>
         <DialogActions>
-          <Button onClick={handleCloseConfirmation}>Close</Button>
-          <Button onClick={handleConfirm}>Confirm</Button>
+          <Button onClick={handleCloseConfirmation}>{t("close")}</Button>
+          <Button onClick={handleConfirm}>{t("confirm")}</Button>
         </DialogActions>
       </Dialog>
 
-      <Paper sx={{ width: '100%', mb: 2 }}>
+      <Paper sx={{ width: "100%", mb: 2 }}>
         <EnhancedTableToolbar numSelected={selected.length} />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
             aria-labelledby="tableTitle"
-            size={dense ? 'small' : 'medium'}
+            size={dense ? "small" : "medium"}
           >
             <EnhancedTableHead
               numSelected={selected.length}
@@ -526,7 +562,7 @@ export default function AdminUsers() {
                           color="primary"
                           checked={isItemSelected}
                           inputProps={{
-                            'aria-labelledby': labelId,
+                            "aria-labelledby": labelId,
                           }}
                         />
                       </TableCell>
@@ -538,23 +574,25 @@ export default function AdminUsers() {
                       >
                         {row.studentID}
                       </TableCell>
-                        <TableCell align="left"
+                      <TableCell
+                        align="left"
+                        onClick={() => navigateToUserPage(row.id)}
+                      >
+                        {row.email}
+                      </TableCell>
+                      <TableCell align="left">{row.username}</TableCell>
+                      <TableCell align="left">{row.createAt}</TableCell>
+                      <TableCell align="center">{row.status}</TableCell>
+                      <TableCell align="center">{row.role}</TableCell>
+                      <TableCell align="center">
+                        <IconButton
+                          color="primary"
+                          aria-label="View Detail"
                           onClick={() => navigateToUserPage(row.id)}
                         >
-                          {row.email}
-                        </TableCell>
-                        <TableCell align="left">{row.username}</TableCell>
-                        <TableCell align="left">{row.createAt}</TableCell>
-                        <TableCell align="center">{row.status}</TableCell>
-                        <TableCell align="center">{row.role}</TableCell>
-                        <TableCell align="center">
-                          <IconButton 
-                            color="primary" aria-label="View Detail"
-                            onClick={() => navigateToUserPage(row.id)}
-                            >
-                            <Info />
-                          </IconButton>
-                        </TableCell>
+                          <Info />
+                        </IconButton>
+                      </TableCell>
                     </TableRow>
                   );
                 })}
@@ -578,11 +616,13 @@ export default function AdminUsers() {
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
+          labelRowsPerPage={t("rowsPerPage")}
+          labelDisplayedRows={defaultLabelDisplayedRows}
         />
       </Paper>
       <FormControlLabel
         control={<Switch checked={dense} onChange={handleChangeDense} />}
-        label="Dense padding"
+        label={t("densePadding")}
       />
     </Box>
   );
