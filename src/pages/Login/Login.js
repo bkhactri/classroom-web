@@ -57,6 +57,7 @@ const LoginPage = () => {
         }, 50);
       } catch (error) {
         setIsLoading(false);
+        console.log('error', error);
         setError(error.response?.data);
       }
     } else {

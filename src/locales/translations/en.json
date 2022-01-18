@@ -93,6 +93,7 @@
     "duplicateEmail": "Duplicate email",
     "userNotFound": "User Not Found",
     "incorrectPassword": "Incorrect Password",
+    "banned": "Your account has been banned",
     "takenUsername": "Username is taken",
     "takenEmail": "Email is taken",
     "requiredField": "This field is required",

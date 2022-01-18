@@ -93,6 +93,7 @@
     "duplicateEmail": "Trùng mail",
     "userNotFound": "Không tìm thấy người dùng",
     "incorrectPassword": "Sai mật khẩu",
+    "banned": "Tài khoản của bạn đã bị khóa",
     "takenUsername": "Tên này đã được sử dụng",
     "takenEmail": "Email đã được sử dụng",
     "requiredField": "Trường này là bắt buộc",
