@@ -84,6 +84,15 @@ const Header = ({ loading, classroom = 0, classID = "", classrooms }) => {
         setNotifications(notifications.concat(userNotification));
         setNewNotifications(newNotifications.concat(userNotification));
       });
+
+      socketRef.current.on("createReviewRequest", (data) => {
+        const userNotification = data.result.filter(
+          (notice) => notice.userId === userId
+        );
+        console.log(userNotification);
+        setNotifications(notifications.concat(userNotification));
+        setNewNotifications(newNotifications.concat(userNotification));
+      });
     }
 
     return () => {
@@ -181,8 +190,9 @@ const Header = ({ loading, classroom = 0, classID = "", classrooms }) => {
             : { ...notification };
         });
         setNotifications(newNotifications);
-        navigate(link);
       }
+
+      navigate(link);
     } catch (error) {
       throw new Error(error);
     }

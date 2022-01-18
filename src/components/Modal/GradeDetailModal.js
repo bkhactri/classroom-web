@@ -99,9 +99,9 @@ const GradeDetailModal = ({
           { headers: { Authorization: "Bearer " + accessToken } }
         );
 
-        let currentSenderId = tempMessages?.[0].sender.id;
+        let currentSenderId = tempMessages?.[0].senderId;
         setMessages(tempMessages.map((message, index) => {
-          if (index === 0 || currentSenderId !== message.sender.id) {
+          if (index === 0 || currentSenderId !== message.senderId) {
             message.willDisplayName = true;
           } else {
             message.willDisplayName = false;
