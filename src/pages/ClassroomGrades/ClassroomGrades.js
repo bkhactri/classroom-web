@@ -61,7 +61,7 @@ const ClassroomGrades = () => {
   const [gradeIds, setGradeIds] = useState({});
   const [additionalInfos, setAdditionalInfos] = useState({});
   const [gradeInfos, setGradeInfos] = useState({});
-  const [selectedGrade, setSelectedGrade] = useState({});
+  const [highlightedGrade, setHighlightedGrade] = useState({});
   // eslint-disable-next-line
   const [queryParams, setQueryParams] = useSearchParams();
   const { classroomId } = useParams();
@@ -168,8 +168,8 @@ const ClassroomGrades = () => {
                 <Typography
                   sx={{
                     color:
-                      selectedGrade?.gradeStructureId === grade.id &&
-                      selectedGrade?.studentId === params.value?.[2]?.studentId
+                      highlightedGrade?.gradeStructureId === grade.id &&
+                      highlightedGrade?.studentId === params.value?.[2]?.studentId
                         ? "crimson"
                         : "black",
                   }}
@@ -259,8 +259,8 @@ const ClassroomGrades = () => {
       classroomId,
       mapGradeToStudent,
       t,
-      selectedGrade?.gradeStructureId,
-      selectedGrade?.studentId,
+      highlightedGrade?.gradeStructureId,
+      highlightedGrade?.studentId,
     ]
   );
 
@@ -306,7 +306,7 @@ const ClassroomGrades = () => {
           gradeStructureId: queryParams.get("gradeStructureId"),
           studentId: queryParams.get("studentId"),
         };
-        setSelectedGrade(tempSelectedGrade);
+        setHighlightedGrade(tempSelectedGrade);
 
         setIsLoading(false);
       } catch (error) {

@@ -15,6 +15,7 @@ const GradeTable = ({
   gradeTotal,
   clickable,
   handleOpenGradeDetail,
+  highlightedGradeStructureId,
 }) => {
   const { t } = useTranslation();
   const canOpenModal = (gradeStatus) =>
@@ -52,7 +53,11 @@ const GradeTable = ({
               >
                 <TableCell>
                   <Fab
-                    color="primary"
+                    color={
+                      myGrade.gradeStructureId === highlightedGradeStructureId
+                        ? "secondary"
+                        : "primary"
+                    }
                     disabled={myGrade.status !== GRADE_STATUS.FINALIZED}
                     sx={{ pointerEvents: "none" }}
                   >

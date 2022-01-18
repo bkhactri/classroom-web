@@ -1,5 +1,5 @@
 import { useEffect, useState, Fragment, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
 import Header from "../../components/Header/Header";
@@ -34,6 +34,9 @@ const MyGrades = () => {
   const [gradeTotal, setGradeTotal] = useState(null);
   const [isGradeDetailOpen, setGradeDetailOpen] = useState(false);
   const [selectedGrade, setSelectedGrade] = useState({});
+  const [highlightedGrade, setHighlightedGrade] = useState({});
+  // eslint-disable-next-line
+  const [queryParams, setQueryParams] = useSearchParams();
 
   const fetchMyGrades = useCallback(
     async (tempStudentId) => {
@@ -103,6 +106,11 @@ const MyGrades = () => {
 
         fetchMyGrades(tempStudentId);
 
+        const tempHighlightedGrade = {
+          gradeStructureId: queryParams.get("gradeStructureId")
+        }
+        setHighlightedGrade(tempHighlightedGrade);
+
         setIsLoading(false);
       } catch (err) {
         setIsLoading(false);
@@ -111,7 +119,7 @@ const MyGrades = () => {
     };
 
     fetchInitialData();
-  }, [accessToken, classroomId, dispatch, fetchMyGrades]);
+  }, [accessToken, classroomId, dispatch, fetchMyGrades, queryParams]);
 
   const handleCloseGradeDetailModal = () => {
     setGradeDetailOpen(false);
@@ -170,6 +178,7 @@ const MyGrades = () => {
             gradeTotal={gradeTotal}
             clickable={true}
             handleOpenGradeDetail={handleOpenGradeDetail}
+            highlightedGradeStructureId={highlightedGrade.gradeStructureId}
           />
         </Box>
       </Container>
