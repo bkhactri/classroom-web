@@ -6,7 +6,7 @@ import {
   useRef,
   useCallback,
 } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import Header from "../../components/Header/Header";
 import Paper from "@mui/material/Paper";
@@ -53,7 +53,6 @@ const ClassroomGrades = () => {
   const [gradeColumns, setGradeColumns] = useState([]);
   const [students, setStudents] = useState([]);
   const [structures, setStructures] = useState([]);
-  const [grades, setGrades] = useState([]);
   const [gradeSum, setGradeSum] = useState(null);
   const [gradeRequests, setGradeRequests] = useState([]);
   const [snackBarMessage, setSnackBarMessage] = useState("");
@@ -62,6 +61,9 @@ const ClassroomGrades = () => {
   const [gradeIds, setGradeIds] = useState({});
   const [additionalInfos, setAdditionalInfos] = useState({});
   const [gradeInfos, setGradeInfos] = useState({});
+  const [selectedGrade, setSelectedGrade] = useState({});
+  // eslint-disable-next-line
+  const [queryParams, setQueryParams] = useSearchParams();
   const { classroomId } = useParams();
   const inputFileStudentRef = useRef();
   let downloadGradeTemplateVisible = useRef(false);
@@ -138,7 +140,6 @@ const ClassroomGrades = () => {
             headers: { Authorization: "Bearer " + accessToken },
           }
         );
-        setGrades(gradeBoard);
 
         const tempGradeRequests = await axiosGradeRequest.get(
           `/${classroomId}`,
@@ -164,7 +165,15 @@ const ClassroomGrades = () => {
           renderCell: (params) => {
             return (
               <Fragment>
-                <Typography>
+                <Typography
+                  sx={{
+                    color:
+                      selectedGrade?.gradeStructureId === grade.id &&
+                      selectedGrade?.studentId === params.value?.[2]?.studentId
+                        ? "crimson"
+                        : "black",
+                  }}
+                >
                   {params.value?.[0] === null || params.value?.[0] === undefined
                     ? ""
                     : params.value?.[0]}{" "}
@@ -245,7 +254,14 @@ const ClassroomGrades = () => {
         console.log(err);
       }
     },
-    [accessToken, classroomId, mapGradeToStudent, t]
+    [
+      accessToken,
+      classroomId,
+      mapGradeToStudent,
+      t,
+      selectedGrade?.gradeStructureId,
+      selectedGrade?.studentId,
+    ]
   );
 
   useEffect(() => {
@@ -286,6 +302,12 @@ const ClassroomGrades = () => {
 
         fetchStudentsGrades(tempStudents, tempGradeSum, gradeStructures);
 
+        const tempSelectedGrade = {
+          gradeStructureId: queryParams.get("gradeStructureId"),
+          studentId: queryParams.get("studentId"),
+        };
+        setSelectedGrade(tempSelectedGrade);
+
         setIsLoading(false);
       } catch (error) {
         setIsLoading(false);
@@ -294,7 +316,13 @@ const ClassroomGrades = () => {
     };
 
     fetchInfos();
-  }, [classroomId, accessToken, dispatch, fetchStudentsGrades]);
+  }, [
+    classroomId,
+    accessToken,
+    dispatch,
+    fetchStudentsGrades,
+    queryParams,
+  ]);
 
   // Student Identification
   const downloadStudentTemplate = () => {
@@ -447,22 +475,18 @@ const ClassroomGrades = () => {
                 gr.gradeStructureId === field
             );
             const student = students.find((st) => st.id === id);
-            const grade = grades.find(
-              (g) =>
-                g.studentIdentificationId === id && g.gradeStructureId === field
-            );
 
             return row.id === id
               ? {
                   ...row,
                   [field]: [
-                    value,
+                    value.toFixed(2),
                     requestOpen ? true : false,
                     {
                       studentId: id,
                       studentName: student.name,
-                      gradeCreatedAt: grade?.createdAt,
-                      gradeUpdatedAt: grade?.updatedAt,
+                      gradeCreatedAt: response?.createdAt,
+                      gradeUpdatedAt: response?.updatedAt,
                     },
                   ],
                   total,

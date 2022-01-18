@@ -38,8 +38,6 @@ const CustomColumnMenuComponent = (props) => {
         text: t("notice.completedFinalizedGrade"),
         icon: "success",
       });
-
-      // NOTIFICATION NEEDED
     } catch (err) {
       throw new Error(err);
     }
