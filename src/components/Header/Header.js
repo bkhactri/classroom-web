@@ -89,7 +89,14 @@ const Header = ({ loading, classroom = 0, classID = "", classrooms }) => {
         const userNotification = data.result.filter(
           (notice) => notice.userId === userId
         );
-        console.log(userNotification);
+        setNotifications(notifications.concat(userNotification));
+        setNewNotifications(newNotifications.concat(userNotification));
+      });
+
+      socketRef.current.on("gradeReviewResolved", (data) => {
+        const userNotification = data.result.filter(
+          (notice) => notice.userId === userId
+        );
         setNotifications(notifications.concat(userNotification));
         setNewNotifications(newNotifications.concat(userNotification));
       });
