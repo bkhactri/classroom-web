@@ -43,7 +43,7 @@ const ConfirmEmail = () => {
         email: c_email,
         verifyToken,
       });
-      console.log(response);
+
       const userInfo = {
         userId: response.id,
         email: response.email,
@@ -57,7 +57,6 @@ const ConfirmEmail = () => {
         dispatch(userInfoActions.setUser(userInfo));
         navigate("/");
       });
-      console.log(response);
     } catch (error) {
       setIsLoading(false);
       setError(error.response.data);

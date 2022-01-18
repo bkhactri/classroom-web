@@ -81,7 +81,6 @@ const Header = ({ loading, classroom = 0, classID = "", classrooms }) => {
         const userNotification = data.result.filter(
           (notice) => notice.userId === userId
         );
-        console.log(userNotification);
         setNotifications(notifications.concat(userNotification));
         setNewNotifications(newNotifications.concat(userNotification));
       });
@@ -109,7 +108,7 @@ const Header = ({ loading, classroom = 0, classID = "", classrooms }) => {
       }
     };
 
-    if (isAuthenticated) {
+    if (isAuthenticated && userId) {
       getNotifications();
     }
   }, [accessToken, isAuthenticated, userId]);
