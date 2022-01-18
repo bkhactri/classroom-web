@@ -3,7 +3,8 @@ version: '2.1'
 services:
 
   classroom-frontend: 
-    image: nguyenduongag/classroom-frontend
+    container_name: classroom-frontend
+    image: nguyenduongag/classroom-frontend:2.0
     ports:
       - '3000:3000'
     environment:
@@ -11,7 +12,8 @@ services:
     depends_on: 
       - classroom-backend
   classroom-backend: 
-    image: nguyenduongag/classroom-backend
+    container_name: classroom-backend
+    image: nguyenduongag/classroom-backend:2.0
     ports:
       - '8000:8000'
     environment:
