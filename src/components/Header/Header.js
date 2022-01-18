@@ -112,6 +112,15 @@ const Header = ({ loading, classroom = 0, classID = "", classrooms }) => {
         setNotifications(userNotification.concat(temp));
         setNewNotifications(newNotifications.concat(userNotification));
       });
+
+      socketRef.current.on("studentReplyGradeReview", (data) => {
+        const userNotification = data.result.filter(
+          (notice) => notice.userId === userId
+        );
+        const temp = notifications;
+        setNotifications(userNotification.concat(temp));
+        setNewNotifications(newNotifications.concat(userNotification));
+      });
     }
 
     return () => {
