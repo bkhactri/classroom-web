@@ -59,9 +59,17 @@ const GradeDetailModal = ({
   const [requests, setRequests] = useState([]);
   const [messages, setMessages] = useState([]);
   const [currentPoint, setCurrentPoint] = useState(null);
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
   const gradeEl = useRef(null);
   const reasonEl = useRef(null);
   const messageEl = useRef(null);
+
+  useEffect(() => {
+    window.addEventListener("resize", () => {
+      console.log(window.innerWidth);
+      setScreenWidth(window.innerWidth);
+    });
+  }, []);
 
   useEffect(() => {
     if (
@@ -100,15 +108,17 @@ const GradeDetailModal = ({
         );
 
         let currentSenderId = tempMessages?.[0].senderId;
-        setMessages(tempMessages.map((message, index) => {
-          if (index === 0 || currentSenderId !== message.senderId) {
-            message.willDisplayName = true;
-          } else {
-            message.willDisplayName = false;
-          }
+        setMessages(
+          tempMessages.map((message, index) => {
+            if (index === 0 || currentSenderId !== message.senderId) {
+              message.willDisplayName = true;
+            } else {
+              message.willDisplayName = false;
+            }
 
-          return message;
-        }));
+            return message;
+          })
+        );
       } catch (err) {
         console.log(err);
       }
@@ -239,7 +249,9 @@ const GradeDetailModal = ({
 
     Swal.fire({
       title: `${
-        status === REVIEW_REQUEST_STATUS.ACCEPTED ? translation("gradeDetail.accept") : translation("gradeDetail.deny")
+        status === REVIEW_REQUEST_STATUS.ACCEPTED
+          ? translation("gradeDetail.accept")
+          : translation("gradeDetail.deny")
       } ${translation("gradeDetail.gradeReviewRequest")}`,
       showCancelButton: true,
       confirmButtonText: translation("confirm"),
@@ -301,7 +313,8 @@ const GradeDetailModal = ({
       .then((resultPrivateMessage) => {
         if (
           messages[messages.length - 1]?.sender?.id !==
-          resultPrivateMessage?.sender?.id || messages.length === 0
+            resultPrivateMessage?.sender?.id ||
+          messages.length === 0
         ) {
           resultPrivateMessage.willDisplayName = true;
         } else {
@@ -323,8 +336,11 @@ const GradeDetailModal = ({
   };
 
   const formatDate = (date) => {
-    return format(new Date(date), currentLanguageCode === "vi-VN" ? "dd/MM/yyyy" : "PPP");
-  }
+    return format(
+      new Date(date),
+      currentLanguageCode === "vi-VN" ? "dd/MM/yyyy" : "PPP"
+    );
+  };
 
   return (
     <Modal
@@ -332,16 +348,29 @@ const GradeDetailModal = ({
       onClose={handleClose}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
-      sx={{ zIndex: 1402 }}
+      sx={{ overflow: "auto" }}
     >
-      <Container maxWidth="lg" component={Card} sx={{ my: 5 }}>
+      <Container maxWidth="lg" component={Card} sx={{ mt: 5 }}>
         {isLoading && <Loading isOverlay={true} />}
 
-        <Grid container flexDirection="row">
-          <Grid item xs={7}>
+        <Grid container flexDirection="row" sx={{ position: "relative" }}>
+          <CloseIcon
+            onClick={handleClose}
+            sx={{
+              fontSize: "40px",
+              position: "absolute",
+              right: "0px",
+              top: "10px",
+              cursor: "pointer",
+            }}
+          />
+          <Grid item xs={12} md={7}>
             <Box
               sx={{
-                m: 8,
+                mt: 5,
+                mr: 2,
+                mb: 2,
+                ml: 2,
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
@@ -356,8 +385,8 @@ const GradeDetailModal = ({
                   {additionalInfos?.createdAt && additionalInfos?.updatedAt && (
                     <Fragment>
                       <FiberManualRecordIcon sx={{ fontSize: "0.75em" }} />{" "}
-                      {formatDate(additionalInfos?.createdAt)}{" "}
-                      ({translation("gradeDetail.edited") + " "}
+                      {formatDate(additionalInfos?.createdAt)} (
+                      {translation("gradeDetail.edited") + " "}
                       {formatDate(additionalInfos?.updatedAt)})
                     </Fragment>
                   )}
@@ -441,7 +470,10 @@ const GradeDetailModal = ({
                   )}
 
                   {isExtraInputsOpen && role === ROLE.STUDENT && (
-                    <Tooltip arrow title={translation("gradeDetail.addReviewRequest")}>
+                    <Tooltip
+                      arrow
+                      title={translation("gradeDetail.addReviewRequest")}
+                    >
                       <span style={{ alignSelf: "center" }}>
                         <Fab
                           size="small"
@@ -457,7 +489,10 @@ const GradeDetailModal = ({
 
                   {isExtraInputsOpen &&
                     [ROLE.OWNER, ROLE.TEACHER].includes(role) && (
-                      <Tooltip arrow title={translation("gradeDetail.saveGrade")}>
+                      <Tooltip
+                        arrow
+                        title={translation("gradeDetail.saveGrade")}
+                      >
                         <span style={{ alignSelf: "center" }}>
                           <Fab
                             size="small"
@@ -497,6 +532,7 @@ const GradeDetailModal = ({
                   border: 1,
                   borderColor: "#c5cae9",
                   borderRadius: "5px",
+                  overflow: "auto",
                 }}
               >
                 {messages.map((mess, index, arr) => {
@@ -578,11 +614,14 @@ const GradeDetailModal = ({
             </Box>
           </Grid>
 
-          <Grid item xs={1}>
-            <Divider orientation="vertical" sx={{ width: "50%" }} />
+          <Grid item xs={12} md={1}>
+            <Divider
+              orientation={screenWidth >= 768 ? "vertical" : "horizontal"}
+              sx={{ width: screenWidth >= 768 ? "50%" : "100%" }}
+            />
           </Grid>
 
-          <Grid item xs={4}>
+          <Grid item xs={12} md={4}>
             <Box
               sx={{
                 my: 8,
@@ -591,7 +630,9 @@ const GradeDetailModal = ({
                 alignItems: "center",
               }}
             >
-              <Typography variant="h6">{translation("gradeDetail.reviewRequestHistory")}</Typography>
+              <Typography variant="h6">
+                {translation("gradeDetail.reviewRequestHistory")}
+              </Typography>
 
               <Collapse
                 in={Boolean(reviewRequest)}
@@ -599,10 +640,14 @@ const GradeDetailModal = ({
               >
                 <Alert severity="info">
                   <Typography>
-                    <strong>{translation("gradeDetail.gradeRequested")}:</strong> {reviewRequest?.point}
+                    <strong>
+                      {translation("gradeDetail.gradeRequested")}:
+                    </strong>{" "}
+                    {reviewRequest?.point}
                   </Typography>
                   <Typography sx={{ wordBreak: "break-all" }}>
-                    <strong>{translation("gradeDetail.reasonLabel")}:</strong> {reviewRequest?.reason}
+                    <strong>{translation("gradeDetail.reasonLabel")}:</strong>{" "}
+                    {reviewRequest?.reason}
                   </Typography>
                   {reviewRequest?.createdAt && (
                     <Typography mt={1}>
@@ -669,17 +714,24 @@ const GradeDetailModal = ({
                         </span>
                       </Typography>
                       <Typography sx={{ wordBreak: "break-all" }}>
-                        <strong>{translation("gradeDetail.reasonLabel")}:</strong> {request.reason}
+                        <strong>
+                          {translation("gradeDetail.reasonLabel")}:
+                        </strong>{" "}
+                        {request.reason}
                       </Typography>
                       {request.resolveStatus && (
                         <Typography>
-                          <strong>{translation("gradeDetail.resolvedBy")}:</strong>{" "}
+                          <strong>
+                            {translation("gradeDetail.resolvedBy")}:
+                          </strong>{" "}
                           {request?.resolver?.username}
                         </Typography>
                       )}
                       {request?.createdAt && (
                         <Typography mt={1}>
-                          <strong>{translation("gradeDetail.createdOn")}</strong>{" "}
+                          <strong>
+                            {translation("gradeDetail.createdOn")}
+                          </strong>{" "}
                           {formatDate(request.createdAt)}
                         </Typography>
                       )}

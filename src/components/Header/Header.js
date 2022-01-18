@@ -81,7 +81,8 @@ const Header = ({ loading, classroom = 0, classID = "", classrooms }) => {
         const userNotification = data.result.filter(
           (notice) => notice.userId === userId
         );
-        setNotifications(notifications.concat(userNotification));
+        const temp = notifications;
+        setNotifications(userNotification.concat(temp));
         setNewNotifications(newNotifications.concat(userNotification));
       });
 
@@ -89,7 +90,8 @@ const Header = ({ loading, classroom = 0, classID = "", classrooms }) => {
         const userNotification = data.result.filter(
           (notice) => notice.userId === userId
         );
-        setNotifications(notifications.concat(userNotification));
+        const temp = notifications;
+        setNotifications(userNotification.concat(temp));
         setNewNotifications(newNotifications.concat(userNotification));
       });
 
@@ -97,7 +99,17 @@ const Header = ({ loading, classroom = 0, classID = "", classrooms }) => {
         const userNotification = data.result.filter(
           (notice) => notice.userId === userId
         );
-        setNotifications(notifications.concat(userNotification));
+        const temp = notifications;
+        setNotifications(userNotification.concat(temp));
+        setNewNotifications(newNotifications.concat(userNotification));
+      });
+
+      socketRef.current.on("teacherReplyGradeReview", (data) => {
+        const userNotification = data.result.filter(
+          (notice) => notice.userId === userId
+        );
+        const temp = notifications;
+        setNotifications(userNotification.concat(temp));
         setNewNotifications(newNotifications.concat(userNotification));
       });
     }
