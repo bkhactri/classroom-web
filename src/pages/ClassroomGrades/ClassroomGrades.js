@@ -82,7 +82,7 @@ const ClassroomGrades = () => {
         if(Object.prototype.toString.call(value) === '[object Array]') {
             value = value[0];
         }
-        rowValue[column.headerName] = value;        
+        rowValue[column.headerName] = value || "";        
       });
       board.push(rowValue); 
     });
