@@ -86,7 +86,7 @@ const JoinClassroom = (props) => {
               {t("youWillBeJoin")} <strong>{joinInfo.classroomName}</strong>
             </Typography>
             <Typography variant="h5" sx={{ mb: 2 }}>
-              {t("asA")} <strong>{joinInfo.role}</strong>
+              {t("asA")} <strong>{t(joinInfo.role)}</strong>
             </Typography>
             <Grid sx={{ mt: 5 }} container justifyContent="space-around">
               <Grid item xs={5}>

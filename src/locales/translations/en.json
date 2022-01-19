@@ -1,4 +1,6 @@
 {
+  "TEACHER": "Teacher",
+  "STUDENT": "Student",
   "auth": {
     "signIn": "Sign In",
     "signUp": "Sign Up",

@@ -1,4 +1,6 @@
 {
+  "TEACHER": "Giáo viên",
+  "STUDENT": "Học viên",
   "auth": {
     "signIn": "Đăng nhập",
     "signUp": "Đăng ký",
