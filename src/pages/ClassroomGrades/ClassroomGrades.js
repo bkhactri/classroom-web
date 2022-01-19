@@ -13,9 +13,9 @@ import Paper from "@mui/material/Paper";
 import {
   GridToolbarContainer,
   DataGridPro,
-  GridToolbarExport,
 } from "@mui/x-data-grid-pro";
 import Button from "@mui/material/Button";
+import { ExportToCsv } from 'export-to-csv';
 import Snackbar from "@mui/material/Snackbar";
 import Typography from "@mui/material/Typography";
 import Fab from "@mui/material/Fab";
@@ -72,6 +72,36 @@ const ClassroomGrades = () => {
   useEffect(() => {
     localStorage.setItem("currentUrl", currentUrl);
   }, [currentUrl]);
+
+  const generateGradeBoard = () => {
+    const board = [];
+    gradeRows.forEach(row => {
+      const rowValue = {};
+      gradeColumns.forEach(column => {
+        let value = row[column.field];
+        if(Object.prototype.toString.call(value) === '[object Array]') {
+            value = value[0];
+        }
+        rowValue[column.headerName] = value;        
+      });
+      board.push(rowValue); 
+    });
+    return board;
+  }
+
+  const csvOptions = { 
+    fieldSeparator: ',',
+    filename: 'gradeBoard',
+    quoteStrings: '"',
+    decimalSeparator: '.',
+    showLabels: true, 
+    useTextFile: false,
+    useBom: true,
+    useKeysAsHeaders: true,
+    // headers: ['Column 1', 'Column 2', etc...] <-- Won't work with useKeysAsHeaders present!
+  };
+ 
+  const csvExporter = new ExportToCsv(csvOptions);
 
   const mapGradeToStudent = useCallback(
     (
@@ -565,7 +595,9 @@ const ClassroomGrades = () => {
             Toolbar: () => {
               return (
                 <GridToolbarContainer>
-                  <GridToolbarExport />
+                  <Button onClick={() => csvExporter.generateCsv(generateGradeBoard())}>
+                    {t("classroom.downloadGradeBoard")}
+                  </Button>
                   <Button onClick={downloadStudentTemplate}>
                     {t("classroom.downloadStudentTemplate")}
                   </Button>
